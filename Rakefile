@@ -76,9 +76,9 @@ end
 desc 'Remove all files in the build directory'
 task :clean do
   count = 0
-  ['kona', 'kona.min'].each do |f|
+  [DIST_PATH, "#{DIST_PATH}.min"].each do |f|
     # Top level dist files
-    File.delete(File.join('./', "#{f}.js"))
+    File.delete(File.path("#{f}.js"))
     count += 1
   end
 
