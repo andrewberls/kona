@@ -8,9 +8,14 @@ SRC_PATH   = './src'   # Path to source files
 BUILD_PATH = './build' # All individual coffeescript files are compiled to indiv. js files in this path
 DIST_PATH  = './kona'  # Produces kona.js and kona.min.js in this path
 
+VENDOR_FILENAMES = [
+  # Hack here to support plain JS files
+  'underscore.min'
+]
+
 FILENAMES = [
-  'src/main',
-  'demo/test'
+  'main',
+  'test'
 ]
 
 # Accepts an array of filenames and an optional
@@ -22,22 +27,37 @@ end
 
 desc 'Compiles and concatenates source coffeescript files'
 task :build do
-  files = join_filenames(
-    FILENAMES.map { |file| "#{file}.coffee" }#,
-    #SRC_PATH
+  vendor_files = join_filenames(
+    VENDOR_FILENAMES.map { |file| "#{file}.js" }
   )
+
+  files = join_filenames(
+    FILENAMES.map { |file| "#{file}.coffee" },
+    SRC_PATH
+  )
+
   # Compile everything
   `coffee -b --output #{BUILD_PATH} --compile #{files}`
   if $?.to_i == 0
     puts "Compiled successfully."
-    js = FILENAMES.map do |file|
+    js = []
+    js << VENDOR_FILENAMES.map do |file|
+      IO.read File.join('./vendor', File.basename("#{file}.js"))
+    end
+
+    js << FILENAMES.map do |file|
       IO.read File.join(BUILD_PATH, File.basename("#{file}.js"))
-    end.join "\n"
+    end
+
+    js = js.join "\n"
 
     # Minify and write concatenated dist files
     minjs = Uglifier.new.compile(js)
     File.open("#{DIST_PATH}.js", 'w') { |f| f.write(js) }
     File.open("#{DIST_PATH}.min.js", 'w') { |f| f.write(minjs) }
+  else
+    # Send a growl notification on failure if enabled
+    system "growlnotify -m 'An error occured while compiling!' 2>/dev/null"
   end
 end
 
