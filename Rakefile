@@ -9,7 +9,8 @@ BUILD_PATH = './build' # All individual coffeescript files are compiled to indiv
 DIST_PATH  = './kona'  # Produces kona.js and kona.min.js in this path
 
 FILENAMES = [
-  'main'
+  'src/main',
+  'demo/test'
 ]
 
 # Accepts an array of filenames and an optional
@@ -22,8 +23,8 @@ end
 desc 'Compiles and concatenates source coffeescript files'
 task :build do
   files = join_filenames(
-    FILENAMES.map { |file| "#{file}.coffee" }, 
-    SRC_PATH
+    FILENAMES.map { |file| "#{file}.coffee" }#,
+    #SRC_PATH
   )
   # Compile everything
   `coffee -b --output #{BUILD_PATH} --compile #{files}`
