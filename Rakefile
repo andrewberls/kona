@@ -15,7 +15,12 @@ VENDOR_FILENAMES = [
 
 FILENAMES = [
   'main',
-  'test'
+  'engine',
+  'entity',
+  'keys',
+  'sound',
+
+  'game'
 ]
 
 # Accepts an array of filenames and an optional

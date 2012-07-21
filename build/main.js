@@ -2,3 +2,45 @@
 var Kona;
 
 Kona = window.Kona = {};
+
+Kona.debugMode = true;
+
+Kona.debug = function(msg) {
+  if (Kona.debugMode) {
+    return console.log(msg);
+  }
+};
+
+Kona.readyCallbacks = [];
+
+Kona.isReady = false;
+
+Kona.ready = function(callback) {
+  if (document.readyState === 'complete') {
+    Kona.isReady = true;
+  }
+  if (Kona.isReady) {
+    callback.call();
+  }
+  return Kona.readyCallbacks.push(callback);
+};
+
+Kona.DOMContentLoaded = function() {
+  if (Kona.isReady) {
+    return;
+  }
+  Kona.isReady = true;
+  return _.each(Kona.readyCallbacks, function(callback) {
+    return callback.call();
+  });
+};
+
+if (document.readyState !== 'complete') {
+  if (document.addEventListener) {
+    document.addEventListener('DOMContentLoaded', Kona.DOMContentLoaded, false);
+    window.addEventListener('load', Kona.DOMContentLoaded, false);
+  } else if (document.attachEvent) {
+    document.attachEvent('onreadystatechange', Kona.DOMContentLoaded);
+    window.attachEvent('onload', Kona.DOMContentLoaded);
+  }
+}
