@@ -92,7 +92,7 @@ Kona.Engine.start = function(canvas, fps) {
   Kona.debug('starting');
   Kona.Engine.fps = fps || Kona.Engine.defaults.fps;
   Kona.Engine.canvas = document.getElementById(canvas.id);
-  Kona.Engine.mainCtx = Kona.Engine.canvas.getContext('2d');
+  Kona.Engine.ctx = Kona.Engine.canvas.getContext('2d');
   Kona.Engine.C_WIDTH = canvas.width || Kona.Engine.defaults.width;
   Kona.Engine.C_HEIGHT = canvas.height || Kona.Engine.defaults.height;
   return Kona.Engine.run();
@@ -105,8 +105,6 @@ Kona.Engine.run = function() {
 };
 
 Kona.Engine.update = function() {};
-
-Kona.Engine.preload = function() {};
 
 Kona.Engine.draw = function() {};
 
@@ -173,6 +171,15 @@ Kona.Entity = (function() {
     this.sprite = new Image();
     this.sprite.src = '';
   }
+
+  Entity.prototype.update = function() {
+    this.position.x += this.direction.dx;
+    return this.position.y += this.direction.dy;
+  };
+
+  Entity.prototype.draw = function() {
+    return Kona.Engine.ctx.drawImage(this.sprite, this.position.x, this.position.y);
+  };
 
   return Entity;
 

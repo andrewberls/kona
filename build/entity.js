@@ -19,6 +19,15 @@ Kona.Entity = (function() {
     this.sprite.src = '';
   }
 
+  Entity.prototype.update = function() {
+    this.position.x += this.direction.dx;
+    return this.position.y += this.direction.dy;
+  };
+
+  Entity.prototype.draw = function() {
+    return Kona.Engine.ctx.drawImage(this.sprite, this.position.x, this.position.y);
+  };
+
   return Entity;
 
 })();

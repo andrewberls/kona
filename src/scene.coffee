@@ -27,5 +27,5 @@ class Kona.Scene
   update: ->
 
   draw: ->
-    # Load into back buffer?
+    # Render onto main canvas
 

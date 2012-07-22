@@ -17,3 +17,10 @@ class Kona.Entity
 
     @sprite = new Image() # TODO: Kona.Sprite /sheet ?
     @sprite.src = ''
+
+  update: ->
+    @position.x += @direction.dx
+    @position.y += @direction.dy
+
+  draw: ->
+    Kona.Engine.ctx.drawImage(@sprite, @position.x, @position.y)
