@@ -2,16 +2,23 @@
 
 Kona.Engine = {};
 
-Kona.Engine._defaultFPS = 24;
+Kona.Engine.defaults = {
+  fps: 24,
+  width: 640,
+  height: 480
+};
 
-Kona.Engine.start = function(fps) {
-  Kona.debug('start');
-  Kona.Engine._fps = fps || Kona.Engine._defaultFPS;
+Kona.Engine.start = function(canvas, fps) {
+  Kona.debug('starting');
+  Kona.Engine.fps = fps || Kona.Engine.defaults.fps;
+  Kona.Engine.canvas = document.getElementById(canvas.id);
+  Kona.Engine.mainCtx = Kona.Engine.canvas.getContext('2d');
+  Kona.Engine.C_WIDTH = canvas.width || Kona.Engine.defaults.width;
+  Kona.Engine.C_HEIGHT = canvas.height || Kona.Engine.defaults.height;
   return Kona.Engine.run();
 };
 
 Kona.Engine.run = function() {
-  Kona.debug('running');
   Kona.Engine.update();
   Kona.Engine.draw();
   return requestAnimFrame(Kona.Engine.run);
@@ -19,10 +26,12 @@ Kona.Engine.run = function() {
 
 Kona.Engine.update = function() {};
 
+Kona.Engine.preload = function() {};
+
 Kona.Engine.draw = function() {};
 
 window.requestAnimFrame = (function() {
   return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback) {
-    return Kona.Engine._timeoutId = setTimeout(callback, 1000 / Kona.Engine._fps);
+    return setTimeout(callback, 1000 / Kona.Engine.defaults.fps);
   };
 })();

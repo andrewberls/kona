@@ -1,3 +1,5 @@
 Kona.ready ->
   Kona.debug 'ready'
-  Kona.Engine.start()
+  Kona.Engine.start {
+    id: 'canvas'
+  }

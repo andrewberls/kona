@@ -2,5 +2,7 @@
 
 Kona.ready(function() {
   Kona.debug('ready');
-  return Kona.Engine.start();
+  return Kona.Engine.start({
+    id: 'canvas'
+  });
 });

@@ -2,7 +2,22 @@
 
 Kona.Entity = (function() {
 
-  function Entity() {}
+  function Entity() {
+    this.position = {
+      x: 0,
+      y: 0
+    };
+    this.direction = {
+      dx: 0,
+      dy: 0
+    };
+    this.box = {
+      width: 0,
+      height: 0
+    };
+    this.sprite = new Image();
+    this.sprite.src = '';
+  }
 
   return Entity;
 
