@@ -9,6 +9,7 @@
 
 
 Kona.Keys =
+  name: "kona.keys"
   # Contains info on keys on their associated handler(s)
   # Ex format:
   #   65: [ <function>, <function> ]
@@ -34,54 +35,44 @@ Kona.Keys =
     Kona.debug "binding on key: '#{key}' (normalized to code: #{Kona.Keys._map[key] || key.toUpperCase().charCodeAt(0)})"
 
     # Convert to keycode
-    key = Kona.Keys._map[key] || key.toUpperCase().charCodeAt(0)
+    key = @_map[key] || key.toUpperCase().charCodeAt(0)
 
     # Store handler
-    if !Kona.Keys._handlers[key]?
+    if !@_handlers[key]?
       Kona.debug "  key #{key} not found in existing handlers, setting to []\n"
-      Kona.Keys._handlers[key] = []
+      @_handlers[key] = []
 
-    Kona.Keys._handlers[key].push(handler)
+    @_handlers[key].push(handler)
 
 
   # Respond to keydown event and call associated handler
   dispatch: (event) ->
     key = event.keyCode # TODO: normalize (event.which ?)
     Kona.debug "\ndispatching key: #{key}"
-    Kona.debug "  no handler found, ABORT" if !Kona.Keys._handlers[key]?
+    Kona.debug "  no handler found, ABORT" if !@_handlers[key]?
 
     # Abort if we're in a data input element or no matching handlers found
-    return if Kona.Keys.reject(event) || !Kona.Keys._handlers[key]?
+    return if @reject(event) || !@_handlers[key]?
 
     # Call the handler and stop further event propagation
-    for handler in Kona.Keys._handlers[key]
+    for handler in @_handlers[key]
       handler.call()
-
-      if event.preventDefault
-        event.preventDefault()
-      else
-        event.returnValue = false
-
-      event.stopPropagation() if event.stopPropagation
-      event.cancelBubble = true if event.cancelBubble
+      return false
 
 
   reject: (event) ->
     # Ignore keypresses from elements that take keyboard data input
-    tagName = (event.target || event.srcElement).tagName
+    tagName = event.target.tagName
     Kona.debug "  data input - REJECT" if _.include(['INPUT', 'SELECT', 'TEXTAREA'], tagName)
     _.include(['INPUT', 'SELECT', 'TEXTAREA'], tagName)
 
 
   # Cross-browser event listeners
   addEvent: (object, event, method) ->
-    if object.addEventListener
-      object.addEventListener(event, method, false)
-    else if object.attachEvent
-      object.attachEvent "on#{event}", ->
-        method(window.event)
+    object.addEventListener(event, method, false)
 
 
 Kona.ready ->
-  # Set global key dispatch on the document
-  Kona.Keys.addEvent(document, 'keydown', Kona.Keys.dispatch)
+  # Set global key dispatch on the document, with some extra work to
+  # bind the desired 'this' context
+  Kona.Keys.addEvent(document, 'keydown', Kona.Keys.dispatch.bind(Kona.Keys))
