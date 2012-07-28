@@ -8,3 +8,6 @@ Kona.ready ->
 
   Kona.Keys.bind "left", ->
     console.log "you pressed left!"
+
+  Kona.Keys.bind 'ctrl', ->
+    console.log "you pressed ctrl"

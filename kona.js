@@ -191,10 +191,13 @@ Kona.Keys = {
   _handlers: {},
   _map: {
     enter: 13,
-    'return': 13,
+    "return": 13,
     esc: 27,
     escape: 27,
     space: 32,
+    shift: 16,
+    ctrl: 17,
+    control: 17,
     left: 37,
     up: 38,
     right: 39,
@@ -295,7 +298,10 @@ Kona.ready(function() {
   Kona.Keys.bind("a", function() {
     return console.log("You pressed a!");
   });
-  return Kona.Keys.bind("left", function() {
+  Kona.Keys.bind("left", function() {
     return console.log("you pressed left!");
+  });
+  return Kona.Keys.bind('ctrl', function() {
+    return console.log("you pressed ctrl");
   });
 });
