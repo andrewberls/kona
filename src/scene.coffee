@@ -21,7 +21,7 @@ class Kona.Scene
     @entities.push(entity)
 
   loadEntities: (entities) ->
-    _.each entities, (entity) ->
+    for entity in entities
       @addEntity(entity)
 
   update: ->

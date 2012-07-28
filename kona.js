@@ -59,13 +59,18 @@ Kona.ready = function(callback) {
 };
 
 Kona.DOMContentLoaded = function() {
+  var callback, _i, _len, _ref, _results;
   if (Kona.isReady) {
     return;
   }
   Kona.isReady = true;
-  return _.each(Kona.readyCallbacks, function(callback) {
-    return callback.call();
-  });
+  _ref = Kona.readyCallbacks;
+  _results = [];
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    callback = _ref[_i];
+    _results.push(callback.call());
+  }
+  return _results;
 };
 
 if (document.readyState !== 'complete') {
