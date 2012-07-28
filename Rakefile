@@ -14,8 +14,8 @@ VENDOR_FILENAMES = [
 ]
 
 FILENAMES = [
-  'util',
   'kona',
+  'util',
   'engine',
   'scene',
   'entity',
