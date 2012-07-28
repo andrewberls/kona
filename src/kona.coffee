@@ -27,8 +27,9 @@ Kona.ready = (callback) ->
 Kona.DOMContentLoaded = ->
   return if Kona.isReady # Do nothing if already ready
   Kona.isReady = true
-  _.each Kona.readyCallbacks, (callback) ->
-    callback.call()
+  # _.each Kona.readyCallbacks, (callback) ->
+  #   callback.call()
+  callback.call() for callback in Kona.readyCallbacks
 
 
 # Hook the various DOM loaded events. Borrowed from jQuery's implementation.
