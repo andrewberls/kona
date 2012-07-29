@@ -9,6 +9,7 @@ Kona.Engine.defaults =
 
 Kona.Engine.start = (canvas, fps) ->
   Kona.debug 'starting'
+  Kona.Scenes.currentScene = Kona.Utils.findByKey(Kona.Scenes.scenes, 'active', true)
   @fps =  fps || @defaults.fps
 
   # TODO: Do these belong in a Graphics namespace or similar?
@@ -31,6 +32,7 @@ Kona.Engine.update = ->
 
 Kona.Engine.draw = ->
   # Draw current scene onto main canvas
+  Kona.Scenes.drawCurrent()
 
 
 window.requestAnimFrame = do ->
