@@ -167,54 +167,24 @@ Kona.Sound =
           return (if supported then @sound.playbackRate else null)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        this.getDuration = function() {
-            return null if !supported
-
-            var duration = Math.round( this.sound.duration * 100 ) / 100
-            return isNaN( duration ) ? buzz.defaults.placeholder : duration
-        }
-
-        this.getPlayed = function() {
+        @getDuration = ->
           return null if !supported
 
-            return timerangeToArray( this.sound.played )
-        }
+          duration = Math.round( this.sound.duration * 100 ) / 100
+          return (if isNaN(duration) then buzz.defaults.placeholder else duration)
 
-        this.getBuffered = function() {
-          return null if !supported
 
-            return timerangeToArray( this.sound.buffered )
-        }
+        @getPlayed = ->
+          return (if supported then timerangeToArray(@sound.played) else null)
 
-        this.getSeekable = function() {
-          return null if !supported
 
-            return timerangeToArray( this.sound.seekable )
-        }
+        @getBuffered = ->
+          return (if supported then timerangeToArray(@sound.buffered) else null)
+
+
+        @getSeekable = ->
+          return (if supported then timerangeToArray(@sound.seekable) else null)
+
 
 
 
