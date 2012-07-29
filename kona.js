@@ -122,9 +122,7 @@ Kona.Engine.run = function() {
   return requestAnimFrame(Kona.Engine.run);
 };
 
-Kona.Engine.update = function() {
-  return console.log(Kona.Engine.C_WIDTH);
-};
+Kona.Engine.update = function() {};
 
 Kona.Engine.draw = function() {};
 

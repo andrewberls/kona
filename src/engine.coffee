@@ -28,7 +28,6 @@ Kona.Engine.run = ->
 
 Kona.Engine.update = ->
   # Update all entities
-  console.log Kona.Engine.C_WIDTH
 
 Kona.Engine.draw = ->
   # Draw current scene onto main canvas
