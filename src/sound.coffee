@@ -658,3 +658,5 @@ Kona.Sound =
     fromPercent: (percent, total, decimal) ->
       r = Math.pow(10, decimal || 0)
       return Math.round(((total / 100) * percent) * r) / r
+
+#test
