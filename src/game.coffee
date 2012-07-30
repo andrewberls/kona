@@ -6,11 +6,20 @@ Kona.ready ->
 
 
   menu = new Kona.Scene {
-    name: 'menu-1',
-    background: 'lvl1.jpg',
+    name: 'menu-1'
+    background: 'lvl1.jpg'
     active: true
+  }
+
+  level = new Kona.Scene {
+    name: 'level-1'
+    background: 'lvl2.jpg'
   }
 
   Kona.Engine.start {
     id: 'canvas'
   }
+
+  setTimeout ->
+    Kona.Scenes.setCurrent 'level-1'
+  , 2000

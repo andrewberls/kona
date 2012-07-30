@@ -3,18 +3,19 @@
 # rendering the current scene.
 
 
-Kona.Scenes = {}
+Kona.Scenes =
+  _scenes: []
 
-Kona.Scenes.scenes = [] # TODO: better naming
-Kona.Scenes.currentScene = {}
+  currentScene: {}
 
-Kona.Scenes.drawCurrent = ->
-  @currentScene.draw()
+  drawCurrent: ->
+    @currentScene.draw()
 
-Kona.Scenes.setCurrent = (sceneName) ->
-  # @currentScene.active = false
-  # @currentScene = Kona.Utils.findByKey(@scenes, 'name', sceneName)
-  # @currentScene.active = true
+  setCurrent: (sceneName) ->
+    @currentScene.active = false
+    @currentScene = Kona.Utils.findByKey(@_scenes, 'name', sceneName)
+    @currentScene.active = true
+
 
 
 class Kona.Scene
@@ -23,9 +24,9 @@ class Kona.Scene
     @name           = options.name   || throw new Error("scene must have a name")
     @background     = new Image()
     @background.src = options.background || ''
-    @entities       = []
+    @entities       = [] # TODO: entity loader
 
-    Kona.Scenes.scenes.push(@)
+    Kona.Scenes._scenes.push(@)
 
   addEntity: (entity) ->
     @entities.push(entity)
@@ -38,6 +39,7 @@ class Kona.Scene
 
   draw: ->
     # Render onto main canvas
-    Kona.debug "will draw: #{@background}"
-    #Kona.Engine.ctx.drawImage(@background, 0, 0)
-
+    Kona.debug "will draw: #{@name}"
+    # drawImage(image, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight)
+    Kona.Engine.ctx.drawImage(@background, 0, 0)
+    # entity.draw() for entity in @entities
