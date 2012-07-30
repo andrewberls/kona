@@ -9,9 +9,13 @@ Kona.Engine.defaults =
 
 Kona.Engine.start = (canvas, fps) ->
   Kona.debug 'starting'
+  Kona.Scenes.currentScene = Kona.Utils.findByKey(Kona.Scenes._scenes, 'active', true)
   @fps =  fps || @defaults.fps
 
   # TODO: Do these belong in a Graphics namespace or similar?
+  # TODO: you get weird image drawing issues if height/width
+  #   are not defined directly on the <canvas> element.
+  #   Can some of that be mitigated here?
   @canvas   = document.getElementById(canvas.id)
   @ctx      = @canvas.getContext('2d')
   @C_WIDTH  = canvas.width  || @defaults.width
@@ -31,6 +35,7 @@ Kona.Engine.update = ->
 
 Kona.Engine.draw = ->
   # Draw current scene onto main canvas
+  Kona.Scenes.drawCurrent()
 
 
 window.requestAnimFrame = do ->

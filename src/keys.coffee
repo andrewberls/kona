@@ -9,7 +9,6 @@
 
 
 Kona.Keys =
-  name: "kona.keys"
   # Contains info on keys on their associated handler(s)
   # Ex format:
   #   65: [ <function>, <function> ]
@@ -32,14 +31,14 @@ Kona.Keys =
   # Usage: Kona.keys.bind 'a', -> console.log "You pressed a!"
   bind: (key, handler) ->
     key = key.replace(/\s/g,'') # Strip any whitespace from key selector
-    Kona.debug "binding on key: '#{key}' (normalized to code: #{Kona.Keys._map[key] || key.toUpperCase().charCodeAt(0)})"
+    # Kona.debug "binding on key: '#{key}' (normalized to code: #{Kona.Keys._map[key] || key.toUpperCase().charCodeAt(0)})"
 
     # Convert to keycode
     key = @_map[key] || key.toUpperCase().charCodeAt(0)
 
     # Store handler
     if !@_handlers[key]?
-      Kona.debug "  key #{key} not found in existing handlers, setting to []\n"
+      # Kona.debug "  key #{key} not found in existing handlers, setting to []\n"
       @_handlers[key] = []
 
     @_handlers[key].push(handler)
@@ -48,8 +47,8 @@ Kona.Keys =
   # Respond to keydown event and call associated handler
   dispatch: (event) ->
     key = event.keyCode # TODO: normalize (event.which ?)
-    Kona.debug "\ndispatching key: #{key}"
-    Kona.debug "  no handler found, ABORT" if !@_handlers[key]?
+    # Kona.debug "\ndispatching key: #{key}"
+    # Kona.debug "  no handler found, ABORT" if !@_handlers[key]?
 
     # Abort if we're in a data input element or no matching handlers found
     return if @reject(event) || !@_handlers[key]?
@@ -63,7 +62,7 @@ Kona.Keys =
   reject: (event) ->
     # Ignore keypresses from elements that take keyboard data input
     tagName = event.target.tagName
-    Kona.debug "  data input - REJECT" if _.include(['INPUT', 'SELECT', 'TEXTAREA'], tagName)
+    # Kona.debug "  data input - REJECT" if _.include(['INPUT', 'SELECT', 'TEXTAREA'], tagName)
     _.include(['INPUT', 'SELECT', 'TEXTAREA'], tagName)
 
 

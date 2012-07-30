@@ -1,13 +1,25 @@
 Kona.ready ->
   Kona.debug 'ready'
-  Kona.Engine.start {
-    id: 'canvas'
-  }
-  Kona.Keys.bind "a", ->
-    console.log "You pressed a!"
 
   Kona.Keys.bind "left", ->
     console.log "you pressed left!"
 
-  Kona.Keys.bind 'ctrl', ->
-    console.log "you pressed ctrl"
+
+  menu = new Kona.Scene {
+    name: 'menu-1'
+    background: 'lvl1.jpg'
+    active: true
+  }
+
+  level = new Kona.Scene {
+    name: 'level-1'
+    background: 'lvl2.jpg'
+  }
+
+  Kona.Engine.start {
+    id: 'canvas'
+  }
+
+  setTimeout ->
+    Kona.Scenes.setCurrent 'level-1'
+  , 2000
