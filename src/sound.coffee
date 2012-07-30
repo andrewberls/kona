@@ -1,10 +1,10 @@
-#### OGG - Firefox, Chrome, Opera
-#### MP3 - IE
+# OGG - Firefox, Chrome, Opera
+# MP3 - IE
 
 
-#### Interface for defining and playing sound assets
-#### Uses the Buzz HTML5 audio library by Jay Salvat
-#### http://buzz.jaysalvat.com/
+# Interface for defining and playing sound assets
+# Uses the Buzz HTML5 audio library by Jay Salvat
+# http://buzz.jaysalvat.com/
 
 Kona.Sound =
     defaults:
@@ -251,7 +251,7 @@ Kona.Sound =
         return if key then @sound[key] else @sound
 
 
-#### I left this kind of untouched because I wasn't sure of how to deal with line 259
+# I left this kind of untouched because I wasn't sure of how to deal with line 259
       @bind = (types, func) ->
         return @ if !supported
         types = types.split( ' ' )
@@ -268,7 +268,7 @@ Kona.Sound =
       }
 
 
-#### I need to go over this one too
+# I need to go over this one too
       @unbind = (types) ->
         return @ if !supported
         types = types.split(' ')
@@ -294,7 +294,7 @@ Kona.Sound =
       }
 
 
-#### Do you remove the ( and { from lines 302 and 307?
+# Do you remove the ( and { from lines 302 and 307?
       @bindOnce = (type, func) ->
         return @ if !supported
         that = @
@@ -324,7 +324,7 @@ Kona.Sound =
         return @
 
 
-#### Something with fadeTo and doFade
+# Something with fadeTo and doFade
       @fadeTo = (to, duration, callback) ->
         return @ if !supported
         if duration instanceof Function
@@ -369,7 +369,7 @@ Kona.Sound =
         return @fadeTo(0, duration, callback)
 
 
-#### Check here too
+# Check here too
       @fadeWith = (sound, duration) ->
         return @ if !supported
         @fadeOut (duration), ->
@@ -378,7 +378,7 @@ Kona.Sound =
         return @
 
 
-#### Check here too
+# Check here too
       @whenReady = (func) ->
         return null if !supported
         that = @
@@ -388,9 +388,9 @@ Kona.Sound =
         else
           func.call(that)
 
-        #### privates
-#### Another check
-#### It was an object with a collection of key value pairs
+        # privates
+# Another check
+# It was an object with a collection of key value pairs
       timeRangeToArray = (timeRange) ->
         array = []
         length = timeRange.length - 1
@@ -413,9 +413,9 @@ Kona.Sound =
           source.type = buzz.types[getExt(src)]
         sound.appendChild(source)
 
-        ####// init
-        #### So is this whole block of code belong to addSource?
-        #### There was already a closed bracket above this to close out the function
+        # init
+        # So is this whole block of code belong to addSource?
+        # There was already a closed bracket above this to close out the function
         if supported and src {
             for var i in buzz.defaults
               if buzz.defaults.hasOwnProperty(i)
@@ -470,7 +470,7 @@ Kona.Sound =
       #    for sound in soundArray
       #      sounds.push(push)
 
-#### Can be redone
+# Can be redone
       @remove = (soundArray) ->
         soundArray = argsToArray(soundArray, arguments)
           for( var a = 0 a < soundArray.length a++ )
