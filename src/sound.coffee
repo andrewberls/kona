@@ -1,3 +1,25 @@
+###
+
+TODO:
+  Replace references to buzz with Kona.Sound
+    Or even find out if you can use @ in the top-
+    level namespace instead of Kona.Sound (would be clean)
+    @get can probably be refactored as well
+
+###
+
+
+
+
+
+
+
+
+
+
+
+
+
 # OGG - Firefox, Chrome, Opera
 # MP3 - IE
 
@@ -176,79 +198,81 @@ Kona.Sound =
 
 
       @getErrorCode = ->
-        if supported and @sound.error
-          return @sound.error.code
-        return 0
+        return (if supported && @sound.error then @sound.error.code else 0)
 
 
       @getErrorMessage = ->
         return null if !supported
-          switch @getErrorCode
-            case 1:
-              return 'MEDIA_ERR_ABORTED'
-            case 2:
-              return 'MEDIA_ERR_NETWORK'
-            case 3:
-              return 'MEDIA_ERR_DECODE'
-            case 4:
-              return 'MEDIA_ERR_SRC_NOT_SUPPORTED'
-            default:
-              return null
+        switch @getErrorCode
+          when 1 then 'MEDIA_ERR_ABORTED'
+          when 2 then 'MEDIA_ERR_NETWORK'
+          when 3 then 'MEDIA_ERR_DECODE'
+          when 4 then 'MEDIA_ERR_SRC_NOT_SUPPORTED'
+          else null
 
 
       @getStateCode = ->
-        return null if !supported
-        return @sound.readyState
+        return (if supported then @sound.readyState else null)
 
 
       @getStateMessage = ->
         return null if !supported
-          switch @getStateCode
-            case 0:
-              return 'HAVE_NOTHING'
-            case 1:
-              return 'HAVE_METADATA'
-            case 2:
-              return 'HAVE_CURRENT_DATA'
-            case 3:
-              return 'HAVE_FUTURE_DATA'
-            case 4:
-              return 'HAVE_ENOUGH_DATA'
-            default:
-              return null
+        switch @getStateCode
+          when 0 then 'HAVE_NOTHING'
+          when 1 then 'HAVE_METADATA'
+          when 2 then 'HAVE_CURRENT_DATA'
+          when 3 then 'HAVE_FUTURE_DATA'
+          when 4 then 'HAVE_ENOUGH_DATA'
+          else null
 
 
       @getNetworkStateCode = ->
-        return null if !supported
-        return @sound.networkState
+        return (if supported then @sound.networkState else null)
 
 
       @getNetworkStateMessage = ->
         return null if !supported
-          switch @getNetworkStateCode
-            case 0:
-              return 'NETWORK_EMPTY'
-            case 1:
-              return 'NETWORK_IDLE'
-            case 2:
-              return 'NETWORK_LOADING'
-            case 3:
-              return 'NETWORK_NO_SOURCE'
-            default:
-              return null
+        switch @getNetworkStateCode
+          when 0 'NETWORK_EMPTY'
+          when 1 'NETWORK_IDLE'
+          when 2 'NETWORK_LOADING'
+          when 3 'NETWORK_NO_SOURCE'
+          else null
 
 
       @set = (key, value) ->
-        return @ if !supported
-
-
-      @sound[key] = value
-        return @
+        return (if supported then @sound[key] = value else @)
 
 
       @get = (key) ->
+        # TODO: this can be done better
         return null if !supported
-        return if key then @sound[key] else @sound
+        return if key? then @sound[key] else @sound
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # I left this kind of untouched because I wasn't sure of how to deal with line 259
@@ -359,6 +383,21 @@ Kona.Sound =
         }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       @fadeIn = (duration, callback) ->
         return @ if !supported
         return @setVolume(0).fadeTo(100, duration, callback)
@@ -369,7 +408,6 @@ Kona.Sound =
         return @fadeTo(0, duration, callback)
 
 
-# Check here too
       @fadeWith = (sound, duration) ->
         return @ if !supported
         @fadeOut (duration), ->
@@ -378,7 +416,16 @@ Kona.Sound =
         return @
 
 
+
+
+
+
+
+
+
+
 # Check here too
+# TODO: fat arrow
       @whenReady = (func) ->
         return null if !supported
         that = @
@@ -387,6 +434,13 @@ Kona.Sound =
             func.call(that)
         else
           func.call(that)
+
+
+
+
+
+
+
 
         # privates
 # Another check
@@ -407,51 +461,55 @@ Kona.Sound =
 
 
       addSource = (sound, src) ->
-        source = document.createElement( 'source' )
+        source = document.createElement('source')
         source.src = src
-        if buzz.types[getExt(src)]
-          source.type = buzz.types[getExt(src)]
+        if Kona.Sound.types[getExt(src)]?
+          source.type = Kona.Sound.types[getExt(src)]
         sound.appendChild(source)
 
+
+
+
+
+
+
         # init
-        # So is this whole block of code belong to addSource?
-        # There was already a closed bracket above this to close out the function
-        if supported and src {
-            for var i in buzz.defaults
-              if buzz.defaults.hasOwnProperty(i)
-                options[i] = options[i] || buzz.defaults[i]
+        if supported and src
+          for var i in buzz.defaults
+            if buzz.defaults.hasOwnProperty(i)
+              options[i] = options[i] || buzz.defaults[i]
 
-            @sound = document.createElement('audio')
+          @sound = document.createElement('audio')
 
-            if src instanceof Array
-                for var j in src
-                  if src.hasOwnProperty(j)
-                    addSource(@sound, src[j])
-            else if options.formats.length
-                for var k in options.formats
-                  if(options.formats.hasOwnProperty(k))
-                    addSource(@sound, src + '.' + options.formats[k])
-            else
-              addSource(@sound, src)
+          if src instanceof Array
+              for var j in src
+                if src.hasOwnProperty(j)
+                  addSource(@sound, src[j])
+          else if options.formats.length
+              for var k in options.formats
+                if(options.formats.hasOwnProperty(k))
+                  addSource(@sound, src + '.' + options.formats[k])
+          else
+            addSource(@sound, src)
 
-            if options.loop
-              @loop()
+          if options.loop
+            @loop()
 
-            if options.autoplay
-              @sound.autoplay = 'autoplay'
+          if options.autoplay
+            @sound.autoplay = 'autoplay'
 
-            if options.preload === true
-              @sound.preload = 'auto'
-            else if options.preload === false
-              @sound.preload = 'none'
-            else
-              @sound.preload = options.preload
+          if options.preload === true
+            @sound.preload = 'auto'
+          else if options.preload === false
+            @sound.preload = 'none'
+          else
+            @sound.preload = options.preload
 
-            @setVolume(options.volume)
+          @setVolume(options.volume)
 
-            buzz.sounds.push(@)
-        }
-    },
+          buzz.sounds.push(@)
+
+
 
 
 
@@ -481,12 +539,12 @@ Kona.Sound =
 
 
       @load = ->
-        fn( 'load' )
+        fn('load')
         return @
 
 
       @play = ->
-        fn( 'play' )
+        fn('play')
         return @
 
 
@@ -594,19 +652,23 @@ Kona.Sound =
         return @
 
 
-      // privates
+      # privates
       fn = ->
         args = argsToArray(null, arguments)
         func = args.shift()
-        for i in sounds
-        #for( var i = 0 i < sounds.length i++ ) {
-          sounds[i][func].apply(sounds[i], args)
-        argsToArray = (array, args) ->
+        for sound in sounds
+          sound[func].apply(sound, args)
+
+
+      argsToArray = (array, args) ->
         return (array instanceof Array) ? array : Array.prototype.slice.call(args)
-    #},
 
 
-    #all: function()
+
+
+
+
+
     all: ->
       return new buzz.group(buzz.sounds)
 
