@@ -245,173 +245,117 @@ Kona.Sound =
 
 
       @get = (key) ->
-        # TODO: this can be done better
-        return null if !supported
-        return if key? then @sound[key] else @sound
+        if supported
+          return (if key? then @sound[key] else @sound)
+        else
+          return null
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# I left this kind of untouched because I wasn't sure of how to deal with line 259
       @bind = (types, func) ->
         return @ if !supported
-        types = types.split( ' ' )
-        that = @,
-        efunc = function( e ) { func.call(that, e) }
-          for( var t = 0 t < types.length t++ ) {
-              type = types[t],
-              idx = type
-              type = idx.split('.')[0]
-              events.push({idx: idx, func: efunc})
-              @sound.addEventListener(type, efunc, true)
+        types = types.split(' ')
+        self = @
+        efunc = (e) -> func.call(self, e)
+
+        for type in types
+          idx = type
+          type = idx.split('.')[0]
+          events.push {
+            idx: idx
+            func: efunc
           }
-          return @
-      }
+          @sound.addEventListener(type, efunc, true)
+
+        return @
 
 
-# I need to go over this one too
       @unbind = (types) ->
         return @ if !supported
         types = types.split(' ')
-          #for( var t = 0 t < types.length t++ ) {
-           #   var idx = types[ t ],
-            #      type = idx.split( '.' )[ 0 ]
-          for t in types
-            idx = t
-            type = idx.split('.')[0]
-              for( var i = 0 i < events.length i++ ) {
-                #for i in events
-                temp = i
-                  #var namespace = events[ i ].idx.split( '.' )
-                  namespace = temp.idx.split('.')
-                  if (events[i].idx == idx || (namespace[1] && namespace[1] == idx.replace( '.', '' ) ) ) {
-                      @sound.removeEventListener( type, events[ i ].func, true )
-                      // remove event
-                      events.splice(i, 1)
-                  }
-              }
-          }
-          return @
-      }
+
+        for type in types
+          idx = type
+          type = idx.split('.')[0]
+
+          for event, i in events
+            namespace = event.idx.split('.')
+            if event.idx == idx || (namespace[1] && namespace[1] == idx.replace('.', '') )
+              @sound.removeEventListener( type, event.func, true );
+              events.splice(i, 1) # remove event
+
+        return @
 
 
-# Do you remove the ( and { from lines 302 and 307?
       @bindOnce = (type, func) ->
         return @ if !supported
-        that = @
+        self = @
         eventsOnce[pid++] = false
-        @bind(pid + type, function() {
+        @bind pid + type, ->
           if !eventsOnce[pid]
             eventsOnce[pid] = true
-            func.call(that)
+            func.call(self)
              @unbind(pid + type)
-          })
 
 
       @trigger = (types) ->
         return @ if !supported
-        types = types.split( ' ' )
-        for( var t = 0 t < types.length t++ ) {
-            var idx = types[t]
-            for( var i = 0 i < events.length i++ ) {
-                var eventType = events[ i ].idx.split( '.' )
-                if ( events[ i ].idx == idx || ( eventType[ 0 ] && eventType[ 0 ] == idx.replace( '.', '' ) ) ) {
-                  var evt = document.createEvent('HTMLEvents')
-                  evt.initEvent( eventType[ 0 ], false, true )
+        types = types.split(' ')
+
+        for type in types
+          idx = type
+
+          for event in events
+            eventType = event.idx.split('.')
+            if event.idx == idx || ( eventType[0] && eventType[0] == idx.replace('.', '') )
+                  evt = document.createEvent('HTMLEvents')
+                  evt.initEvent(eventType[0], false, true)
                   @sound.dispatchEvent(evt)
-                  }
-              }
-          }
+
         return @
 
 
-# Something with fadeTo and doFade
       @fadeTo = (to, duration, callback) ->
         return @ if !supported
-        if duration instanceof Function
+
+        if (duration instanceof Function)
           callback = duration
-          duration = buzz.defaults.duration
+          duration = Kona.Sound.defaults.duration
         else
-          duration = duration || buzz.defaults.duration
-        from = @volume,
-        delay = duration / Math.abs(from - to),
-        that = @
+          duration = duration || Kona.Sound.defaults.duration
+
+        from = @volume
+        delay = duration / Math.abs( from - to )
+        self = @
         @play()
 
-
-        function doFade() {
-          setTimeout( function() {
-          if ( from < to and that.volume < to ) {
-            that.setVolume( that.volume += 1 )
-            doFade()
-          } else if ( from > to and that.volume > to ) {
-              that.setVolume( that.volume -= 1 )
+        doFade = ->
+          setTimeout ->
+              if from < to && self.volume < to
+                self.setVolume(self.volume += 1)
                 doFade()
-          } else if ( callback instanceof Function ) {
-                callback.apply( that )
-                }
-          }, delay )
-          }
-            this.whenReady( function() {
+              else if from > to && self.volume > to
+                self.setVolume(self.volume -= 1)
                 doFade()
-            })
+              else if callback instanceof Function
+                callback.apply(self)
+          , delay
 
-            return this
-        }
+        @whenReady -> doFade()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        return @
 
 
       @fadeIn = (duration, callback) ->
-        return @ if !supported
-        return @setVolume(0).fadeTo(100, duration, callback)
+        return (if supported then @setVolume(0).fadeTo(100, duration, callback) else @)
 
 
       @fadeOut = (duration, callback) ->
-        return @ if !supported
-        return @fadeTo(0, duration, callback)
+        return (if supported then @fadeTo(0, duration, callback) else @)
 
 
       @fadeWith = (sound, duration) ->
         return @ if !supported
-        @fadeOut (duration), ->
-          @stop()
+        @fadeOut (duration), -> @stop()
         sound.play().fadeIn(duration)
         return @
 
@@ -423,17 +367,15 @@ Kona.Sound =
 
 
 
-
-# Check here too
-# TODO: fat arrow
+      # TODO: KONA EVENT
       @whenReady = (func) ->
         return null if !supported
-        that = @
-        if @sound.readyState === 0
+        self = @
+        if @sound.readyState == 0
           @bind ('canplay.buzzwhenready'), ->
-            func.call(that)
+            func.call(self)
         else
-          func.call(that)
+          func.call(self)
 
 
 
@@ -442,18 +384,23 @@ Kona.Sound =
 
 
 
-        # privates
-# Another check
-# It was an object with a collection of key value pairs
+
+
+
+
+
+
+
+      # privates
       timeRangeToArray = (timeRange) ->
-        array = []
+        result = []
         length = timeRange.length - 1
-        for(var i = 0 i <= length i++)
-          array.push(
-          start: timeRange.start(length)
-          end: timeRange.end(length)
+        for num in [0..length]
+          result.push(
+            start: timeRange.start(length)
+            end: timeRange.end(length)
           )
-        return array
+        return result
 
 
       getExt = (filename) ->
@@ -466,10 +413,6 @@ Kona.Sound =
         if Kona.Sound.types[getExt(src)]?
           source.type = Kona.Sound.types[getExt(src)]
         sound.appendChild(source)
-
-
-
-
 
 
 
