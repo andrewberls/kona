@@ -1,25 +1,3 @@
-###
-
-TODO:
-  Replace references to buzz with Kona.Sound
-    Or even find out if you can use @ in the top-
-    level namespace instead of Kona.Sound (would be clean)
-    @get can probably be refactored as well
-
-###
-
-
-
-
-
-
-
-
-
-
-
-
-
 # OGG - Firefox, Chrome, Opera
 # MP3 - IE
 
@@ -96,7 +74,7 @@ Kona.Sound =
       @loop = ->
         return @ if !supported
         @sound.loop = 'loop'
-        @bind( 'ended.buzzloop', ->
+        @bind 'ended.buzzloop', ->
           @currentTime = 0
           @play()
         return @
@@ -143,7 +121,7 @@ Kona.Sound =
         return @setVolume(@volume + value)
 
 
-      @decreaseVolume = (value = 1)
+      @decreaseVolume = (value = 1) ->
         return @setVolume(@volume - value)
 
 
@@ -233,10 +211,10 @@ Kona.Sound =
       @getNetworkStateMessage = ->
         return null if !supported
         switch @getNetworkStateCode
-          when 0 'NETWORK_EMPTY'
-          when 1 'NETWORK_IDLE'
-          when 2 'NETWORK_LOADING'
-          when 3 'NETWORK_NO_SOURCE'
+          when 0 then 'NETWORK_EMPTY'
+          when 1 then 'NETWORK_IDLE'
+          when 2 then 'NETWORK_LOADING'
+          when 3 then 'NETWORK_NO_SOURCE'
           else null
 
 
@@ -294,7 +272,7 @@ Kona.Sound =
           if !eventsOnce[pid]
             eventsOnce[pid] = true
             func.call(self)
-             @unbind(pid + type)
+            @unbind(pid + type)
 
 
       @trigger = (types) ->
@@ -416,41 +394,70 @@ Kona.Sound =
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+        # TODO: change buzz references to Kona.Sound
+
+
         # init
-        if supported and src
-          for var i in buzz.defaults
-            if buzz.defaults.hasOwnProperty(i)
-              options[i] = options[i] || buzz.defaults[i]
+        # if supported && src
+        #   for var i in buzz.defaults
+        #     if buzz.defaults.hasOwnProperty(i)
+        #       options[i] = options[i] || buzz.defaults[i]
 
-          @sound = document.createElement('audio')
+        #   @sound = document.createElement('audio')
 
-          if src instanceof Array
-              for var j in src
-                if src.hasOwnProperty(j)
-                  addSource(@sound, src[j])
-          else if options.formats.length
-              for var k in options.formats
-                if(options.formats.hasOwnProperty(k))
-                  addSource(@sound, src + '.' + options.formats[k])
-          else
-            addSource(@sound, src)
+        #   if src instanceof Array
+        #       for var j in src
+        #         if src.hasOwnProperty(j)
+        #           addSource(@sound, src[j])
+        #   else if options.formats.length
+        #       for var k in options.formats
+        #         if(options.formats.hasOwnProperty(k))
+        #           addSource(@sound, src + '.' + options.formats[k])
+        #   else
+        #     addSource(@sound, src)
 
-          if options.loop
-            @loop()
+        #   if options.loop
+        #     @loop()
 
-          if options.autoplay
-            @sound.autoplay = 'autoplay'
+        #   if options.autoplay
+        #     @sound.autoplay = 'autoplay'
 
-          if options.preload === true
-            @sound.preload = 'auto'
-          else if options.preload === false
-            @sound.preload = 'none'
-          else
-            @sound.preload = options.preload
+        #   if options.preload === true
+        #     @sound.preload = 'auto'
+        #   else if options.preload === false
+        #     @sound.preload = 'none'
+        #   else
+        #     @sound.preload = options.preload
 
-          @setVolume(options.volume)
+        #   @setVolume(options.volume)
 
-          buzz.sounds.push(@)
+        #   buzz.sounds.push(@)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -460,25 +467,63 @@ Kona.Sound =
     group: (sounds) ->
       sounds = argsToArray(sounds, arguments)
 
-      // publics
+      # publics
       @getSounds = ->
         return sounds
 
       @add = (soundArray) ->
         soundArray = argsToArray(soundArray, arguments)
-        for var a = 0 a < soundArray.length a++
-          sounds.push(soundArray[a])
-      #    for sound in soundArray
-      #      sounds.push(push)
+        for sound in soundArray
+          sounds.push(sound)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# TODO: how many fucking nested loops are in this? refactor to not use traditional JS looping
 
 # Can be redone
-      @remove = (soundArray) ->
-        soundArray = argsToArray(soundArray, arguments)
-          for( var a = 0 a < soundArray.length a++ )
-            for( var i = 0 i < sounds.length i++ )
-              if (sounds[ i ] == soundArray[ a ])
-                delete sounds[i]
-                break
+      # @remove = (soundArray) ->
+      #   soundArray = argsToArray(soundArray, arguments)
+      #     for( var a = 0 a < soundArray.length a++ )
+      #       for( var i = 0 i < sounds.length i++ )
+      #         if (sounds[ i ] == soundArray[ a ])
+      #           delete sounds[i]
+      #           break
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
       @load = ->
@@ -496,7 +541,7 @@ Kona.Sound =
         return @
 
 
-      @pause = (time)
+      @pause = (time) ->
         fn('pause', time)
         return @
 
@@ -621,36 +666,48 @@ Kona.Sound =
 
 
     isOGGSupported: ->
-      return !!buzz.el.canPlayType and buzz.el.canPlayType('audio/ogg codecs="vorbis"')
+      return !!buzz.el.canPlayType && buzz.el.canPlayType('audio/ogg codecs="vorbis"')
 
 
     isWAVSupported: ->
-      return !!buzz.el.canPlayType and buzz.el.canPlayType('audio/wav codecs="1"')
+      return !!buzz.el.canPlayType && buzz.el.canPlayType('audio/wav codecs="1"')
 
 
     isMP3Supported: ->
-      return !!buzz.el.canPlayType and buzz.el.canPlayType('audio/mpeg')
+      return !!buzz.el.canPlayType && buzz.el.canPlayType('audio/mpeg')
 
 
     isAACSupported: ->
-      return !!buzz.el.canPlayType and (buzz.el.canPlayType('audio/x-m4a') || buzz.el.canPlayType('audio/aac'))
+      return !!buzz.el.canPlayType && (buzz.el.canPlayType('audio/x-m4a') || buzz.el.canPlayType('audio/aac'))
 
 
     toTimer: (time, withHours) ->
       h = Math.floor(time / 3600)
-      h = isNaN(h) ? '--' : ( h >= 10 ) ? h : '0' + h
-      m = withHours ? Math.floor(time / 60 % 60) : Math.floor(time / 60)
-      m = isNaN(m) ? '--' : (m >= 10) ? m : '0' + m
+      if isNaN(h)
+        h = '--'
+      else if h < 10
+        h = "0#{h}"
+
+      m = if withHours then Math.floor(time / 60 % 60) else Math.floor(time / 60)
+      if isNaN(m)
+        m = '--'
+      else if m < 10
+        m = "0#{m}"
+
       s = Math.floor(time % 60)
-      s = isNaN(s) ? '--' : (s >= 10) ? s : '0' + s
-      return withHours ? h + ':' + m + ':' + s : m + ':' + s
+      if isNaN(s)
+        s = '--'
+      else if s < 10
+        s = "0#{s}"
+
+      return (if withHours then "#{h}:#{m}:#{s}:" else "#{m}:#{s}")
 
 
     fromTimer: (time) ->
       splits = time.toString().split(':')
-      if splits and splits.length == 3
+      if splits && splits.length == 3
         time = (parseInt(splits[0], 10) * 3600) + (parseInt(splits[1], 10) * 60) + parseInt(splits[2], 10)
-      if splits and splits.length == 2
+      if splits && splits.length == 2
         time = (parseInt(splits[0], 10) * 60) + parseInt(splits[1], 10)
       return time
 
@@ -664,4 +721,3 @@ Kona.Sound =
       r = Math.pow(10, decimal || 0)
       return Math.round(((total / 100) * percent) * r) / r
 
-#test
