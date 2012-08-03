@@ -682,25 +682,32 @@ Kona.Sound =
 
 
     toTimer: (time, withHours) ->
+      # Convert seconds to a timer-like string
+      # Usage:
+      #   Kona.Sound.toTimer(90)
+      #     "01:30"
+      #
+      #   Kona.Sound.toTimer(5000, true)
+      #     "01:23:20"
+
+      clockify = (num) ->
+        if isNaN(num) # lol
+          return '--'
+        else if num < 10
+          return "0#{num}"
+        else
+          num
+
       h = Math.floor(time / 3600)
-      if isNaN(h)
-        h = '--'
-      else if h < 10
-        h = "0#{h}"
+      h = clockify(h)
 
       m = if withHours then Math.floor(time / 60 % 60) else Math.floor(time / 60)
-      if isNaN(m)
-        m = '--'
-      else if m < 10
-        m = "0#{m}"
+      m = clockify(m)
 
       s = Math.floor(time % 60)
-      if isNaN(s)
-        s = '--'
-      else if s < 10
-        s = "0#{s}"
+      s = clockify(s)
 
-      return (if withHours then "#{h}:#{m}:#{s}:" else "#{m}:#{s}")
+      return (if withHours then "#{h}:#{m}:#{s}" else "#{m}:#{s}")
 
 
     fromTimer: (time) ->
