@@ -1,6 +1,7 @@
 # A scene represents a distinct game state, such as a menu or a level.
-# Entities are added to a particular scene, and the engine takes care of
-# rendering the current scene.
+# Entities are added to a particular scene and defined in a layout.
+# The engine takes care of rendering the current scene, although
+# transitions must be specified manually.
 
 
 Kona.Scenes =
@@ -12,6 +13,8 @@ Kona.Scenes =
     @currentScene.draw()
 
   setCurrent: (sceneName) ->
+    # Find the new scene by name and set it to active to start rendering
+    # ex: Kona.Scenes.setCurrent('level-2')
     @currentScene.active = false
     @currentScene = Kona.Utils.findByKey(@_scenes, 'name', sceneName)
     @currentScene.active = true
@@ -24,22 +27,36 @@ class Kona.Scene
     @name           = options.name   || throw new Error("scene must have a name")
     @background     = new Image()
     @background.src = options.background || ''
-    @entities       = [] # TODO: entity loader
+    @entities       = []
 
     Kona.Scenes._scenes.push(@)
 
   addEntity: (entity) ->
     @entities.push(entity)
 
-  loadEntities: (entities) ->
-    for entity in entities
-      @addEntity(entity)
+  setLayout: (schema) ->
+    # TODO: definition schema here is ugly
+    #
+    # [                                 Schema
+    #   {                                 Object Definition
+    #     entity: Player,
+    #     layout: [ {opts}, {opts} ]        Options
+    #   }
+    # ]
+
+    for definition in schema
+      entity = definition.entity
+      for opts in definition.layout
+        @addEntity(new entity(opts))
+
+
+
 
   update: ->
 
   draw: ->
     # Render onto main canvas
-    Kona.debug "will draw: #{@name}"
-    # drawImage(image, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight)
+    # Kona.debug "will draw: #{@name}"
     Kona.Engine.ctx.drawImage(@background, 0, 0)
-    # entity.draw() for entity in @entities
+    # for entity in @entities
+    #   entity.draw()
