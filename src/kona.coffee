@@ -3,7 +3,7 @@ Kona = window.Kona = {}
 # Debug helpers
 # Set this to true to log info to the console
 # Make sure to disable for production dists
-Kona.debugMode = true;
+Kona.debugMode = true
 
 Kona.debug = (msg) ->
   console.log msg if Kona.debugMode
