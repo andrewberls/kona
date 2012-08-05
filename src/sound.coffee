@@ -26,15 +26,15 @@ Kona.Sound =
     volume: 80
 
   types:
-    'mp3': 'audio/mpeg',
-    'ogg': 'audio/ogg',
-    'wav': 'audio/wav',
-    'aac': 'audio/aac',
+    'mp3': 'audio/mpeg'
+    'ogg': 'audio/ogg'
+    'wav': 'audio/wav'
+    'aac': 'audio/aac'
     'm4a': 'audio/x-m4a'
 
   sounds: []
 
-  el: document.createElement( 'audio' )
+  el: document.createElement('audio')
 
   all: ->
     return new @group(@sounds)
@@ -140,6 +140,8 @@ Kona.Sound =
   #   SOUND INSTANCES
   # ----------------------------
 
+  # TODO: Figure out how to make this into a class
+
   sound: (src, options={}) ->
     pid        = 0
     events     = []
@@ -217,7 +219,7 @@ Kona.Sound =
 
     @stop = ->
       return @ if !supported
-      @setTime( @getDuration() )
+      @setTime(@getDuration())
       @sound.pause()
       return @
 
@@ -413,7 +415,7 @@ Kona.Sound =
         for event, i in events
           namespace = event.idx.split('.')
           if event.idx == idx || (namespace[1] && namespace[1] == idx.replace('.', '') )
-            @sound.removeEventListener( type, event.func, true );
+            @sound.removeEventListener(type, event.func, true)
             events.splice(i, 1) # remove event
 
       return @
@@ -439,7 +441,7 @@ Kona.Sound =
 
         for event in events
           eventType = event.idx.split('.')
-          if event.idx == idx || ( eventType[0] && eventType[0] == idx.replace('.', '') )
+          if event.idx == idx || (eventType[0] && eventType[0] == idx.replace('.', '') )
                 evt = document.createEvent('HTMLEvents')
                 evt.initEvent(eventType[0], false, true)
                 @sound.dispatchEvent(evt)
@@ -457,7 +459,7 @@ Kona.Sound =
         duration = duration || Kona.Sound.defaults.duration
 
       from = @volume
-      delay = duration / Math.abs( from - to )
+      delay = duration / Math.abs(from - to)
       self = @
       @play()
 
