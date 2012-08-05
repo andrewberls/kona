@@ -9,7 +9,7 @@
 
 
 Kona.Keys =
-  # Contains info on keys on their associated handler(s)
+  # Contains info on keys and their associated handler(s)
   # Ex format:
   #   65: [ <function>, <function> ]
   #   17: [ <function> ]
