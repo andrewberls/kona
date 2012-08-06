@@ -140,7 +140,6 @@ Kona.Engine.defaults = {
 };
 
 Kona.Engine.start = function(canvas, fps) {
-  Kona.debug('starting');
   Kona.Scenes.currentScene = Kona.Utils.findByKey(Kona.Scenes._scenes, 'active', true);
   this.fps = fps || this.defaults.fps;
   this.canvas = document.getElementById(canvas.id);
@@ -226,7 +225,16 @@ Kona.Scene = (function() {
   Scene.prototype.update = function() {};
 
   Scene.prototype.draw = function() {
-    return Kona.Engine.ctx.drawImage(this.background, 0, 0);
+    var entity, _i, _len, _ref, _results;
+    Kona.Engine.ctx.drawImage(this.background, 0, 0);
+    _ref = this.entities;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      entity = _ref[_i];
+      entity.update();
+      _results.push(entity.draw());
+    }
+    return _results;
   };
 
   return Scene;
@@ -237,31 +245,9 @@ Kona.Scene = (function() {
 
 Kona.Entity = (function() {
 
-  function Entity() {
-    this.position = {
-      x: 0,
-      y: 0
-    };
-    this.direction = {
-      dx: 0,
-      dy: 0
-    };
-    this.box = {
-      width: 0,
-      height: 0
-    };
-    this.sprite = new Image();
-    this.sprite.src = '';
+  function Entity(opts) {
+    Kona.debug("entity superconstructor called!");
   }
-
-  Entity.prototype.update = function() {
-    this.position.x += this.direction.dx;
-    return this.position.y += this.direction.dy;
-  };
-
-  Entity.prototype.draw = function() {
-    return Kona.Engine.ctx.drawImage(this.sprite, this.position.x, this.position.y);
-  };
 
   return Entity;
 
@@ -341,8 +327,90 @@ Kona.Sound = {
   },
   sounds: [],
   el: document.createElement('audio'),
+  all: function() {
+    return new this.group(this.sounds);
+  },
+  isSupported: function() {
+    return !!this.el.canPlayType;
+  },
+  isOGGSupported: function() {
+    return !!this.el.canPlayType && this.el.canPlayType('audio/ogg codecs="vorbis"');
+  },
+  isWAVSupported: function() {
+    return !!this.el.canPlayType && this.el.canPlayType('audio/wav codecs="1"');
+  },
+  isMP3Supported: function() {
+    return !!this.el.canPlayType && this.el.canPlayType('audio/mpeg');
+  },
+  isAACSupported: function() {
+    return !!this.el.canPlayType && (this.el.canPlayType('audio/x-m4a') || this.el.canPlayType('audio/aac'));
+  },
+  toTimer: function(time, withHours) {
+    var clockify, h, m, s;
+    clockify = function(num) {
+      if (isNaN(num)) {
+        return '--';
+      } else if (num < 10) {
+        return "0" + num;
+      } else {
+        return num;
+      }
+    };
+    h = Math.floor(time / 3600);
+    h = clockify(h);
+    m = withHours ? Math.floor(time / 60 % 60) : Math.floor(time / 60);
+    m = clockify(m);
+    s = Math.floor(time % 60);
+    s = clockify(s);
+    return (withHours ? "" + h + ":" + m + ":" + s : "" + m + ":" + s);
+  },
+  fromTimer: function(time) {
+    var splits;
+    splits = time.toString().split(':');
+    if (splits && splits.length === 3) {
+      time = (parseInt(splits[0], 10) * 3600) + (parseInt(splits[1], 10) * 60) + parseInt(splits[2], 10);
+    }
+    if (splits && splits.length === 2) {
+      time = (parseInt(splits[0], 10) * 60) + parseInt(splits[1], 10);
+    }
+    return time;
+  },
+  toPercent: function(value, total, decimal) {
+    var r;
+    r = Math.pow(10, decimal || 0);
+    return Math.round(((value * 100) / total) * r) / r;
+  },
+  fromPercent: function(percent, total, decimal) {
+    var r;
+    r = Math.pow(10, decimal || 0);
+    return Math.round(((total / 100) * percent) * r) / r;
+  },
+  timeRangeToArray: function(timeRange) {
+    var length, num, result, _i;
+    result = [];
+    length = timeRange.length - 1;
+    for (num = _i = 0; 0 <= length ? _i <= length : _i >= length; num = 0 <= length ? ++_i : --_i) {
+      result.push({
+        start: timeRange.start(length),
+        end: timeRange.end(length)
+      });
+    }
+    return result;
+  },
+  getExt: function(filename) {
+    return filename.split('.').pop();
+  },
+  addSource: function(sound, src) {
+    var source;
+    source = document.createElement('source');
+    source.src = src;
+    if (Kona.Sound.types[getExt(src)] != null) {
+      source.type = Kona.Sound.types[getExt(src)];
+    }
+    return sound.appendChild(source);
+  },
   sound: function(src, options) {
-    var addSource, events, eventsOnce, getExt, pid, supported, timeRangeToArray;
+    var events, eventsOnce, pid, supported;
     if (options == null) {
       options = {};
     }
@@ -702,7 +770,7 @@ Kona.Sound = {
       sound.play().fadeIn(duration);
       return this;
     };
-    this.whenReady = function(func) {
+    return this.whenReady = function(func) {
       var self;
       if (!supported) {
         return null;
@@ -716,33 +784,9 @@ Kona.Sound = {
         return func.call(self);
       }
     };
-    timeRangeToArray = function(timeRange) {
-      var length, num, result, _i;
-      result = [];
-      length = timeRange.length - 1;
-      for (num = _i = 0; 0 <= length ? _i <= length : _i >= length; num = 0 <= length ? ++_i : --_i) {
-        result.push({
-          start: timeRange.start(length),
-          end: timeRange.end(length)
-        });
-      }
-      return result;
-    };
-    getExt = function(filename) {
-      return filename.split('.').pop();
-    };
-    return addSource = function(sound, src) {
-      var source;
-      source = document.createElement('source');
-      source.src = src;
-      if (Kona.Sound.types[getExt(src)] != null) {
-        source.type = Kona.Sound.types[getExt(src)];
-      }
-      return sound.appendChild(source);
-    };
   },
   group: function(sounds) {
-    var argsToArray, fn;
+    var argsToArray, send;
     sounds = argsToArray(sounds, arguments);
     this.getSounds = function() {
       return sounds;
@@ -758,98 +802,98 @@ Kona.Sound = {
       return _results;
     };
     this.load = function() {
-      fn('load');
+      send('load');
       return this;
     };
     this.play = function() {
-      fn('play');
+      send('play');
       return this;
     };
     this.togglePlay = function() {
-      fn('togglePlay');
+      send('togglePlay');
       return this;
     };
     this.pause = function(time) {
-      fn('pause', time);
+      send('pause', time);
       return this;
     };
     this.stop = function() {
-      fn('stop');
+      send('stop');
       return this;
     };
     this.mute = function() {
-      fn('mute');
+      send('mute');
       return this;
     };
     this.unmute = function() {
-      fn('unmute');
+      send('unmute');
       return this;
     };
     this.toggleMute = function() {
-      fn('toggleMute');
+      send('toggleMute');
       return this;
     };
     this.setVolume = function(volume) {
-      fn('setVolume', volume);
+      send('setVolume', volume);
       return this;
     };
     this.increaseVolume = function(value) {
-      fn('increaseVolume', value);
+      send('increaseVolume', value);
       return this;
     };
     this.decreaseVolume = function(value) {
-      fn('decreaseVolume', value);
+      send('decreaseVolume', value);
       return this;
     };
     this.loop = function() {
-      fn('loop');
+      send('loop');
       return this;
     };
     this.unloop = function() {
-      fn('unloop');
+      send('unloop');
       return this;
     };
     this.setTime = function(time) {
-      fn('setTime', time);
+      send('setTime', time);
       return this;
     };
     this.setDuration = function(duration) {
-      fn('setDuration', duration);
+      send('setDuration', duration);
       return this;
     };
     this.set = function(key, value) {
-      fn('set', key, value);
+      send('set', key, value);
       return this;
     };
     this.bind = function(type, func) {
-      fn('bind', type, func);
+      send('bind', type, func);
       return this;
     };
     this.unbind = function(type) {
-      fn('unbind', type);
+      send('unbind', type);
       return this;
     };
     this.bindOnce = function(type, func) {
-      fn('bindOnce', type, func);
+      send('bindOnce', type, func);
       return this;
     };
     this.trigger = function(type) {
-      fn('trigger', type);
+      send('trigger', type);
       return this;
     };
     this.fade = function(from, to, duration, callback) {
-      fn('fade', from, to, duration, callback);
+      send('fade', from, to, duration, callback);
       return this;
     };
     this.fadeIn = function(duration, callback) {
-      fn('fadeIn', duration, callback);
+      send('fadeIn', duration, callback);
       return this;
     };
     this.fadeOut = function(duration, callback) {
-      fn('fadeOut', duration, callback);
+      send('fadeOut', duration, callback);
       return this;
     };
-    fn = function() {
+    send = function() {
       var args, func, sound, _i, _len, _results;
       args = argsToArray(null, arguments);
       func = args.shift();
@@ -866,64 +910,6 @@ Kona.Sound = {
         array: Array.prototype.slice.call(args)
       };
     };
-  },
-  all: function() {
-    return new buzz.group(buzz.sounds);
-  },
-  isSupported: function() {
-    return !!buzz.el.canPlayType;
-  },
-  isOGGSupported: function() {
-    return !!buzz.el.canPlayType && buzz.el.canPlayType('audio/ogg codecs="vorbis"');
-  },
-  isWAVSupported: function() {
-    return !!buzz.el.canPlayType && buzz.el.canPlayType('audio/wav codecs="1"');
-  },
-  isMP3Supported: function() {
-    return !!buzz.el.canPlayType && buzz.el.canPlayType('audio/mpeg');
-  },
-  isAACSupported: function() {
-    return !!buzz.el.canPlayType && (buzz.el.canPlayType('audio/x-m4a') || buzz.el.canPlayType('audio/aac'));
-  },
-  toTimer: function(time, withHours) {
-    var clockify, h, m, s;
-    clockify = function(num) {
-      if (isNaN(num)) {
-        return '--';
-      } else if (num < 10) {
-        return "0" + num;
-      } else {
-        return num;
-      }
-    };
-    h = Math.floor(time / 3600);
-    h = clockify(h);
-    m = withHours ? Math.floor(time / 60 % 60) : Math.floor(time / 60);
-    m = clockify(m);
-    s = Math.floor(time % 60);
-    s = clockify(s);
-    return (withHours ? "" + h + ":" + m + ":" + s : "" + m + ":" + s);
-  },
-  fromTimer: function(time) {
-    var splits;
-    splits = time.toString().split(':');
-    if (splits && splits.length === 3) {
-      time = (parseInt(splits[0], 10) * 3600) + (parseInt(splits[1], 10) * 60) + parseInt(splits[2], 10);
-    }
-    if (splits && splits.length === 2) {
-      time = (parseInt(splits[0], 10) * 60) + parseInt(splits[1], 10);
-    }
-    return time;
-  },
-  toPercent: function(value, total, decimal) {
-    var r;
-    r = Math.pow(10, decimal || 0);
-    return Math.round(((value * 100) / total) * r) / r;
-  },
-  fromPercent: function(percent, total, decimal) {
-    var r;
-    r = Math.pow(10, decimal || 0);
-    return Math.round(((total / 100) * percent) * r) / r;
   }
 };
 
@@ -932,50 +918,65 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Kona.ready(function() {
-  var Player, level, menu;
+  var Shape, level, menu, shape;
   Kona.debug('ready');
-  Kona.Keys.bind("left", function() {
-    return console.log("you pressed left!");
+  Kona.Keys.bind("a", function() {
+    return console.log("you pressed a!");
   });
   menu = new Kona.Scene({
     name: 'menu-1',
     background: 'lvl1.jpg',
     active: true
   });
-  Player = (function(_super) {
-
-    __extends(Player, _super);
-
-    function Player(opts) {
-      Kona.debug("\nMaking a player!");
-      Kona.Utils.inspect(opts, 'player opts');
-    }
-
-    return Player;
-
-  })(Kona.Entity);
   level = new Kona.Scene({
     name: 'level-1',
     background: 'lvl2.jpg'
   });
-  level.setLayout([
-    {
-      entity: Player,
-      layout: [
-        {
-          x: 10,
-          y: 20
-        }, {
-          x: 75,
-          y: 100
-        }
-      ]
+  Shape = (function(_super) {
+
+    __extends(Shape, _super);
+
+    function Shape(opts) {
+      this.position = {
+        x: opts.x || 0,
+        y: opts.y || 0
+      };
+      this.direction = {
+        dx: opts.dx || 0,
+        dy: opts.dy || 0
+      };
+      this.box = {
+        width: opts.width || 0,
+        height: opts.height || 0
+      };
+      this.sprite = new Image();
+      this.sprite.src = '';
+      Shape.__super__.constructor.apply(this, arguments);
     }
-  ]);
+
+    Shape.prototype.update = function() {
+      this.position.x += this.direction.dx;
+      return this.position.y += this.direction.dy;
+    };
+
+    Shape.prototype.draw = function() {
+      return Kona.Engine.ctx.fillRect(this.position.x, this.position.y, this.box.width, this.box.height);
+    };
+
+    return Shape;
+
+  })(Kona.Entity);
+  shape = new Shape({
+    x: 400,
+    y: 20,
+    width: 75,
+    height: 50
+  });
+  level.addEntity(shape);
   Kona.Engine.start({
     id: 'canvas'
   });
   return setTimeout(function() {
     return Kona.Scenes.setCurrent('level-1');
-  }, 2000);
+  }, 500);
 });

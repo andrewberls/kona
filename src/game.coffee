@@ -10,8 +10,8 @@ Kona.ready ->
 
 
   # Test a random key binding
-  Kona.Keys.bind "left", ->
-    console.log "you pressed left!"
+  Kona.Keys.bind "a", ->
+    console.log "you pressed a!"
 
 
 
@@ -24,11 +24,7 @@ Kona.ready ->
 
 
 
-  # A sample game entity to test rendering and schema loading
-  class Player extends Kona.Entity
-    constructor: (opts) ->
-      Kona.debug "\nMaking a player!"
-      Kona.Utils.inspect opts, 'player opts'
+
 
 
 
@@ -38,15 +34,64 @@ Kona.ready ->
     background: 'lvl2.jpg',
   }
 
-  level.setLayout [
-    {
-      entity: Player,
-      layout: [
-        {x: 10, y:20},
-        {x: 75, y: 100}
-      ]
-    }
-  ]
+  # TODO: how to bind methods on entities defined with the schema loader?
+  # Maybe schema loader is only for things like blocks, etc?
+
+  # level.setLayout [
+  #   {
+  #     entity: Ball,
+  #     layout: [
+  #       {x: 10, y:20, width: 75, height: 50},
+  #       {x: 75, y: 100, width: 75, height: 50}
+  #     ]
+  #   }
+  # ]
+
+
+
+
+
+
+  # A sample game entity to test rendering and schema loading
+  class Shape extends Kona.Entity
+    constructor: (opts) ->
+      @position =
+        x: opts.x || 0
+        y: opts.y || 0
+
+      @direction =
+        dx: opts.dx || 0
+        dy: opts.dy || 0
+
+      @box =
+        width: opts.width   || 0
+        height: opts.height || 0
+
+      @sprite = new Image() # TODO: Kona.Sprite /sheet ?
+      @sprite.src = ''
+
+      super # TODO
+
+    update: ->
+      # TODO
+      @position.x += @direction.dx
+      @position.y += @direction.dy
+
+    draw: ->
+      #Kona.Engine.ctx.drawImage(@sprite, @position.x, @position.y)
+      Kona.Engine.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
+
+
+
+
+  shape = new Shape({ x: 400, y: 20, width: 75, height: 50 })
+  level.addEntity(shape)
+
+
+
+
+
+
 
 
 
@@ -60,4 +105,4 @@ Kona.ready ->
   # Test transitions between scenes after a fixed time period
   setTimeout ->
     Kona.Scenes.setCurrent 'level-1'
-  , 2000
+  , 500

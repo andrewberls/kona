@@ -58,5 +58,6 @@ class Kona.Scene
     # Render onto main canvas
     # Kona.debug "will draw: #{@name}"
     Kona.Engine.ctx.drawImage(@background, 0, 0)
-    # for entity in @entities
-    #   entity.draw()
+    for entity in @entities
+      entity.update()
+      entity.draw()

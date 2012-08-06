@@ -8,7 +8,6 @@ Kona.Engine.defaults =
   height: 480
 
 Kona.Engine.start = (canvas, fps) ->
-  Kona.debug 'starting'
   Kona.Scenes.currentScene = Kona.Utils.findByKey(Kona.Scenes._scenes, 'active', true)
   @fps =  fps || @defaults.fps
 
