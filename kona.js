@@ -91,7 +91,7 @@ Kona.Utils = {
     var defined_str, is_array, is_number, is_string, key, spacer, value, _results;
     defined_str = (obj != null ? '' : '<undefined>');
     spacer = "  ";
-    is_array = obj instanceof Array;
+    is_array = Array.isArray(obj);
     is_string = typeof obj === 'string';
     is_number = typeof obj === 'number';
     if (label != null) {
@@ -932,6 +932,7 @@ Kona.ready(function() {
     name: 'level-1',
     background: 'lvl2.jpg'
   });
+  Kona.Utils.inspect([1, 2, 3]);
   Shape = (function(_super) {
 
     __extends(Shape, _super);

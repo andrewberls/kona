@@ -19,7 +19,7 @@ Kona.Utils =
 
     defined_str   = (if obj? then '' else '<undefined>')
     spacer        = "  " # Indent results
-    is_array      = obj instanceof Array
+    is_array      = Array.isArray(obj)
     is_string     = typeof obj == 'string'
     is_number     = typeof obj == 'number'
 
