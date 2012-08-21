@@ -142,11 +142,17 @@ Kona.Sound =
 
   # TODO: Figure out how to make this into a class
 
-  sound: (src, options={}) ->
-    pid        = 0
-    events     = []
-    eventsOnce = {}
-    supported  = buzz.isSupported()
+  #sound: (src, options={}) ->
+  #  pid        = 0
+  #  events     = []
+  #  eventsOnce = {}
+  #  supported  = buzz.isSupported()
+  class sound
+    constructor = (src, options ={}) ->
+      pid = 0
+      events = []
+      eventsOnce = {}
+      supported = buzz.isSupported()
 
 
 
@@ -154,40 +160,37 @@ Kona.Sound =
     # TODO: change buzz references to Kona.Sound
     #
     # init
-    # if supported && src
-    #   for var i in buzz.defaults
-    #     if buzz.defaults.hasOwnProperty(i)
-    #       options[i] = options[i] || buzz.defaults[i]
-    #
-    #   @sound = document.createElement('audio')
-    #
-    #   if src instanceof Array
-    #       for var j in src
-    #         if src.hasOwnProperty(j)
-    #           addSource(@sound, src[j])
-    #   else if options.formats.length
-    #       for var k in options.formats
-    #         if (options.formats.hasOwnProperty(k))
-    #           addSource(@sound, src + '.' + options.formats[k])
-    #   else
-    #     addSource(@sound, src)
-    #
-    #   if options.loop
-    #     @loop()
-    #
-    #   if options.autoplay
-    #     @sound.autoplay = 'autoplay'
-    #
-    #   if options.preload === true
-    #     @sound.preload = 'auto'
-    #   else if options.preload === false
-    #     @sound.preload = 'none'
-    #   else
-    #     @sound.preload = options.preload
-    #
-    #   @setVolume(options.volume)
-    #
-    #   buzz.sounds.push(@)
+     if supported && src
+       for own key, value of Kona.defaults
+         options[key] = options[key] || buzz.defaults[key]
+
+       @sound = document.createElement('audio')
+
+       if src instanceof Array
+           for own key, value of src
+             addSource(@sound, src[key])
+       else if options.formats.length
+           for own key, value of options.formats
+             addSource(@sound, src + '.' + options.formats[key])
+       else
+         addSource(@sound, src)
+
+       if options.loop
+         @loop()
+
+       if options.autoplay
+         @sound.autoplay = 'autoplay'
+
+       if options.preload === true
+         @sound.preload = 'auto'
+       else if options.preload === false
+         @sound.preload = 'none'
+       else
+         @sound.preload = options.preload
+
+       @setVolume(options.volume)
+
+       buzz.sounds.push(@)
 
 
 
