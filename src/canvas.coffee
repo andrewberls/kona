@@ -16,20 +16,23 @@ Kona.Canvas =
     fxn()
     @ctx.restore()
 
+  # Wipe the canvas
   clear: ->
     @safe =>
-      @ctx.fillStyle = "white"
+      @ctx.fillStyle = 'white'
       @ctx.fillRect(0, 0, @width, @height)
 
-
-
+  # Draw a vertical line at an x-coordinate
   verticalLine: (x) ->
     @safe =>
       @ctx.fillStyle = 'red'
       @ctx.fillRect(x, 0, 2, @height)
 
-  highlightColumn: (tile) ->
+  # Highlight a column at an x-coordinate
+  highlightColumn: (x) ->
     Kona.Canvas.safe =>
-      Kona.Canvas.ctx.fillStyle = 'red'
+      Kona.Canvas.ctx.fillStyle   = 'red'
       Kona.Canvas.ctx.globalAlpha = 0.1
-      Kona.Canvas.ctx.fillRect(tile.position.x, 0, Kona.Tile.tileSize, Kona.Canvas.height)
+      size = Kona.Tile.tileSize
+      left = size * Math.floor(x / size)
+      Kona.Canvas.ctx.fillRect(left, 0, size, Kona.Canvas.height)

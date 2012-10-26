@@ -81,37 +81,25 @@ Kona.ready ->
   # ----------------------
   # A sample game entity to test rendering and schema loading
   class Shape extends Kona.Entity
-    constructor: (opts) ->
+    constructor: (opts={}) ->
+      @jumpHeight = 12
       @isJumping = false
       super
 
     # Use the dx/dy attributes to update position, accounting for canvas bounds
     update: ->
-      # TODO: these are placeholders
-      floor      = Kona.Canvas.height
-      jumpHeight = 12
-      grav       = 5
-
-      # Left Collisions
-      if @futureLeft() < 0 || (@leftCollision() && @movingLeft())
-        @direction.dx = 0
-
-      # Right collisions
-      if @futureRight() > Kona.Engine.C_WIDTH || (@rightCollision() && @movingRight())
-        @direction.dx = 0
-
+      @direction.dx = 0 if @leftCollision() or @rightCollision()
       @position.x += @direction.dx
 
       if @isJumping
-        # Move up unless restricted by ceiling
-        @position.y += if @futureTop() < 0 then 0 else -jumpHeight
-      else if @bottom() < floor
-        # TODO: check for vert collisions and adjust grav increment to pull to nearest bottom tile
-
-        # Pull the player down if above the floor
-        @position.y += if @bottom() + grav > floor then floor - @bottom() else grav
+        @position.y -= @jumpHeight unless @topCollision()
+      else
+        if @bottomCollision()
+        else
+          @addGravity()
 
     draw: ->
+      # Kona.Canvas.highlightColumn(@position.x); Kona.Canvas.highlightColumn(@right())
       Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
     jump: ->
@@ -127,7 +115,7 @@ Kona.ready ->
         , duration
 
 
-  shape = new Shape { x: 260, y: 200, width: 30, height: 60 }
+  shape = new Shape { x: 220, y: 200, width: 30, height: 60 }
   level.addEntity(shape)
 
 
@@ -165,8 +153,8 @@ Kona.ready ->
     [0,0,0,0,0,0,0,0,2,3,1],
     [0,0,0,0,0,0,0,0,0,0,2],
     [0,0,0,0,0,0,0,0,0,0,3],
-    [1,0,2,3,0,0,1,2,3,0,2],
-    [3,0,1,2,3,0,0,1,2,0,1]
+    [1,0,1,2,0,0,3,2,3,0,2],
+    [3,0,2,3,1,0,0,1,2,0,1]
   ]
   Kona.TileManager.buildTiles('level-1', tiles)
 

@@ -6,7 +6,7 @@ Kona.Engine =
     width:  640
     height: 480
 
-  start: (opts) ->
+  start: (opts={}) ->
     # Kona.Canvas.init(opts.id)
     @fps = opts.fps || @defaults.fps
     Kona.Scenes.currentScene = Kona.Utils.findByKey(Kona.Scenes._scenes, 'active', true)

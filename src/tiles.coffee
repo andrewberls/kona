@@ -10,7 +10,8 @@ Kona.TileManager =
   # Load debugging tiles from a grid configuration
   # {
   #   'level-1': [
-  #     [1,0,2,3,0,0,1,2,3,1,2]
+  #     [1,0,2,3,0,0,1,2,3,1,2],
+  #     [0,0,0,0,0,0,0,0,0,0,2],
   #   ]
   # }
   buildTiles: (scene, grid) ->
@@ -42,29 +43,21 @@ Kona.TileManager =
 
 
   columnFor: (idx) ->
-    result = []
-    for row in @sceneTilemap[Kona.Scenes.currentScene.name]
-      result.push row[idx]
-    result
+    _.map @sceneTilemap[Kona.Scenes.currentScene.name], (row) -> row[idx]
 
 
   # Return all the columns that an entity spans
   columnsFor: (entity) ->
     start = Math.floor entity.position.x / Kona.Tile.tileSize
-    end   = Math.floor (entity.position.x + entity.box.width) / Kona.Tile.tileSize
-    grid  = @sceneTilemap[Kona.Scenes.currentScene.name]
-    result = []
-
-    for idx in [start..end]
-      result.push @columnFor(idx)
-    result
+    end   = Math.floor entity.right() / Kona.Tile.tileSize
+    _.map [start..end], (idx) => @columnFor(idx)
 
 
 
 class Kona.Tile extends Kona.Entity
   @tileSize = 60
 
-  constructor: (opts) ->
+  constructor: (opts={}) ->
     super(opts)
 
     @size = Kona.Tile.tileSize
@@ -74,7 +67,7 @@ class Kona.Tile extends Kona.Entity
 
     @color = opts.color || -1
 
-  toString: -> "<Tile @color=#{Kona.Utils.colorFor(@color)}>"
+  toString: -> "<Tile @x=#{@position.x}, @y=#{@position.y}, @color=#{Kona.Utils.colorFor(@color)}>"
 
   draw: ->
     Kona.Canvas.safe =>
