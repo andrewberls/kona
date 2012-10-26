@@ -16,9 +16,11 @@ VENDOR_FILENAMES = [
 FILENAMES = [
   'kona',
   'utils',
+  'canvas',
   'engine',
   'scene',
   'entity',
+  'tiles',
   'keys',
   'sound',
 
@@ -31,6 +33,8 @@ FILENAMES = [
 def join_filenames(filenames, base='./')
   filenames.map { |f| File.expand_path(File.join(base, f)) }.join(' ')
 end
+
+
 
 desc 'Compiles and concatenates source coffeescript files'
 task :build do
@@ -68,6 +72,8 @@ task :build do
   end
 end
 
+
+
 # Watch and wait for changes, then call `rake build` to compile the changes
 desc 'Waits for changes to files, then recompiles.'
 task :watch do
@@ -79,6 +85,8 @@ task :watch do
     system 'rake build'
   end
 end
+
+
 
 desc 'Remove all files in the build directory'
 task :clean do
@@ -96,5 +104,6 @@ task :clean do
       count += 1
     end
   end
+
   puts "Removed #{count} files."
 end
