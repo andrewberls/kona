@@ -400,30 +400,29 @@ Kona.TileManager = {
   sceneTilemap: {},
   tiles: [],
   buildTiles: function(scene, grid) {
-    var color, row, rowBuffer, x, y, _base, _i, _j, _len, _len1, _results;
+    var color, row, rowBuffer, tile, x, y, _base, _i, _j, _len, _len1, _results;
     (_base = this.sceneTilemap)[scene] || (_base[scene] = []);
     x = 0;
-    y = Kona.Canvas.height - Kona.Tile.tileSize;
+    y = Kona.Canvas.height - (grid.length * Kona.Tile.tileSize);
     rowBuffer = [];
     _results = [];
     for (_i = 0, _len = grid.length; _i < _len; _i++) {
       row = grid[_i];
       for (_j = 0, _len1 = row.length; _j < _len1; _j++) {
         color = row[_j];
-        if (color === 0) {
-          rowBuffer.push(new Kona.BlankTile({
-            x: x,
-            y: y
-          }));
-        } else {
-          rowBuffer.push(new Kona.Tile({
-            color: color,
-            x: x,
-            y: y
-          }));
-        }
-        x += 60;
+        tile = color === 0 ? new Kona.BlankTile({
+          x: x,
+          y: y
+        }) : new Kona.Tile({
+          color: color,
+          x: x,
+          y: y
+        });
+        rowBuffer.push(tile);
+        x += Kona.Tile.tileSize;
       }
+      x = 0;
+      y += Kona.Tile.tileSize;
       this.sceneTilemap[scene].push(rowBuffer);
       _results.push(rowBuffer = []);
     }
@@ -453,7 +452,6 @@ Kona.TileManager = {
     _ref = this.sceneTilemap[Kona.Scenes.currentScene.name];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       row = _ref[_i];
-      Kona.debug(row);
       result += row[idx];
     }
     return result;
@@ -464,20 +462,21 @@ Kona.TileManager = {
     end = Math.floor((entity.position.x + entity.box.width) / Kona.Tile.tileSize);
     grid = this.sceneTilemap[Kona.Scenes.currentScene.name];
     return result = [];
-  },
-  tilesFor: function(column) {}
+  }
 };
 
 Kona.Tile = (function(_super) {
 
   __extends(Tile, _super);
 
+  Tile.tileSize = 60;
+
   function Tile(opts) {
     Tile.__super__.constructor.call(this, opts);
-    this.tileSize = 60;
+    this.size = Kona.Tile.tileSize;
     this.box = {
-      width: this.tileSize,
-      height: this.tileSize
+      width: this.size,
+      height: this.size
     };
     this.color = opts.color || -1;
   }
@@ -498,21 +497,27 @@ Kona.Tile = (function(_super) {
 
 })(Kona.Entity);
 
-Kona.Tile.tileSize = 60;
-
 Kona.BlankTile = (function(_super) {
 
   __extends(BlankTile, _super);
 
   function BlankTile(opts) {
     BlankTile.__super__.constructor.call(this, opts);
-    this.tileSize = 60;
     this.solid = false;
+    this.size = Kona.Tile.tileSize;
     this.box = {
-      width: this.tileSize,
-      height: this.tileSize
+      width: this.size,
+      height: this.size
     };
   }
+
+  BlankTile.prototype.toString = function() {
+    return "<BlankTile>";
+  };
+
+  BlankTile.prototype.draw = function() {
+    return Kona.Canvas.ctx.strokeRect(this.position.x, this.position.y, this.box.width, this.box.height);
+  };
 
   return BlankTile;
 
@@ -1319,7 +1324,8 @@ Kona.ready(function() {
 
     Shape.prototype.update = function() {
       var floor, grav, jumpHeight;
-      floor = Kona.Canvas.height - Kona.Tile.tileSize;
+      KTiles.columnsFor(this);
+      floor = Kona.Canvas.height;
       jumpHeight = 12;
       grav = 5;
       if (this.futureLeft() < 0 || this.futureRight() > Kona.Engine.C_WIDTH) {
@@ -1382,7 +1388,7 @@ Kona.ready(function() {
         return shape.stop('dy');
     }
   };
-  tiles = [[1, 0, 2, 3, 0, 0, 1, 2, 3, 1, 2]];
+  tiles = [[0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3], [1, 0, 2, 3, 0, 0, 1, 2, 3, 0, 2], [3, 0, 1, 2, 3, 0, 0, 3, 1, 0, 1]];
   Kona.TileManager.buildTiles('level-1', tiles);
   return Kona.Engine.start({
     id: 'canvas'

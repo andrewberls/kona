@@ -87,12 +87,12 @@ Kona.ready ->
 
     # Use the dx/dy attributes to update position, accounting for canvas bounds
     update: ->
-      # KTiles.columnsFor(@)
+      KTiles.columnsFor(@)
 
 
 
       # TODO: these are placeholders
-      floor      = Kona.Canvas.height - Kona.Tile.tileSize
+      floor      = Kona.Canvas.height
       jumpHeight = 12
       grav       = 5
 
@@ -110,7 +110,7 @@ Kona.ready ->
           @position.y += if @bottom() + grav > floor then floor - @bottom() else grav
 
     draw: ->
-      # Kona.Canvas.verticalLine(200)
+      # Kona.Canvas.verticalLine(@position.x)
       Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
     jump: ->
@@ -161,7 +161,11 @@ Kona.ready ->
 
 
   tiles = [
-    [1,0,2,3,0,0,1,2,3,1,2]
+    [0,0,0,0,0,0,0,0,2,3,1],
+    [0,0,0,0,0,0,0,0,0,0,2],
+    [0,0,0,0,0,0,0,0,0,0,3],
+    [1,0,2,3,0,0,1,2,3,0,2],
+    [3,0,1,2,3,0,0,3,1,0,1]
   ]
   Kona.TileManager.buildTiles('level-1', tiles)
 
