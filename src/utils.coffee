@@ -1,9 +1,4 @@
 Kona.Utils =
-
-  # Debug util - inspect an object or raise an error if it's undefined
-  require: (obj) ->
-    if obj? then Kona.debug(obj) else throw new Error("Obj not defined")
-
   # Print a 2d array in a grid format
   # ex: printGrid [[1,2], [3,4]]
   #   [

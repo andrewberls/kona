@@ -87,17 +87,17 @@ Kona.ready ->
 
     # Use the dx/dy attributes to update position, accounting for canvas bounds
     update: ->
-      KTiles.columnsFor(@)
-
-
-
       # TODO: these are placeholders
       floor      = Kona.Canvas.height
       jumpHeight = 12
       grav       = 5
 
-      # Left/Right edges
-      if @futureLeft() < 0 || @futureRight() > Kona.Engine.C_WIDTH
+      # Left Collisions
+      if @futureLeft() < 0 || (@leftCollision() && @movingLeft())
+        @direction.dx = 0
+
+      # Right collisions
+      if @futureRight() > Kona.Engine.C_WIDTH || (@rightCollision() && @movingRight())
         @direction.dx = 0
 
       @position.x += @direction.dx
@@ -106,11 +106,12 @@ Kona.ready ->
         # Move up unless restricted by ceiling
         @position.y += if @futureTop() < 0 then 0 else -jumpHeight
       else if @bottom() < floor
-          # Pull the player down if above the floor
-          @position.y += if @bottom() + grav > floor then floor - @bottom() else grav
+        # TODO: check for vert collisions and adjust grav increment to pull to nearest bottom tile
+
+        # Pull the player down if above the floor
+        @position.y += if @bottom() + grav > floor then floor - @bottom() else grav
 
     draw: ->
-      # Kona.Canvas.verticalLine(@position.x)
       Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
     jump: ->
@@ -126,7 +127,7 @@ Kona.ready ->
         , duration
 
 
-  shape = new Shape { x: 400, y: 200, width: 30, height: 60 }
+  shape = new Shape { x: 260, y: 200, width: 30, height: 60 }
   level.addEntity(shape)
 
 
@@ -165,7 +166,7 @@ Kona.ready ->
     [0,0,0,0,0,0,0,0,0,0,2],
     [0,0,0,0,0,0,0,0,0,0,3],
     [1,0,2,3,0,0,1,2,3,0,2],
-    [3,0,1,2,3,0,0,3,1,0,1]
+    [3,0,1,2,3,0,0,1,2,0,1]
   ]
   Kona.TileManager.buildTiles('level-1', tiles)
 

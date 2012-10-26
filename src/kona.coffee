@@ -32,6 +32,8 @@ Kona.debug = (obj) ->
     is_boolean  = _.isBoolean obj
     is_object   = _.isObject obj
 
+    log "<undefined>" unless obj?
+
     if is_array || is_object
       log "Dumping #{ if is_array then 'array' else typeof obj}: #{defined_str}"
 

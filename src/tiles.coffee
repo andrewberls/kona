@@ -44,8 +44,9 @@ Kona.TileManager =
   columnFor: (idx) ->
     result = []
     for row in @sceneTilemap[Kona.Scenes.currentScene.name]
-      result += row[idx]
+      result.push row[idx]
     result
+
 
   # Return all the columns that an entity spans
   columnsFor: (entity) ->
@@ -54,10 +55,10 @@ Kona.TileManager =
     grid  = @sceneTilemap[Kona.Scenes.currentScene.name]
     result = []
 
+    for idx in [start..end]
+      result.push @columnFor(idx)
+    result
 
-    # once => Kona.debug @columnFor(0)
-
-    # _.each [start..end], (colNum) ->
 
 
 class Kona.Tile extends Kona.Entity
@@ -79,7 +80,6 @@ class Kona.Tile extends Kona.Entity
     Kona.Canvas.safe =>
       Kona.Canvas.ctx.fillStyle = Kona.Utils.colorFor(@color)
       Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
-
 
 
 

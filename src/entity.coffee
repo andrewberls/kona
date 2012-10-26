@@ -33,32 +33,56 @@ class Kona.Entity
 
   # Edge coordinates accounting for current motion
   futureTop:    -> @position.y + @direction.dy
-  futureBottom: -> @position.y + @direction.dy + @box.height
+  futureBottom: -> @bottom()   + @direction.dy
   futureLeft:   -> @position.x + @direction.dx
-  futureRight:  -> @position.x + @direction.dx + @box.width
+  futureRight:  -> @right()    + @direction.dx
 
-  # onSuface = ->
+  # Sugar for integer dx/dy attributes
+  movingLeft:  -> @direction.dx < 0
+  movingRight: -> @direction.dx > 0
 
-  # function intersecting(a, b) {
-  #        return !(
-  #            ((a.y + a.height) < (b.y)) ||
-  #            (a.y > (b.y + b.height))   ||
-  #            ((a.x + a.width) < b.x)    ||
-  #            (a.x > (b.x + b.width))
-  #        );
-  #     }
-  intersecting: (e) ->
-    if e?
-      test = !(
-        (@bottom() < e.top())    ||
-        (@top()    > b.bottom()) ||
-        (@right    < e.left())   ||
-        (@left()   > e.right())
-      )
 
-    if test
-      Kona.debug "intersecting"
-      return true
+
+
+
+  # Player's left hitting a tile's right
+  leftCollision: ->
+    collision = false
+    for col in Kona.TileManager.columnsFor(@)
+      for tile in col
+        if !tile.solid || @left() > tile.right()
+          continue
+        else
+          if @right() >= tile.right() && @futureLeft() <= tile.right()
+            if @futureBottom() > tile.top() and @futureTop() < tile.bottom()
+              collision = true
+
+    collision
+
+
+  # Player's right hitting a tile's left
+  rightCollision: ->
+    collision = false
+    for col in Kona.TileManager.columnsFor(@)
+      for tile in col
+        if !tile.solid || @right() < tile.left()
+          continue
+        else
+          if @left() <= tile.left() && @futureRight() >= tile.left()
+            if @futureBottom() > tile.top() and @futureTop() < tile.bottom()
+              collision = true
+
+    collision
+
+
+
+
+
+
+
+
+
+
 
   stop: (axis) ->
     # TODO: factor out accepted axes. Enforce?

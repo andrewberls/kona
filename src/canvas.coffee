@@ -27,3 +27,9 @@ Kona.Canvas =
     @safe =>
       @ctx.fillStyle = 'red'
       @ctx.fillRect(x, 0, 2, @height)
+
+  highlightColumn: (tile) ->
+    Kona.Canvas.safe =>
+      Kona.Canvas.ctx.fillStyle = 'red'
+      Kona.Canvas.ctx.globalAlpha = 0.1
+      Kona.Canvas.ctx.fillRect(tile.position.x, 0, Kona.Tile.tileSize, Kona.Canvas.height)
