@@ -12,9 +12,9 @@ Kona.Scenes =
   drawCurrent: ->
     @currentScene.draw()
 
+  # Find the new scene by name and set it to active to start rendering
+  # ex: Kona.Scenes.setCurrent('level-2')
   setCurrent: (sceneName) ->
-    # Find the new scene by name and set it to active to start rendering
-    # ex: Kona.Scenes.setCurrent('level-2')
     @currentScene.active = false
     @currentScene = Kona.Utils.findByKey(@_scenes, 'name', sceneName)
     @currentScene.active = true
@@ -34,30 +34,29 @@ class Kona.Scene
   addEntity: (entity) ->
     @entities.push(entity)
 
+  # TODO: definition schema here is ugly
+  #
+  # [                                 Schema
+  #   {                                 Object Definition
+  #     entity: Player,
+  #     layout: [ {opts}, {opts} ]        Options
+  #   }
+  # ]
   setLayout: (schema) ->
-    # TODO: definition schema here is ugly
-    #
-    # [                                 Schema
-    #   {                                 Object Definition
-    #     entity: Player,
-    #     layout: [ {opts}, {opts} ]        Options
-    #   }
-    # ]
-
     for definition in schema
       entity = definition.entity
       for opts in definition.layout
         @addEntity(new entity(opts))
 
 
-
-
   update: ->
+    console.log "scene update called"
 
+  # Render onto main canvas
   draw: ->
-    # Render onto main canvas
-    # Kona.debug "will draw: #{@name}"
-    Kona.Engine.ctx.drawImage(@background, 0, 0)
-    for entity in @entities
+    Kona.Canvas.clear()
+    Kona.Canvas.ctx.drawImage(@background, 0, 0) # Background
+    Kona.TileManager.draw(@name)                 # Tiles
+    for entity in @entities                      # Game entities
       entity.update()
       entity.draw()
