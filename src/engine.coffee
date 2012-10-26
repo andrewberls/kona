@@ -1,40 +1,21 @@
 # Handles game clock, main update/draw loop
 
-Kona.Engine = {}
+Kona.Engine =
+  defaults:
+    fps:    24 # Only used for requestAnimationFrame fallback
+    width:  640
+    height: 480
 
-Kona.Engine.defaults =
-  fps: 24 # Only used for requestAnimationFrame fallback
-  width: 640
-  height: 480
+  start: (opts) ->
+    # Kona.Canvas.init(opts.id)
+    @fps = opts.fps || @defaults.fps
+    Kona.Scenes.currentScene = Kona.Utils.findByKey(Kona.Scenes._scenes, 'active', true)
+    @run()
 
-Kona.Engine.start = (canvas, fps) ->
-  Kona.Scenes.currentScene = Kona.Utils.findByKey(Kona.Scenes._scenes, 'active', true)
-  @fps =  fps || @defaults.fps
-
-  # TODO: Do these belong in a Graphics namespace or similar?
-  # TODO: you get weird image drawing issues if height/width
-  #   are not defined directly on the <canvas> element.
-  #   Can some of that be mitigated here?
-  @canvas   = document.getElementById(canvas.id)
-  @ctx      = @canvas.getContext('2d')
-  @C_WIDTH  = canvas.width  || @defaults.width
-  @C_HEIGHT = canvas.height || @defaults.height
-
-  @run()
-
-Kona.Engine.run = ->
-  # Kona.debug 'running'
-  # TODO: engine update/draw or just call on current scene?
-  Kona.Engine.update()
-  Kona.Engine.draw()
-  requestAnimFrame(Kona.Engine.run)
-
-Kona.Engine.update = ->
-  # Update all entities
-
-Kona.Engine.draw = ->
-  # Draw current scene onto main canvas
-  Kona.Scenes.drawCurrent()
+  run: ->
+    # Get animation frames to draw the current scene onto main canvas
+    Kona.Scenes.drawCurrent()
+    requestAnimFrame(Kona.Engine.run)
 
 
 window.requestAnimFrame = do ->
