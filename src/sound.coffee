@@ -139,60 +139,45 @@ Kona.Sound =
   # ----------------------------
   #   SOUND INSTANCES
   # ----------------------------
+  sound: (src, options={}) ->
+    pid        = 0
+    events     = []
+    eventsOnce = {}
+    supported  = Kona.Sound.isSupported()
 
-  # TODO: Figure out how to make this into a class
-
-  #sound: (src, options={}) ->
-  #  pid        = 0
-  #  events     = []
-  #  eventsOnce = {}
-  #  supported  = buzz.isSupported()
-  class sound
-    constructor = (src, options ={}) ->
-      pid = 0
-      events = []
-      eventsOnce = {}
-      supported = buzz.isSupported()
-
-
-
-    # TODO: this probably needs to be a class constructor
-    # TODO: change buzz references to Kona.Sound
-    #
     # init
-     if supported && src
-       for own key, value of Kona.defaults
-         options[key] = options[key] || buzz.defaults[key]
+    if supported && src
+      for key, value in Kona.Sound.defaults
+        options[key] = options[key] || value
 
-       @sound = document.createElement('audio')
+      @sound = document.createElement('audio')
 
-       if src instanceof Array
-           for own key, value of src
-             addSource(@sound, src[key])
-       else if options.formats.length
-           for own key, value of options.formats
-             addSource(@sound, src + '.' + options.formats[key])
-       else
-         addSource(@sound, src)
+      if _.isArray(src)
+        console.log src
+        for s in src
+          addSource(@sound, s)
+      else if options.formats.length
+        console.log options.formats
+        for key, value in options.formats
+          addSource(@sound, "#{src}.#{key}")
+      else
+        addSource(@sound, src)
 
-       if options.loop
-         @loop()
+      if options.loop
+        @loop()
 
-       if options.autoplay
-         @sound.autoplay = 'autoplay'
+      if options.autoplay
+        @sound.autoplay = 'autoplay'
 
-       if options.preload === true
-         @sound.preload = 'auto'
-       else if options.preload === false
-         @sound.preload = 'none'
-       else
-         @sound.preload = options.preload
+      if options.preload == true
+        @sound.preload = 'auto'
+      else if options.preload == false
+        @sound.preload = 'none'
+      else
+        @sound.preload = options.preload
 
-       @setVolume(options.volume)
-
-       buzz.sounds.push(@)
-
-
+      @setVolume(options.volume)
+      Kona.Sound.sounds.push(@)
 
     # publics
     @load = ->
@@ -266,8 +251,8 @@ Kona.Sound =
 
     @setVolume = (volume) ->
       return @ if !supported
-      volume = 0 if volume < 0
-      volume = 100 if volume > 100
+      volume  = 0   if volume < 0
+      volume  = 100 if volume > 100
       @volume = volume
       @sound.volume = volume / 100
       return @
@@ -599,4 +584,4 @@ Kona.Sound =
 
 
     argsToArray = (array, args) ->
-      return (array instanceof Array) ? array : Array.prototype.slice.call(args)
+      return (if _.isArray(array) then array else Array.prototype.slice.call(args))

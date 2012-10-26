@@ -4,21 +4,41 @@
 
 
 Kona.ready ->
-  # Are we actually ready?
-  Kona.debug 'ready'
+
+
+  # DEBUGGING UTILS
+  window.KUtils  = Kona.Utils
+  window.KCanvas = Kona.Canvas
+  window.KEngine = Kona.Engine
+  window.KScenes = Kona.Scenes
+  window.KEntity = Kona.Entity
+  window.KTiles  = Kona.TileManager
+  window.KKeys   = Kona.Keys
+  window.KSound  = Kona.Sound
+  Kona.beat = -> console.log "Heartbeat!"
+  window._k_once = 0; window.once = (fxn) -> fxn() if window._k_once == 0; window._k_once++
 
 
 
-  # Test a random key binding
-  Kona.Keys.bind "a", ->
-    console.log "you pressed a!"
+
+  Kona.Canvas.init {
+    id: 'canvas'
+  }
 
 
 
-  # The 'menu', or first scene that the player will see.
-  menu = new Kona.Scene {
-    name: 'menu-1'
-    background: 'lvl1.jpg'
+  # ----------------------
+  #   SCENES
+  # ----------------------
+  # menu = new Kona.Scene {
+  #   name: 'menu-1'
+  #   background: 'lvl1.jpg'
+  #   active: true
+  # }
+
+  level = new Kona.Scene {
+    name: 'level-1'
+    # background: 'lvl2.jpg',
     active: true
   }
 
@@ -28,12 +48,12 @@ Kona.ready ->
 
 
 
-  # Define a scene and load some entities
-  level = new Kona.Scene {
-    name: 'level-1'
-    background: 'lvl2.jpg',
-  }
 
+
+
+  # ----------------------
+  #   LAYOUT
+  # ----------------------
   # TODO: how to bind methods on entities defined with the schema loader?
   # Maybe schema loader is only for things like blocks, etc?
 
@@ -52,39 +72,61 @@ Kona.ready ->
 
 
 
+
+
+
+
+  # ----------------------
+  #   GAME ENTITIES
+  # ----------------------
   # A sample game entity to test rendering and schema loading
   class Shape extends Kona.Entity
     constructor: (opts) ->
-      @position =
-        x: opts.x || 0
-        y: opts.y || 0
+      @isJumping = false
+      super
 
-      @direction =
-        dx: opts.dx || 0
-        dy: opts.dy || 0
-
-      @box =
-        width: opts.width   || 0
-        height: opts.height || 0
-
-      @sprite = new Image() # TODO: Kona.Sprite /sheet ?
-      @sprite.src = ''
-
-      super # TODO
-
+    # Use the dx/dy attributes to update position, accounting for canvas bounds
     update: ->
-      # TODO
+      # KTiles.columnsFor(@)
+
+
+
+      # TODO: these are placeholders
+      floor      = Kona.Canvas.height - Kona.Tile.tileSize
+      jumpHeight = 12
+      grav       = 5
+
+      # Left/Right edges
+      if @futureLeft() < 0 || @futureRight() > Kona.Engine.C_WIDTH
+        @direction.dx = 0
+
       @position.x += @direction.dx
-      @position.y += @direction.dy
+
+      if @isJumping
+        # Move up unless restricted by ceiling
+        @position.y += if @futureTop() < 0 then 0 else -jumpHeight
+      else if @bottom() < floor
+          # Pull the player down if above the floor
+          @position.y += if @bottom() + grav > floor then floor - @bottom() else grav
 
     draw: ->
-      #Kona.Engine.ctx.drawImage(@sprite, @position.x, @position.y)
-      Kona.Engine.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
+      # Kona.Canvas.verticalLine(200)
+      Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
+
+    jump: ->
+      # TODO: Must be standing on surface to jump
+      duration = 175
+
+      if @isJumping
+        return false
+      else
+        @isJumping = true
+        setTimeout =>
+          @isJumping = false
+        , duration
 
 
-
-
-  shape = new Shape({ x: 400, y: 20, width: 75, height: 50 })
+  shape = new Shape { x: 400, y: 200, width: 30, height: 60 }
   level.addEntity(shape)
 
 
@@ -95,14 +137,40 @@ Kona.ready ->
 
 
 
+
+  # ----------------------
+  #   KEYS
+  # ----------------------
+  moveIncrement = 3
+
+  Kona.Keys.keydown = (key) ->
+    switch key
+      when 'left'  then shape.direction.dx = -moveIncrement
+      when 'right' then shape.direction.dx = moveIncrement
+      when 'up'    then shape.jump()
+
+  Kona.Keys.keyup = (key) ->
+    switch key
+      when 'left', 'right' then shape.stop('dx')
+      when 'up', 'down'    then shape.stop('dy')
+
+
+
+
+
+
+
+  tiles = [
+    [1,0,2,3,0,0,1,2,3,1,2]
+  ]
+  Kona.TileManager.buildTiles('level-1', tiles)
+
+
+
+  # ----------------------
+  #   GAME START
+  # ----------------------
   # Start the engine! The game is running after this point.
   Kona.Engine.start {
     id: 'canvas'
   }
-
-
-
-  # Test transitions between scenes after a fixed time period
-  setTimeout ->
-    Kona.Scenes.setCurrent 'level-1'
-  , 500
