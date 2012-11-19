@@ -737,19 +737,35 @@ Kona.Sound = (function() {
   };
 
   Sound.isOGGSupported = function() {
-    return this.isSupported() && this.testEl.canPlayType('audio/ogg codecs="vorbis"');
+    return this.testEl.canPlayType('audio/ogg codecs="vorbis"');
   };
 
   Sound.isWAVSupported = function() {
-    return this.isSupported() && this.testEl.canPlayType('audio/wav codecs="1"');
+    return this.testEl.canPlayType('audio/wav codecs="1"');
   };
 
   Sound.isMP3Supported = function() {
-    return this.isSupported() && this.testEl.canPlayType('audio/mpeg');
+    return this.testEl.canPlayType('audio/mpeg codecs="mp3"');
   };
 
   Sound.isAACSupported = function() {
-    return this.isSupported() && (this.testEl.canPlayType('audio/x-m4a') || this.testEl.canPlayType('audio/aac'));
+    return this.testEl.canPlayType('audio/x-m4a') || this.testEl.canPlayType('audio/aac');
+  };
+
+  Sound.supportedFormats = function() {
+    var supported;
+    supported = function(check) {
+      if (check === '') {
+        return 'yes';
+      } else {
+        return check;
+      }
+    };
+    Kona.debug("Audio format compatability:");
+    Kona.debug("  OGG: " + (supported(this.isOGGSupported())));
+    Kona.debug("  WAV: " + (supported(this.isWAVSupported())));
+    Kona.debug("  MP3: " + (supported(this.isMP3Supported())));
+    return Kona.debug("  AAC: " + (supported(this.isAACSupported())));
   };
 
   function Sound(src, options) {

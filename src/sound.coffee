@@ -4,6 +4,9 @@
 #   fire.play()
 
 class Kona.Sound
+  # --------------------
+  # Class methods
+  # --------------------
   @defaults:
     autoplay: false
     duration: 5000
@@ -24,12 +27,31 @@ class Kona.Sound
 
   @testEl: document.createElement('audio')
   @isSupported:    -> return !!@testEl.canPlayType
-  @isOGGSupported: -> @isSupported() && @testEl.canPlayType('audio/ogg codecs="vorbis"')
-  @isWAVSupported: -> @isSupported() && @testEl.canPlayType('audio/wav codecs="1"')
-  @isMP3Supported: -> @isSupported() && @testEl.canPlayType('audio/mpeg')
-  @isAACSupported: -> @isSupported() && (@testEl.canPlayType('audio/x-m4a') || @testEl.canPlayType('audio/aac'))
+  @isOGGSupported: -> @testEl.canPlayType('audio/ogg codecs="vorbis"')
+  @isWAVSupported: -> @testEl.canPlayType('audio/wav codecs="1"')
+  @isMP3Supported: -> @testEl.canPlayType('audio/mpeg codecs="mp3"')
+  @isAACSupported: -> (@testEl.canPlayType('audio/x-m4a') || @testEl.canPlayType('audio/aac'))
 
 
+  # Run tests for supported audio formats
+  # Ex for Chrome 23.0.1271.64:
+  # Kona.Sound.supportedFormats()
+  #   OGG: yes
+  #   WAV: yes
+  #   MP3: yes
+  #   AAC: maybe
+  @supportedFormats: ->
+    supported = (check) -> if check == '' then 'yes' else check
+    Kona.debug "Audio format compatability:"
+    Kona.debug "  OGG: #{ supported(@isOGGSupported()) }"
+    Kona.debug "  WAV: #{ supported(@isWAVSupported()) }"
+    Kona.debug "  MP3: #{ supported(@isMP3Supported()) }"
+    Kona.debug "  AAC: #{ supported(@isAACSupported()) }"
+
+
+  # --------------------
+  # Instance methods
+  # --------------------
   constructor: (src, options={}) ->
     @supported  = Kona.Sound.isSupported()
 
