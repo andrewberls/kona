@@ -13,7 +13,7 @@ Kona.Scenes =
     @currentScene.draw()
 
   # Find the new scene by name and set it to active to start rendering
-  # ex: Kona.Scenes.setCurrent('level-2')
+  # Ex: Kona.Scenes.setCurrent('level-2')
   setCurrent: (sceneName) ->
     @currentScene.active = false
     @currentScene = Kona.Utils.findByKey(@_scenes, 'name', sceneName)
@@ -42,15 +42,15 @@ class Kona.Scene
   #     layout: [ {opts}, {opts} ]        Options
   #   }
   # ]
-  setLayout: (schema) ->
-    for definition in schema
-      entity = definition.entity
-      for opts in definition.layout
-        @addEntity(new entity(opts))
+  # setLayout: (schema) ->
+  #   for definition in schema
+  #     entity = definition.entity
+  #     for opts in definition.layout
+  #       @addEntity(new entity(opts))
 
 
   update: ->
-    console.log "scene update called"
+
 
   # Render onto main canvas
   draw: ->

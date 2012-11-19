@@ -76,7 +76,7 @@ class Kona.Tile extends Kona.Entity
 
 
 
-class Kona.BlankTile extends Kona.Entity
+class Kona.BlankTile extends Kona.Tile
   constructor: (opts) ->
     super(opts)
     @solid    = false
@@ -89,4 +89,4 @@ class Kona.BlankTile extends Kona.Entity
   toString: -> "<BlankTile>"
 
   draw: ->
-    Kona.Canvas.ctx.strokeRect(@position.x, @position.y, @box.width, @box.height)
+    # Kona.Canvas.ctx.strokeRect(@position.x, @position.y, @box.width, @box.height)

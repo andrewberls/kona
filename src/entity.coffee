@@ -2,7 +2,7 @@
 # An entity belongs to a scene.
 
 class Kona.Entity
-  @grav = 1 # 5
+  @grav = 5
 
   constructor: (opts={}) ->
     @solid = true
@@ -19,7 +19,7 @@ class Kona.Entity
       width:  opts.width   || 0
       height: opts.height || 0
 
-    # TODO: Kona.Sprite /sheet ?
+    # TODO: Kona.Sprite
     @sprite = new Image()
     @sprite.src = ''
 
@@ -57,7 +57,6 @@ class Kona.Entity
   addGravity: -> @position.y += Kona.Entity.grav
 
   stop: (axis) ->
-    # TODO: factor out accepted axes. Enforce?
     if axis?
       _.contains(['dx', 'dy'], axis) || throw new Error("Axis #{axis} not recognized")
       @direction[axis] = 0
@@ -70,7 +69,6 @@ class Kona.Entity
   inRowSpace: (e) ->
     # To collide with a tile from the left or right, you must be in its row
     @futureBottom() > e.top() and @futureTop() < e.bottom()
-    # @bottom() < e.bottom() and @top() > e.top()
 
   inColumnSpace: (e) ->
     # To collide with a tile from the top or bottom, you must be in its column
@@ -80,7 +78,7 @@ class Kona.Entity
   eachSolidTile: (fxn) =>
     for col in Kona.TileManager.columnsFor(@)
       for tile in col
-        if tile.solid then fxn(tile) else continue
+        if tile.solid then fxn(tile)
 
 
   # Loop over solid neighbor tiles and determine whether or not a collision occurs
@@ -113,6 +111,4 @@ class Kona.Entity
   # Player's bottom hitting a tile's top
   bottomCollision: ->
     return @isCollision (tile) =>
-      if @top() <= tile.top() and @futureBottom() >= tile.top() and @inColumnSpace(tile)
-        # Kona.debug "bottom collision with tile: #{tile}. in column space?: #{@inColumnSpace(tile)}"
-        return true
+      @top() <= tile.top() and @futureBottom() >= tile.top() and @inColumnSpace(tile)

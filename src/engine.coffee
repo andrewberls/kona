@@ -2,12 +2,11 @@
 
 Kona.Engine =
   defaults:
-    fps:    24 # Only used for requestAnimationFrame fallback
+    fps:    24 # Only used for requestAnimFrame fallback
     width:  640
     height: 480
 
   start: (opts={}) ->
-    # Kona.Canvas.init(opts.id)
     @fps = opts.fps || @defaults.fps
     Kona.Scenes.currentScene = Kona.Utils.findByKey(Kona.Scenes._scenes, 'active', true)
     @run()
