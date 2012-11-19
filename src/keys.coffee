@@ -2,13 +2,19 @@
 # Based on keymaster.js by Thomas Fuchs
 # https://github.com/madrobby/keymaster/
 #
-# Ex:
+# Two ways to bind actions to keys:
+#
+# 1. Directly on the keydown event
+#   Kona.Keys.keydown = (key) ->
+#     switch key
+#       when 'left'  then shape.direction.dx = -moveSpeed
+#       when 'right' then shape.direction.dx = moveSpeed
+#       when 'up'    then shape.jump()
+#
+# 2. Bind a handler function to a keypress
+#     Kona.keys.bind 'a', ->
+#       console.log "You pressed a!"
 
-# TODO: KEYDOWN/UP EX
-
-
-#   Kona.keys.bind 'a', ->
-#     console.log "You pressed a!"
 
 Kona.Keys =
   # Contains info on keys and their associated handler(s)
