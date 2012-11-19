@@ -24,7 +24,7 @@ FILENAMES = [
   'keys',
   'sound',
 
-  'game'
+  'demo'
 ]
 
 # Accepts an array of filenames and an optional
