@@ -18,10 +18,10 @@ Kona.TileManager =
     for row in grid
       for color in row
         tile =
-          if color == 0
-            new Kona.BlankTile { x: x, y: y }
-          else
-            new Kona.Tile { color: color, x: x, y: y }
+        if color == 0
+          new Kona.BlankTile { x: x, y: y }
+        else
+          new Kona.Tile { color: color, x: x, y: y }
 
         rowBuffer.push tile
         x += Kona.Tile.tileSize
@@ -34,8 +34,8 @@ Kona.TileManager =
 
   draw: (scene) ->
     for row in @sceneTilemap[scene]
-      for tile in row
-        tile.draw()
+      tile.draw() for tile in row
+
 
 
   # Return the tileset for the current scene
@@ -81,7 +81,7 @@ class Kona.Tile extends Kona.Entity
 
   draw: ->
     Kona.Canvas.safe =>
-      Kona.Canvas.ctx.fillStyle = Kona.Utils.colorFor(@color)
+      Kona.Canvas.ctx.fillStyle = @colorName()
       Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
   # TODO: FOR DEBUGGING
@@ -91,10 +91,10 @@ class Kona.Tile extends Kona.Entity
 class Kona.BlankTile extends Kona.Tile
   constructor: (opts) ->
     super(opts)
-    @solid    = false
+    @solid = false
 
     @size = Kona.Tile.tileSize
-    @box =
+    @box  =
       width:  @size
       height: @size
 
@@ -103,4 +103,4 @@ class Kona.BlankTile extends Kona.Tile
   draw: ->
     # Grid for blank tiles
     # TODO
-    Kona.Canvas.ctx.strokeRect(@position.x, @position.y, @box.width, @box.height)
+    # Kona.Canvas.ctx.strokeRect(@position.x, @position.y, @box.width, @box.height)

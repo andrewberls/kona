@@ -52,6 +52,9 @@ Kona.debug = (obj) ->
         else
           log "#{spacer}#{key}: #{value}"
 
+
+window.puts = (obj) -> Kona.debug obj
+
 Kona.readyCallbacks = []
 Kona.isReady = false
 
@@ -75,7 +78,6 @@ Kona.DOMContentLoaded = ->
     callback.call()
 
 # Hook the various DOM loaded events. Borrowed from jQuery's implementation.
-# TODO: CHECK FOR EVENT SUPPORT
 if document.readyState != 'complete'
   if document.addEventListener
     document.addEventListener('DOMContentLoaded', Kona.DOMContentLoaded, false)

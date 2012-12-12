@@ -2,7 +2,7 @@
 # An entity belongs to a scene.
 
 class Kona.Entity
-  @grav = 10
+  @grav = 8
 
   constructor: (opts={}) ->
     @solid = true
@@ -55,6 +55,10 @@ class Kona.Entity
   movingRight: -> @direction.dx > 0
 
   addGravity: -> @position.y += Kona.Entity.grav
+
+  setPosition: (x, y) ->
+    @position.x = x
+    @position.y = y
 
   stop: (axis) ->
     if axis?

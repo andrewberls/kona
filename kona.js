@@ -82,6 +82,10 @@ Kona.debug = function(obj) {
   }
 };
 
+window.puts = function(obj) {
+  return Kona.debug(obj);
+};
+
 Kona.readyCallbacks = [];
 
 Kona.isReady = false;
@@ -302,7 +306,7 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
 
 Kona.Entity = (function() {
 
-  Entity.grav = 10;
+  Entity.grav = 8;
 
   function Entity(opts) {
     if (opts == null) {
@@ -375,6 +379,11 @@ Kona.Entity = (function() {
 
   Entity.prototype.addGravity = function() {
     return this.position.y += Kona.Entity.grav;
+  };
+
+  Entity.prototype.setPosition = function(x, y) {
+    this.position.x = x;
+    return this.position.y = y;
   };
 
   Entity.prototype.stop = function(axis) {
@@ -615,7 +624,7 @@ Kona.Tile = (function(_super) {
   Tile.prototype.draw = function() {
     var _this = this;
     return Kona.Canvas.safe(function() {
-      Kona.Canvas.ctx.fillStyle = Kona.Utils.colorFor(_this.color);
+      Kona.Canvas.ctx.fillStyle = _this.colorName();
       return Kona.Canvas.ctx.fillRect(_this.position.x, _this.position.y, _this.box.width, _this.box.height);
     });
   };
@@ -646,9 +655,7 @@ Kona.BlankTile = (function(_super) {
     return "<BlankTile>";
   };
 
-  BlankTile.prototype.draw = function() {
-    return Kona.Canvas.ctx.strokeRect(this.position.x, this.position.y, this.box.width, this.box.height);
-  };
+  BlankTile.prototype.draw = function() {};
 
   return BlankTile;
 
@@ -1101,6 +1108,9 @@ Kona.ready(function() {
         this.addGravity();
         this.correctBottom();
       }
+      if (this.top() > Kona.Canvas.height) {
+        this.die();
+      }
       return Kona.Canvas.ctx.fillRect(this.position.x, this.position.y, this.box.width, this.box.height);
     };
 
@@ -1116,6 +1126,13 @@ Kona.ready(function() {
           return _this.isJumping = false;
         }, duration);
       }
+    };
+
+    Shape.prototype.die = function() {
+      var _this = this;
+      return setTimeout(function() {
+        return _this.setPosition(195, 200);
+      }, 400);
     };
 
     return Shape;

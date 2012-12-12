@@ -95,6 +95,9 @@ Kona.ready ->
         @addGravity()
         @correctBottom()
 
+      @die() if @top() > Kona.Canvas.height
+
+
       Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
 
@@ -108,6 +111,11 @@ Kona.ready ->
         setTimeout =>
           @isJumping = false
         , duration
+
+    die: ->
+      setTimeout =>
+        @setPosition(195, 200)
+      , 400
 
 
   shape = new Shape { x: 220, y: 200, width: 30, height: 60 }
