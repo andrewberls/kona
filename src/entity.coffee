@@ -114,6 +114,17 @@ class Kona.Entity
       @top() <= tile.top() and @futureBottom() >= tile.top() and @inColumnSpace(tile)
 
 
+  onSurface: =>
+    # console.log "top: #{@position.y}, bottom: #{@bottom()}"
+    for col in Kona.TileManager.columnsFor(@)
+      for tile in col
+        return true if tile.position.y == @position.y + 1
+
+    return false
+
+
+
+
 
   # ---------------------
   # Collision correction

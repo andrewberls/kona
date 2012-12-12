@@ -35,6 +35,7 @@ Kona.TileManager =
       @sceneTilemap[scene].push rowBuffer
       rowBuffer = []
 
+
   draw: (scene) ->
     for row in @sceneTilemap[scene]
       for tile in row
@@ -45,8 +46,9 @@ Kona.TileManager =
   currentTiles: ->
     @sceneTilemap[Kona.Scenes.currentScene.name]
 
+
   columnFor: (idx) ->
-    _.map @sceneTilemap[Kona.Scenes.currentScene.name], (row) -> row[idx]
+    _.map @currentTiles(), (row) -> row[idx]
 
 
   # Return all the columns that an entity spans

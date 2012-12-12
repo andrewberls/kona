@@ -157,6 +157,8 @@ Kona.Utils = {
         return 'orange';
       case 3:
         return 'blue';
+      default:
+        return 'blank';
     }
   }
 };
@@ -306,6 +308,8 @@ Kona.Entity = (function() {
     if (opts == null) {
       opts = {};
     }
+    this.onSurface = __bind(this.onSurface, this);
+
     this.eachSolidTile = __bind(this.eachSolidTile, this);
 
     this.solid = true;
@@ -453,6 +457,21 @@ Kona.Entity = (function() {
     });
   };
 
+  Entity.prototype.onSurface = function() {
+    var col, tile, _i, _j, _len, _len1, _ref;
+    _ref = Kona.TileManager.columnsFor(this);
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      col = _ref[_i];
+      for (_j = 0, _len1 = col.length; _j < _len1; _j++) {
+        tile = col[_j];
+        if (tile.position.y === this.position.y + 1) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
   Entity.prototype.correctLeft = function() {
     var _results;
     _results = [];
@@ -550,7 +569,7 @@ Kona.TileManager = {
     return this.sceneTilemap[Kona.Scenes.currentScene.name];
   },
   columnFor: function(idx) {
-    return _.map(this.sceneTilemap[Kona.Scenes.currentScene.name], function(row) {
+    return _.map(this.currentTiles(), function(row) {
       return row[idx];
     });
   },
@@ -1087,7 +1106,7 @@ Kona.ready(function() {
       duration = 175;
       if (this.isJumping) {
         return false;
-      } else {
+      } else if (this.onSurface()) {
         this.isJumping = true;
         return setTimeout(function() {
           return _this.isJumping = false;
@@ -1126,7 +1145,7 @@ Kona.ready(function() {
         return shape.stop('dy');
     }
   };
-  tiles = [[0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 1], [1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 2], [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3], [1, 0, 0, 2, 0, 0, 3, 2, 3, 0, 2], [3, 2, 1, 3, 1, 0, 0, 1, 2, 0, 1]];
+  tiles = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 1], [1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 2], [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3], [1, 0, 0, 2, 0, 0, 3, 2, 3, 0, 2], [3, 2, 1, 3, 1, 0, 0, 1, 2, 0, 1]];
   Kona.TileManager.buildTiles('level-1', tiles);
   return Kona.Engine.start({
     id: 'canvas'

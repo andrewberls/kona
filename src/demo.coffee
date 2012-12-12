@@ -105,7 +105,7 @@ Kona.ready ->
 
       if @isJumping
         return false
-      else
+      else if @onSurface()
         @isJumping = true
         setTimeout =>
           @isJumping = false
@@ -147,6 +147,9 @@ Kona.ready ->
 
 
   tiles = [
+    [0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,2,3,1],
     [1,3,0,0,0,0,0,0,0,0,2],
     [2,0,0,0,0,0,0,0,0,0,3],
@@ -164,6 +167,7 @@ Kona.ready ->
   Kona.Engine.start {
     id: 'canvas'
   }
+
 
   # fire = new Kona.Sound('enemy_fire.ogg')
   # setTimeout ->

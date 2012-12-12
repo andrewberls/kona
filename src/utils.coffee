@@ -39,3 +39,4 @@ Kona.Utils =
       when 1 then 'red'
       when 2 then 'orange'
       when 3 then 'blue'
+      else 'blank'
