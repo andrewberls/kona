@@ -80,27 +80,24 @@ Kona.ready ->
   class Shape extends Kona.Entity
     constructor: (opts={}) ->
       @jumpHeight = 12
-      @isJumping = false
+      @isJumping  = false
       super
 
     # Use the dx/dy attributes to update position, accounting for canvas bounds
     update: ->
-      @direction.dx = 0 if @leftCollision() or @rightCollision()
       @position.x += @direction.dx
+      @correctLeft()
+      @correctRight()
 
       if @isJumping
-        Kona.debug "jumping"
-        @position.y -= @jumpHeight unless @topCollision()
+        @position.y -= @jumpHeight
+        @correctTop()
       else
-        if @bottomCollision()
-          # Kona.debug "bottom col"
-        else
-          # Kona.debug "grav"
-          @addGravity()
+        @addGravity()
+        @correctBottom()
 
-    draw: ->
-      Kona.Canvas.highlightColumn(@position.x); Kona.Canvas.highlightColumn(@right())
       Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
+
 
     jump: ->
       # TODO: Must be standing on surface to jump
@@ -151,10 +148,10 @@ Kona.ready ->
 
   tiles = [
     [0,0,0,0,0,0,0,0,2,3,1],
-    [0,0,0,0,0,0,0,0,0,0,2],
-    [0,0,0,0,0,0,0,0,0,0,3],
+    [1,3,0,0,0,0,0,0,0,0,2],
+    [2,0,0,0,0,0,0,0,0,0,3],
     [1,0,0,2,0,0,3,2,3,0,2],
-    [3,0,2,3,1,0,0,1,2,0,1]
+    [3,2,1,3,1,0,0,1,2,0,1]
   ]
   Kona.TileManager.buildTiles('level-1', tiles)
 
@@ -173,8 +170,8 @@ Kona.ready ->
   #   fire.play()
   # , 500
 
-  music = new Kona.Sound('level1_music.ogg')
-  music.play()
+  # music = new Kona.Sound('level1_music.ogg')
+  # music.play()
 
 
   # MUTE

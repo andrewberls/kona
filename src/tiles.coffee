@@ -5,7 +5,6 @@
 
 Kona.TileManager =
   sceneTilemap: {}
-  tiles: []
 
   # Load debugging tiles from a grid configuration
   # {
@@ -42,16 +41,29 @@ Kona.TileManager =
         tile.draw()
 
 
+  # Return the tileset for the current scene
+  currentTiles: ->
+    @sceneTilemap[Kona.Scenes.currentScene.name]
+
   columnFor: (idx) ->
     _.map @sceneTilemap[Kona.Scenes.currentScene.name], (row) -> row[idx]
 
 
   # Return all the columns that an entity spans
   columnsFor: (entity) ->
-    start = Math.floor entity.position.x / Kona.Tile.tileSize
-    end   = Math.floor entity.right() / Kona.Tile.tileSize
+    size  = Kona.Tile.tileSize
+    start = Math.floor entity.position.x / size
+    end   = Math.floor entity.right() / size
     _.map [start..end], (idx) => @columnFor(idx)
 
+
+  # Return all the rows that an entity spans
+  # TODO
+  # rowsFor: (entity) ->
+  #   size  = Kona.Tile.tileSize
+  #   start = Math.floor(entity.position.y / size) - 1
+  #   end   = Math.floor(entity.bottom() / size) - 1
+  #   _.map [start..end], (idx) => @currentTiles()[idx]
 
 
 class Kona.Tile extends Kona.Entity
@@ -89,4 +101,5 @@ class Kona.BlankTile extends Kona.Tile
   toString: -> "<BlankTile>"
 
   draw: ->
-    # Kona.Canvas.ctx.strokeRect(@position.x, @position.y, @box.width, @box.height)
+    # Grid for blank tiles
+    Kona.Canvas.ctx.strokeRect(@position.x, @position.y, @box.width, @box.height)

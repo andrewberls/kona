@@ -4,7 +4,7 @@ Kona.Canvas =
     height: 480
 
   init: (opts={}) ->
-    @elem    = document.getElementById(opts.id) or throw new Error "cant build canvas with id: #{id}"
+    @elem    = document.getElementById(opts.id) or throw new Error "can't find element with id: #{id}"
     @ctx     = @elem.getContext('2d')
     @width   = @elem.width  || @defaults.width
     @height  = @elem.height || @defaults.height
@@ -22,6 +22,8 @@ Kona.Canvas =
       @ctx.fillStyle = 'white'
       @ctx.fillRect(0, 0, @width, @height)
 
+
+
   # Draw a vertical line at an x-coordinate
   verticalLine: (x) ->
     @safe =>
@@ -31,8 +33,17 @@ Kona.Canvas =
   # Highlight a column at an x-coordinate
   highlightColumn: (x) ->
     Kona.Canvas.safe =>
-      Kona.Canvas.ctx.fillStyle   = 'red'
-      Kona.Canvas.ctx.globalAlpha = 0.1
+      @ctx.fillStyle   = 'red'
+      @ctx.globalAlpha = 0.01
       size = Kona.Tile.tileSize
       left = size * Math.floor(x / size)
       Kona.Canvas.ctx.fillRect(left, 0, size, Kona.Canvas.height)
+
+  # Highlight a row at a y-coordinate
+  # highlightRow: (y) ->
+  #   Kona.Canvas.safe =>
+  #     @ctx.fillStyle   = 'red'
+  #     @ctx.globalAlpha = 0.1
+  #     size = Kona.Tile.tileSize
+  #     top  = size * Math.floor(y / size)
+  #     Kona.Canvas.ctx.fillRect(0, top, Kona.Canvas.width, size)

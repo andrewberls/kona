@@ -17,12 +17,6 @@ Kona.Utils =
 
     console.log "#{output}]"
 
-  colorFor: (num) ->
-    switch num
-      when 1 then 'red'
-      when 2 then 'orange'
-      when 3 then 'blue'
-
   # Generate a random integer within range (inclusive)
   randomFromTo: (from, to) ->
     Math.floor(Math.random() * (to - from + 1) + from)
@@ -36,3 +30,12 @@ Kona.Utils =
   #   => { color: 'red', owner: 'Jon' }
   findByKey: (list, key, value) ->
     _.find list, (item) -> item[key] == value
+
+
+
+  # TODO: FOR DEBUGGING
+  colorFor: (num) ->
+    switch num
+      when 1 then 'red'
+      when 2 then 'orange'
+      when 3 then 'blue'

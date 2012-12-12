@@ -141,6 +141,14 @@ Kona.Utils = {
     }
     return console.log("" + output + "]");
   },
+  randomFromTo: function(from, to) {
+    return Math.floor(Math.random() * (to - from + 1) + from);
+  },
+  findByKey: function(list, key, value) {
+    return _.find(list, function(item) {
+      return item[key] === value;
+    });
+  },
   colorFor: function(num) {
     switch (num) {
       case 1:
@@ -150,14 +158,6 @@ Kona.Utils = {
       case 3:
         return 'blue';
     }
-  },
-  randomFromTo: function(from, to) {
-    return Math.floor(Math.random() * (to - from + 1) + from);
-  },
-  findByKey: function(list, key, value) {
-    return _.find(list, function(item) {
-      return item[key] === value;
-    });
   }
 };
 
@@ -173,7 +173,7 @@ Kona.Canvas = {
       opts = {};
     }
     this.elem = document.getElementById(opts.id) || (function() {
-      throw new Error("cant build canvas with id: " + id);
+      throw new Error("can't find element with id: " + id);
     })();
     this.ctx = this.elem.getContext('2d');
     this.width = this.elem.width || this.defaults.width;
@@ -202,8 +202,8 @@ Kona.Canvas = {
     var _this = this;
     return Kona.Canvas.safe(function() {
       var left, size;
-      Kona.Canvas.ctx.fillStyle = 'red';
-      Kona.Canvas.ctx.globalAlpha = 0.1;
+      _this.ctx.fillStyle = 'red';
+      _this.ctx.globalAlpha = 0.01;
       size = Kona.Tile.tileSize;
       left = size * Math.floor(x / size);
       return Kona.Canvas.ctx.fillRect(left, 0, size, Kona.Canvas.height);
@@ -453,6 +453,42 @@ Kona.Entity = (function() {
     });
   };
 
+  Entity.prototype.correctLeft = function() {
+    var _results;
+    _results = [];
+    while (this.leftCollision()) {
+      _results.push(this.position.x += 1);
+    }
+    return _results;
+  };
+
+  Entity.prototype.correctRight = function() {
+    var _results;
+    _results = [];
+    while (this.rightCollision()) {
+      _results.push(this.position.x -= 1);
+    }
+    return _results;
+  };
+
+  Entity.prototype.correctTop = function() {
+    var _results;
+    _results = [];
+    while (this.topCollision()) {
+      _results.push(this.position.y += 1);
+    }
+    return _results;
+  };
+
+  Entity.prototype.correctBottom = function() {
+    var _results;
+    _results = [];
+    while (this.bottomCollision()) {
+      _results.push(this.position.y -= 1);
+    }
+    return _results;
+  };
+
   return Entity;
 
 })();
@@ -463,7 +499,6 @@ var __hasProp = {}.hasOwnProperty,
 
 Kona.TileManager = {
   sceneTilemap: {},
-  tiles: [],
   buildTiles: function(scene, grid) {
     var color, row, rowBuffer, tile, x, y, _base, _i, _j, _len, _len1, _results;
     (_base = this.sceneTilemap)[scene] || (_base[scene] = []);
@@ -511,16 +546,20 @@ Kona.TileManager = {
     }
     return _results;
   },
+  currentTiles: function() {
+    return this.sceneTilemap[Kona.Scenes.currentScene.name];
+  },
   columnFor: function(idx) {
     return _.map(this.sceneTilemap[Kona.Scenes.currentScene.name], function(row) {
       return row[idx];
     });
   },
   columnsFor: function(entity) {
-    var end, start, _i, _results,
+    var end, size, start, _i, _results,
       _this = this;
-    start = Math.floor(entity.position.x / Kona.Tile.tileSize);
-    end = Math.floor(entity.right() / Kona.Tile.tileSize);
+    size = Kona.Tile.tileSize;
+    start = Math.floor(entity.position.x / size);
+    end = Math.floor(entity.right() / size);
     return _.map((function() {
       _results = [];
       for (var _i = start; start <= end ? _i <= end : _i >= end; start <= end ? _i++ : _i--){ _results.push(_i); }
@@ -584,7 +623,9 @@ Kona.BlankTile = (function(_super) {
     return "<BlankTile>";
   };
 
-  BlankTile.prototype.draw = function() {};
+  BlankTile.prototype.draw = function() {
+    return Kona.Canvas.ctx.strokeRect(this.position.x, this.position.y, this.box.width, this.box.height);
+  };
 
   return BlankTile;
 
@@ -995,7 +1036,7 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Kona.ready(function() {
-  var Shape, level, moveIncrement, music, shape, tiles;
+  var Shape, level, moveIncrement, shape, tiles;
   Kona.beat = function() {
     return console.log("Heartbeat!");
   };
@@ -1027,27 +1068,16 @@ Kona.ready(function() {
     }
 
     Shape.prototype.update = function() {
-      if (this.leftCollision() || this.rightCollision()) {
-        this.direction.dx = 0;
-      }
       this.position.x += this.direction.dx;
+      this.correctLeft();
+      this.correctRight();
       if (this.isJumping) {
-        Kona.debug("jumping");
-        if (!this.topCollision()) {
-          return this.position.y -= this.jumpHeight;
-        }
+        this.position.y -= this.jumpHeight;
+        this.correctTop();
       } else {
-        if (this.bottomCollision()) {
-
-        } else {
-          return this.addGravity();
-        }
+        this.addGravity();
+        this.correctBottom();
       }
-    };
-
-    Shape.prototype.draw = function() {
-      Kona.Canvas.highlightColumn(this.position.x);
-      Kona.Canvas.highlightColumn(this.right());
       return Kona.Canvas.ctx.fillRect(this.position.x, this.position.y, this.box.width, this.box.height);
     };
 
@@ -1096,11 +1126,9 @@ Kona.ready(function() {
         return shape.stop('dy');
     }
   };
-  tiles = [[0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3], [1, 0, 0, 2, 0, 0, 3, 2, 3, 0, 2], [3, 0, 2, 3, 1, 0, 0, 1, 2, 0, 1]];
+  tiles = [[0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 1], [1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 2], [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3], [1, 0, 0, 2, 0, 0, 3, 2, 3, 0, 2], [3, 2, 1, 3, 1, 0, 0, 1, 2, 0, 1]];
   Kona.TileManager.buildTiles('level-1', tiles);
-  Kona.Engine.start({
+  return Kona.Engine.start({
     id: 'canvas'
   });
-  music = new Kona.Sound('level1_music.ogg');
-  return music.play();
 });

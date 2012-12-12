@@ -66,6 +66,17 @@ class Kona.Entity
   # ---------------------
   # Collision detection
   # ---------------------
+
+
+  # Collisions need to be detected and resolved AFTER you retrieve the user input and apply all the transformations to the object.
+  # So, for instance, your board would have a bounding box equal to the board width and height.
+  # To check for a collision with the outer bounds you would ask if your player object is outside the board's bounding box.
+  # If so, then you need to apply transformations to the object's x and y coordinates so that it is inside the box.
+  # The main conceptual point, I suppose, is that you shouldn't be checking for collisions as a precondition for user input.
+  # Instead, you should be checking for collisions as a result of user input, and then applying transformations to resolve it.
+
+
+
   inRowSpace: (e) ->
     # To collide with a tile from the left or right, you must be in its row
     @futureBottom() > e.top() and @futureTop() < e.bottom()
@@ -76,9 +87,9 @@ class Kona.Entity
 
 
   eachSolidTile: (fxn) =>
-    for col in Kona.TileManager.columnsFor(@)
+    for col in Kona.TileManager.columnsFor(@) # TODO rowsFor(@)
       for tile in col
-        if tile.solid then fxn(tile)
+        fxn(tile) if tile.solid
 
 
   # Loop over solid neighbor tiles and determine whether or not a collision occurs
@@ -112,3 +123,17 @@ class Kona.Entity
   bottomCollision: ->
     return @isCollision (tile) =>
       @top() <= tile.top() and @futureBottom() >= tile.top() and @inColumnSpace(tile)
+
+
+
+  # ---------------------
+  # Collision correction
+  # ---------------------
+  # Resolve collisions after getting user input and applying transformations to entity
+  correctLeft: -> @position.x += 1 while @leftCollision()
+
+  correctRight: -> @position.x -= 1 while @rightCollision()
+
+  correctTop: -> @position.y += 1 while @topCollision()
+
+  correctBottom: -> @position.y -= 1 while @bottomCollision()
