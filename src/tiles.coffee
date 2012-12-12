@@ -1,12 +1,8 @@
-# Cache of
-#   N = Screen Width/Tile width + 2 in X and
-#   N = Screen Height/Tile height + 2 in Y
-# number of tiles in order to keep the screen full constantly.
-
 Kona.TileManager =
   sceneTilemap: {}
 
-  # Load debugging tiles from a grid configuration
+  # TODO: FOR DEBUGGING
+  # Load test tiles from a grid configuration
   # {
   #   'level-1': [
   #     [1,0,2,3,0,0,1,2,3,1,2],
@@ -59,8 +55,8 @@ Kona.TileManager =
     _.map [start..end], (idx) => @columnFor(idx)
 
 
-  # Return all the rows that an entity spans
   # TODO
+  # Return all the rows that an entity spans
   # rowsFor: (entity) ->
   #   size  = Kona.Tile.tileSize
   #   start = Math.floor(entity.position.y / size) - 1
@@ -88,6 +84,8 @@ class Kona.Tile extends Kona.Entity
       Kona.Canvas.ctx.fillStyle = Kona.Utils.colorFor(@color)
       Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
+  # TODO: FOR DEBUGGING
+  colorName: -> Kona.Utils.colorFor(@color)
 
 
 class Kona.BlankTile extends Kona.Tile
@@ -104,4 +102,5 @@ class Kona.BlankTile extends Kona.Tile
 
   draw: ->
     # Grid for blank tiles
+    # TODO
     Kona.Canvas.ctx.strokeRect(@position.x, @position.y, @box.width, @box.height)

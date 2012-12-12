@@ -2,7 +2,7 @@
 # An entity belongs to a scene.
 
 class Kona.Entity
-  @grav = 5
+  @grav = 10
 
   constructor: (opts={}) ->
     @solid = true
@@ -76,7 +76,8 @@ class Kona.Entity
 
 
   eachSolidTile: (fxn) =>
-    for col in Kona.TileManager.columnsFor(@) # TODO rowsFor(@)
+    # TODO: use rows to avoid computing columns
+    for col in Kona.TileManager.columnsFor(@)
       for tile in col
         fxn(tile) if tile.solid
 
@@ -115,14 +116,11 @@ class Kona.Entity
 
 
   onSurface: =>
-    # console.log "top: #{@position.y}, bottom: #{@bottom()}"
     for col in Kona.TileManager.columnsFor(@)
       for tile in col
-        return true if tile.position.y == @position.y + 1
+        return true if tile.solid && tile.position.y == @bottom() + 1
 
     return false
-
-
 
 
 
@@ -130,10 +128,7 @@ class Kona.Entity
   # Collision correction
   # ---------------------
   # Resolve collisions after getting user input and applying transformations to entity
-  correctLeft: -> @position.x += 1 while @leftCollision()
-
-  correctRight: -> @position.x -= 1 while @rightCollision()
-
-  correctTop: -> @position.y += 1 while @topCollision()
-
+  correctLeft:   -> @position.x += 1 while @leftCollision()
+  correctRight:  -> @position.x -= 1 while @rightCollision()
+  correctTop:    -> @position.y += 1 while @topCollision()
   correctBottom: -> @position.y -= 1 while @bottomCollision()

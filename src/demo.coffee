@@ -2,7 +2,6 @@
 # in a more real environment. Kept in a single file for manageability
 # during development - no point in splitting things up here.
 
-
 Kona.ready ->
 
   # Debugging methods
@@ -100,7 +99,6 @@ Kona.ready ->
 
 
     jump: ->
-      # TODO: Must be standing on surface to jump
       duration = 175
 
       if @isJumping
@@ -169,14 +167,20 @@ Kona.ready ->
   }
 
 
+
+
+  # SOUND TESTS
+  # -----------------------------------------------------
+
+  # SOUND PLAY
+  # ----------------
   # fire = new Kona.Sound('enemy_fire.ogg')
   # setTimeout ->
   #   fire.play()
   # , 500
-
+  #
   # music = new Kona.Sound('level1_music.ogg')
   # music.play()
-
 
   # MUTE
   # ----------------
@@ -189,7 +193,6 @@ Kona.ready ->
   #   music.toggleMute() # or music.unmute()
   # , 2000
 
-
   # PAUSE
   # ----------------
   # setTimeout ->
@@ -201,13 +204,11 @@ Kona.ready ->
   #   console.log music.isPaused()
   # , 2000
 
-
   # VOLUME MODIFIERS
   # ----------------
   # setInterval ->
   #   music.decreaseVolume()
   # , 100
-
 
   # DURATION ACCESSORS
   # ----------------
