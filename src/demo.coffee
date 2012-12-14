@@ -76,17 +76,16 @@ Kona.ready ->
   #   GAME ENTITIES
   # ----------------------
   # A sample game entity to test rendering and schema loading
-  class Shape extends Kona.Entity
+  class Player extends Kona.Entity
     constructor: (opts={}) ->
+      super(opts)
+      @speed      = 3
       @jumpHeight = 12
       @isJumping  = false
-      super
+      @facing     = 'right'
 
-    # Use the dx/dy attributes to update position, accounting for canvas bounds
     update: ->
-      @position.x += @direction.dx
-      @correctLeft()
-      @correctRight()
+      super
 
       if @isJumping
         @position.y -= @jumpHeight
@@ -97,29 +96,61 @@ Kona.ready ->
 
       @die() if @top() > Kona.Canvas.height
 
-
+    draw: ->
       Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
-
     jump: ->
-      duration = 175
+      duration = 180
 
       if @isJumping
         return false
       else if @onSurface()
         @isJumping = true
+        @position.y -= 20 # TODO
         setTimeout =>
           @isJumping = false
         , duration
 
+
+    fire: ->
+      projDx = if @facing == 'right' then 1 else -1
+      color = Kona.Utils.randomFromTo(1, 3)
+      level.addEntity(new Projectile { x: @right(), y: @top(), width: 20, height: 10, dx: projDx, color: color })
+
+
     die: ->
       setTimeout =>
+        @facing = 'right'
         @setPosition(195, 200)
       , 400
 
 
-  shape = new Shape { x: 220, y: 200, width: 30, height: 60 }
-  level.addEntity(shape)
+
+
+
+  class  Projectile extends Kona.Entity
+    constructor: (opts={}) ->
+      super(opts)
+      @color = opts.color
+      @speed = 7 * @direction.dx
+
+    update: ->
+      super
+      @position.x += @speed
+      @destroy() if @leftCollision() || @rightCollision()
+
+
+    draw: ->
+      Kona.Canvas.safe =>
+        Kona.Canvas.ctx.fillStyle = @colorName()
+        Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
+
+
+
+
+
+  player = new Player { x: 220, y: 200, width: 30, height: 60 }
+  level.addEntity(player)
 
 
 
@@ -133,18 +164,17 @@ Kona.ready ->
   # ----------------------
   #   KEYS
   # ----------------------
-  moveIncrement = 3
-
   Kona.Keys.keydown = (key) ->
     switch key
-      when 'left'  then shape.direction.dx = -moveIncrement
-      when 'right' then shape.direction.dx = moveIncrement
-      when 'up'    then shape.jump()
+      when 'left'  then player.direction.dx = -1
+      when 'right' then player.direction.dx = 1
+      when 'up'    then player.jump()
+      when 'space' then player.fire()
 
   Kona.Keys.keyup = (key) ->
     switch key
-      when 'left', 'right' then shape.stop('dx')
-      when 'up', 'down'    then shape.stop('dy')
+      when 'left', 'right' then player.stop('dx')
+      when 'up', 'down'    then player.stop('dy')
 
 
 

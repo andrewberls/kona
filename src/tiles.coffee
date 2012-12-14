@@ -55,7 +55,7 @@ Kona.TileManager =
     _.map [start..end], (idx) => @columnFor(idx)
 
 
-  # TODO
+  # TODO - IMPLEMENT
   # Return all the rows that an entity spans
   # rowsFor: (entity) ->
   #   size  = Kona.Tile.tileSize
@@ -84,8 +84,6 @@ class Kona.Tile extends Kona.Entity
       Kona.Canvas.ctx.fillStyle = @colorName()
       Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
-  # TODO: FOR DEBUGGING
-  colorName: -> Kona.Utils.colorFor(@color)
 
 
 class Kona.BlankTile extends Kona.Tile
@@ -102,5 +100,5 @@ class Kona.BlankTile extends Kona.Tile
 
   draw: ->
     # Grid for blank tiles
-    # TODO
+    # TODO - FOR DEBUGGING
     # Kona.Canvas.ctx.strokeRect(@position.x, @position.y, @box.width, @box.height)

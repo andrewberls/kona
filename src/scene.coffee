@@ -34,6 +34,12 @@ class Kona.Scene
   addEntity: (entity) ->
     @entities.push(entity)
 
+  removeEntity: (entity) ->
+    for ent, idx in @entities
+      return @entities.splice(idx, 1) if entity == ent
+
+
+
   # TODO: definition schema here is ugly
   #
   # [                                 Schema
@@ -58,5 +64,7 @@ class Kona.Scene
     Kona.Canvas.ctx.drawImage(@background, 0, 0) # Background
     Kona.TileManager.draw(@name)                 # Tiles
     for entity in @entities                      # Game entities
-      entity.update()
-      entity.draw()
+      if entity?
+        entity.update()
+        entity.draw()
+

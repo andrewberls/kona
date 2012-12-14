@@ -5,7 +5,9 @@ class Kona.Entity
   @grav = 8
 
   constructor: (opts={}) ->
-    @solid = true
+    @solid  = true
+    @speed  = 0
+    @facing = ''
 
     @position =
       x: opts.x || 0
@@ -23,10 +25,25 @@ class Kona.Entity
     @sprite = new Image()
     @sprite.src = ''
 
-
-  # Punt if not defined in child class
   update: ->
+    if @direction.dx > 0
+      @facing = 'right'
+    else if @direction.dx < 0
+      @facing = 'left'
+
+    @position.x += @speed * @direction.dx
+    @correctLeft()
+    @correctRight()
+
   draw: ->
+
+
+  destroy: ->
+    Kona.Scenes.currentScene.removeEntity(@)
+
+
+  # TODO: FOR DEBUGGING
+  colorName: -> Kona.Utils.colorFor(@color)
 
 
 
@@ -62,8 +79,9 @@ class Kona.Entity
 
   stop: (axis) ->
     if axis?
-      _.contains(['dx', 'dy'], axis) || throw new Error("Axis #{axis} not recognized")
       @direction[axis] = 0
+    else
+      @direction.dx = @direction.dy = 0
 
 
 

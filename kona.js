@@ -280,6 +280,17 @@ Kona.Scene = (function() {
     return this.entities.push(entity);
   };
 
+  Scene.prototype.removeEntity = function(entity) {
+    var ent, idx, _i, _len, _ref;
+    _ref = this.entities;
+    for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+      ent = _ref[idx];
+      if (entity === ent) {
+        return this.entities.splice(idx, 1);
+      }
+    }
+  };
+
   Scene.prototype.update = function() {};
 
   Scene.prototype.draw = function() {
@@ -291,8 +302,12 @@ Kona.Scene = (function() {
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       entity = _ref[_i];
-      entity.update();
-      _results.push(entity.draw());
+      if (entity != null) {
+        entity.update();
+        _results.push(entity.draw());
+      } else {
+        _results.push(void 0);
+      }
     }
     return _results;
   };
@@ -317,6 +332,8 @@ Kona.Entity = (function() {
     this.eachSolidTile = __bind(this.eachSolidTile, this);
 
     this.solid = true;
+    this.speed = 0;
+    this.facing = '';
     this.position = {
       x: opts.x || 0,
       y: opts.y || 0
@@ -333,9 +350,26 @@ Kona.Entity = (function() {
     this.sprite.src = '';
   }
 
-  Entity.prototype.update = function() {};
+  Entity.prototype.update = function() {
+    if (this.direction.dx > 0) {
+      this.facing = 'right';
+    } else if (this.direction.dx < 0) {
+      this.facing = 'left';
+    }
+    this.position.x += this.speed * this.direction.dx;
+    this.correctLeft();
+    return this.correctRight();
+  };
 
   Entity.prototype.draw = function() {};
+
+  Entity.prototype.destroy = function() {
+    return Kona.Scenes.currentScene.removeEntity(this);
+  };
+
+  Entity.prototype.colorName = function() {
+    return Kona.Utils.colorFor(this.color);
+  };
 
   Entity.prototype.top = function() {
     return this.position.y;
@@ -388,10 +422,9 @@ Kona.Entity = (function() {
 
   Entity.prototype.stop = function(axis) {
     if (axis != null) {
-      _.contains(['dx', 'dy'], axis) || (function() {
-        throw new Error("Axis " + axis + " not recognized");
-      })();
       return this.direction[axis] = 0;
+    } else {
+      return this.direction.dx = this.direction.dy = 0;
     }
   };
 
@@ -627,10 +660,6 @@ Kona.Tile = (function(_super) {
       Kona.Canvas.ctx.fillStyle = _this.colorName();
       return Kona.Canvas.ctx.fillRect(_this.position.x, _this.position.y, _this.box.width, _this.box.height);
     });
-  };
-
-  Tile.prototype.colorName = function() {
-    return Kona.Utils.colorFor(this.color);
   };
 
   return Tile;
@@ -1066,7 +1095,7 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Kona.ready(function() {
-  var Shape, level, moveIncrement, shape, tiles;
+  var Player, Projectile, level, player, tiles;
   Kona.beat = function() {
     return console.log("Heartbeat!");
   };
@@ -1084,23 +1113,23 @@ Kona.ready(function() {
     name: 'level-1',
     active: true
   });
-  Shape = (function(_super) {
+  Player = (function(_super) {
 
-    __extends(Shape, _super);
+    __extends(Player, _super);
 
-    function Shape(opts) {
+    function Player(opts) {
       if (opts == null) {
         opts = {};
       }
+      Player.__super__.constructor.call(this, opts);
+      this.speed = 3;
       this.jumpHeight = 12;
       this.isJumping = false;
-      Shape.__super__.constructor.apply(this, arguments);
+      this.facing = 'right';
     }
 
-    Shape.prototype.update = function() {
-      this.position.x += this.direction.dx;
-      this.correctLeft();
-      this.correctRight();
+    Player.prototype.update = function() {
+      Player.__super__.update.apply(this, arguments);
       if (this.isJumping) {
         this.position.y -= this.jumpHeight;
         this.correctTop();
@@ -1109,61 +1138,113 @@ Kona.ready(function() {
         this.correctBottom();
       }
       if (this.top() > Kona.Canvas.height) {
-        this.die();
+        return this.die();
       }
+    };
+
+    Player.prototype.draw = function() {
       return Kona.Canvas.ctx.fillRect(this.position.x, this.position.y, this.box.width, this.box.height);
     };
 
-    Shape.prototype.jump = function() {
+    Player.prototype.jump = function() {
       var duration,
         _this = this;
-      duration = 175;
+      duration = 180;
       if (this.isJumping) {
         return false;
       } else if (this.onSurface()) {
         this.isJumping = true;
+        this.position.y -= 20;
         return setTimeout(function() {
           return _this.isJumping = false;
         }, duration);
       }
     };
 
-    Shape.prototype.die = function() {
+    Player.prototype.fire = function() {
+      var color, projDx;
+      projDx = this.facing === 'right' ? 1 : -1;
+      color = Kona.Utils.randomFromTo(1, 3);
+      return level.addEntity(new Projectile({
+        x: this.right(),
+        y: this.top(),
+        width: 20,
+        height: 10,
+        dx: projDx,
+        color: color
+      }));
+    };
+
+    Player.prototype.die = function() {
       var _this = this;
       return setTimeout(function() {
+        _this.facing = 'right';
         return _this.setPosition(195, 200);
       }, 400);
     };
 
-    return Shape;
+    return Player;
 
   })(Kona.Entity);
-  shape = new Shape({
+  Projectile = (function(_super) {
+
+    __extends(Projectile, _super);
+
+    function Projectile(opts) {
+      if (opts == null) {
+        opts = {};
+      }
+      Projectile.__super__.constructor.call(this, opts);
+      this.color = opts.color;
+      this.speed = 7 * this.direction.dx;
+    }
+
+    Projectile.prototype.update = function() {
+      Projectile.__super__.update.apply(this, arguments);
+      this.position.x += this.speed;
+      if (this.leftCollision() || this.rightCollision()) {
+        return this.destroy();
+      }
+    };
+
+    Projectile.prototype.draw = function() {
+      var _this = this;
+      return Kona.Canvas.safe(function() {
+        Kona.Canvas.ctx.fillStyle = _this.colorName();
+        return Kona.Canvas.ctx.fillRect(_this.position.x, _this.position.y, _this.box.width, _this.box.height);
+      });
+    };
+
+    return Projectile;
+
+  })(Kona.Entity);
+  player = new Player({
     x: 220,
     y: 200,
     width: 30,
     height: 60
   });
-  level.addEntity(shape);
-  moveIncrement = 3;
+  level.addEntity(player);
   Kona.Keys.keydown = function(key) {
     switch (key) {
       case 'left':
-        return shape.direction.dx = -moveIncrement;
+        return player.direction.dx = -1;
       case 'right':
-        return shape.direction.dx = moveIncrement;
+        return player.direction.dx = 1;
       case 'up':
-        return shape.jump();
+        return player.jump();
+      case 'space':
+        return player.fire();
     }
   };
   Kona.Keys.keyup = function(key) {
     switch (key) {
       case 'left':
       case 'right':
-        return shape.stop('dx');
+        return player.stop('dx');
       case 'up':
       case 'down':
-        return shape.stop('dy');
+        return player.stop('dy');
     }
   };
   tiles = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 1], [1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 2], [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3], [1, 0, 0, 2, 0, 0, 3, 2, 3, 0, 2], [3, 2, 1, 3, 1, 0, 0, 1, 2, 0, 1]];
