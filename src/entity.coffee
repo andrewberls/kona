@@ -18,7 +18,7 @@ class Kona.Entity
       dy: opts.dy || 0
 
     @box =
-      width:  opts.width   || 0
+      width:  opts.width  || 0
       height: opts.height || 0
 
     # TODO: Kona.Sprite
@@ -37,13 +37,8 @@ class Kona.Entity
 
   draw: ->
 
-
   destroy: ->
     Kona.Scenes.currentScene.removeEntity(@)
-
-
-  # TODO: FOR DEBUGGING
-  colorName: -> Kona.Utils.colorFor(@color)
 
 
 
@@ -71,7 +66,9 @@ class Kona.Entity
   movingLeft:  -> @direction.dx < 0
   movingRight: -> @direction.dx > 0
 
-  addGravity: -> @position.y += Kona.Entity.grav
+  addGravity: ->
+    @position.y += Kona.Entity.grav
+    @correctBottom()
 
   setPosition: (x, y) ->
     @position.x = x
@@ -97,18 +94,27 @@ class Kona.Entity
     @futureLeft() < e.right() and @futureRight() > e.left()
 
 
-  eachSolidTile: (fxn) =>
-    # TODO: use rows to avoid computing columns
+  eachSolidEntity: (fxn) =>
+    # TODO: Remove duplication between this and onSurface()
+    # TODO: Use rows to avoid computing columns
+    # TODO: Be smarter about computing which entities to test
+    # TODO: Shouldn't be getting undefined tiles here
+
     for col in Kona.TileManager.columnsFor(@)
       for tile in col
-        fxn(tile) if tile.solid
+        fxn(tile) if tile? && tile.solid
+
+    # All scene entities excluding self
+    entities = _.reject Kona.Scenes.currentScene.entities, (ent) => ent == @
+    for ent in entities
+      fxn(ent) if ent? && ent.solid?
 
 
   # Loop over solid neighbor tiles and determine whether or not a collision occurs
   # based on a condition function. Makes left/right/top/bottom detection more generic.
   isCollision: (checkFxn) ->
     collision = false
-    @eachSolidTile (tile) =>
+    @eachSolidEntity (tile) =>
       collision = true if checkFxn(tile)
     collision
 
@@ -141,6 +147,11 @@ class Kona.Entity
     for col in Kona.TileManager.columnsFor(@)
       for tile in col
         return true if tile.solid && tile.position.y == @bottom() + 1
+
+    # All scene entities excluding self
+    entities = _.reject Kona.Scenes.currentScene.entities, (ent) => ent == @
+    for ent in entities
+      return true if ent.solid && ent.position.y == @bottom() + 1
 
     return false
 

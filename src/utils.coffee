@@ -1,4 +1,5 @@
 Kona.Utils =
+
   # Find an object in a list of objects based on the value of one of its keys
   # Returns the first matching object
   # Ex:
@@ -14,9 +15,9 @@ Kona.Utils =
     Math.floor(Math.random() * (to - from + 1) + from)
 
 
-
-
-  # TODO: FOR DEBUGGING
+  # ----------------------
+  #   DEBUGGING UTILS
+  # ----------------------
   # Print a 2d array in a grid format
   # ex: printGrid [[1,2], [3,4]]
   #   [
@@ -35,10 +36,16 @@ Kona.Utils =
 
     console.log "#{output}]"
 
-  # TODO: FOR DEBUGGING
   colorFor: (num) ->
     switch num
       when 1 then 'red'
       when 2 then 'orange'
       when 3 then 'blue'
       else 'blank'
+
+
+# Do something only once (useful for debugging within run loops).
+# Ex:
+#   while true
+#     once -> console.log "This will only be logged once"
+window._k_once = 0; window.once = (fxn) -> fxn() if window._k_once == 0; window._k_once++

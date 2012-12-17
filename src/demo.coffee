@@ -4,85 +4,36 @@
 
 Kona.ready ->
 
-  # Debugging methods
-  # Is a section of code being called?
-  Kona.beat = -> console.log "Heartbeat!"
-
-  # Do something only once (useful for debugging within run loops).
-  # Ex:
-  #   while true
-  #     once -> console.log "This will only be logged once"
-  window._k_once = 0; window.once = (fxn) -> fxn() if window._k_once == 0; window._k_once++
-
-
-
-
-  Kona.Canvas.init {
-    id: 'canvas'
-  }
-
-
+  Kona.Canvas.init { id: 'canvas' }
 
   # ----------------------
   #   SCENES
   # ----------------------
-  # menu = new Kona.Scene {
-  #   name: 'menu-1'
-  #   background: 'lvl1.jpg'
-  #   active: true
-  # }
-
   level = new Kona.Scene {
     name: 'level-1'
-    # background: 'lvl2.jpg',
+    background: 'lvl2.jpg',
     active: true
   }
-
-
-
-
-
-
-
-
-
-
-  # ----------------------
-  #   LAYOUT
-  # ----------------------
-  # TODO: how to bind methods on entities defined with the schema loader?
-  # Maybe schema loader is only for things like blocks, etc?
-
-  # level.setLayout [
-  #   {
-  #     entity: Ball,
-  #     layout: [
-  #       {x: 10, y:20, width: 75, height: 50},
-  #       {x: 75, y: 100, width: 75, height: 50}
-  #     ]
-  #   }
-  # ]
-
-
-
-
-
-
-
 
 
 
   # ----------------------
   #   GAME ENTITIES
   # ----------------------
-  # A sample game entity to test rendering and schema loading
+
+  # PLAYER
+  # ----------------
   class Player extends Kona.Entity
     constructor: (opts={}) ->
       super(opts)
+
+      @color = opts.color # TODO: FOR DEBUGGING
+
       @speed      = 3
       @jumpHeight = 12
       @isJumping  = false
       @facing     = 'right'
+      @canFire    = true
 
     update: ->
       super
@@ -92,30 +43,39 @@ Kona.ready ->
         @correctTop()
       else
         @addGravity()
-        @correctBottom()
 
       @die() if @top() > Kona.Canvas.height
 
     draw: ->
-      Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
+      Kona.Canvas.safe =>
+        Kona.Canvas.ctx.fillStyle = @color
+        Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
     jump: ->
-      duration = 180
+      jumpDuration = 180
 
       if @isJumping
         return false
       else if @onSurface()
         @isJumping = true
-        @position.y -= 20 # TODO
+        @position.y -= 20 # Small boost at start
         setTimeout =>
           @isJumping = false
-        , duration
+        , jumpDuration
 
 
     fire: ->
-      projDx = if @facing == 'right' then 1 else -1
-      color = Kona.Utils.randomFromTo(1, 3)
-      level.addEntity(new Projectile { x: @right(), y: @top(), width: 20, height: 10, dx: projDx, color: color })
+      if @canFire
+        projDx = if @facing == 'right' then 1 else -1
+        startX = if @facing == 'right' then @right() + 1 else @left() - 20
+        startY = @top() + 15
+        color  = ['red','orange','blue'][Kona.Utils.randomFromTo(0, 2)]
+        level.addEntity(new Projectile { x: startX, y: startY, width: 20, height: 10, dx: projDx, color: color })
+
+        @canFire = false
+        setTimeout =>
+          @canFire = true
+        , 150
 
 
     die: ->
@@ -125,39 +85,51 @@ Kona.ready ->
       , 400
 
 
-
-
-
-  class  Projectile extends Kona.Entity
+  # PROJECTILE
+  # ----------------
+  class Projectile extends Kona.Entity
     constructor: (opts={}) ->
       super(opts)
       @color = opts.color
-      @speed = 7 * @direction.dx
+      @speed = 7
 
     update: ->
       super
-      @position.x += @speed
+      @position.x += @speed * @direction.dx
       @destroy() if @leftCollision() || @rightCollision()
-
+      @destroy() if @position.x < 0 || @position.x > Kona.Canvas.width
 
     draw: ->
       Kona.Canvas.safe =>
-        Kona.Canvas.ctx.fillStyle = @colorName()
+        Kona.Canvas.ctx.fillStyle = @color
+        Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
+
+
+  # ENEMY
+  # ----------------
+  class Enemy extends Kona.Entity
+    constructor: (opts={}) ->
+      super(opts)
+      @color = opts.color
+      @speed = 2
+
+    update: ->
+      super
+      @position.x += @speed * @direction.dx
+      @addGravity()
+
+    draw: ->
+      Kona.Canvas.safe =>
+        Kona.Canvas.ctx.fillStyle = @color
         Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
 
 
+  player = new Player { x: 220, y: 200, width: 30, height: 60, color: 'black' }
+  enemy  = new Enemy { x: 400, y: 250, width: 30, height: 60, color: '#00ffcc' }
 
-
-  player = new Player { x: 220, y: 200, width: 30, height: 60 }
+  level.addEntity(enemy)
   level.addEntity(player)
-
-
-
-
-
-
-
 
 
 
@@ -178,10 +150,9 @@ Kona.ready ->
 
 
 
-
-
-
-
+  # ----------------------
+  #   LAYOUT
+  # ----------------------
   tiles = [
     [0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0],
@@ -208,7 +179,7 @@ Kona.ready ->
 
 
   # SOUND TESTS
-  # -----------------------------------------------------
+  # --------------------------------------------
 
   # SOUND PLAY
   # ----------------

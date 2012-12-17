@@ -21,7 +21,7 @@ Kona.TileManager =
         if color == 0
           new Kona.BlankTile { x: x, y: y }
         else
-          new Kona.Tile { color: color, x: x, y: y }
+          new Kona.Tile { color: Kona.Utils.colorFor(color), x: x, y: y }
 
         rowBuffer.push tile
         x += Kona.Tile.tileSize
@@ -44,7 +44,8 @@ Kona.TileManager =
 
 
   columnFor: (idx) ->
-    _.map @currentTiles(), (row) -> row[idx]
+    _.map @currentTiles(), (row) ->
+      row[idx] if row[idx]?
 
 
   # Return all the columns that an entity spans
@@ -75,13 +76,13 @@ class Kona.Tile extends Kona.Entity
       width:  @size
       height: @size
 
-    @color = opts.color || -1
+    @color = opts.color || 'black'
 
-  toString: -> "<Tile @x=#{@position.x}, @y=#{@position.y}, @color=#{Kona.Utils.colorFor(@color)}>"
+  toString: -> "<Tile @x=#{@position.x}, @y=#{@position.y}, @color=#{@color}>"
 
   draw: ->
     Kona.Canvas.safe =>
-      Kona.Canvas.ctx.fillStyle = @colorName()
+      Kona.Canvas.ctx.fillStyle = @color
       Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
 
