@@ -22,9 +22,7 @@ FILENAMES = [
   'entity',
   'tiles',
   'keys',
-  'sound',
-
-  'demo'
+  'sound'
 ]
 
 # Accepts an array of filenames and an optional
@@ -106,4 +104,14 @@ task :clean do
   end
 
   puts "Removed #{count} files."
+end
+
+
+# Build the demo
+desc 'Build the demo'
+task :demo do
+  files = [
+    'demo/demo.coffee'
+  ]
+  `coffee -b --output demo --compile #{files.join}`
 end

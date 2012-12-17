@@ -164,7 +164,7 @@ Kona.ready ->
         Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
 
-  player = new Player { x: 500, y: 200, width: 30, height: 60, color: 'black' }
+  player = new Player { x: 200, y: 200, width: 30, height: 60, color: 'black' }
   enemy  = new Enemy { x: 400, y: 250, width: 30, height: 60, color: '#00ffcc' }
 
   level1_1.addEntity(enemy)
