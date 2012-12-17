@@ -18,7 +18,7 @@ FILENAMES = [
   'utils',
   'canvas',
   'engine',
-  'scene',
+  'scenes',
   'entity',
   'tiles',
   'keys',
