@@ -161,7 +161,7 @@ class Kona.Entity
   # Collision correction
   # ---------------------
   # Resolve collisions after getting user input and applying transformations to entity
-  correctLeft:   -> @position.x += 1 while @leftCollision()
+  correctLeft:   -> @position.x += 1 while @leftCollision() || @left() < 0
   correctRight:  -> @position.x -= 1 while @rightCollision()
   correctTop:    -> @position.y += 1 while @topCollision()
   correctBottom: -> @position.y -= 1 while @bottomCollision()

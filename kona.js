@@ -500,7 +500,7 @@ Kona.Entity = (function() {
   Entity.prototype.correctLeft = function() {
     var _results;
     _results = [];
-    while (this.leftCollision()) {
+    while (this.leftCollision() || this.left() < 0) {
       _results.push(this.position.x += 1);
     }
     return _results;
@@ -1080,15 +1080,21 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Kona.ready(function() {
-  var Enemy, Player, Projectile, enemy, level, player, tiles;
+  var Enemy, Player, Projectile, enemy, level1_1, level1_2, player;
   Kona.Canvas.init({
     id: 'canvas'
   });
-  level = new Kona.Scene({
-    name: 'level-1',
+  level1_1 = new Kona.Scene({
+    name: 'level-1:s1',
     background: 'lvl2.jpg',
     active: true
   });
+  level1_2 = new Kona.Scene({
+    name: 'level-1:s2',
+    background: 'lvl2.jpg'
+  });
+  Kona.TileManager.buildTiles('level-1:s1', [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0], [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 0, 2, 0, 0, 3, 2, 3, 0, 2], [3, 2, 1, 3, 1, 0, 0, 1, 2, 0, 1]]);
+  Kona.TileManager.buildTiles('level-1:s2', [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0], [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0], [3, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1], [2, 3, 0, 1, 1, 1, 1, 1, 1, 1, 1]]);
   Player = (function(_super) {
 
     __extends(Player, _super);
@@ -1115,7 +1121,12 @@ Kona.ready(function() {
         this.addGravity();
       }
       if (this.top() > Kona.Canvas.height) {
-        return this.die();
+        this.die();
+      }
+      if (this.right() > Kona.Canvas.width - 20) {
+        Kona.Scenes.setCurrent('level-1:s2');
+        level1_2.addEntity(player);
+        return player.setPosition(0, this.top());
       }
     };
 
@@ -1150,7 +1161,7 @@ Kona.ready(function() {
         startX = this.facing === 'right' ? this.right() + 1 : this.left() - 30;
         startY = this.top() + 15;
         color = ['red', 'orange', 'blue'][Kona.Utils.randomFromTo(0, 2)];
-        level.addEntity(new Projectile({
+        Kona.Scenes.currentScene.addEntity(new Projectile({
           x: startX,
           y: startY,
           width: 20,
@@ -1253,7 +1264,7 @@ Kona.ready(function() {
 
   })(Kona.Entity);
   player = new Player({
-    x: 220,
+    x: 500,
     y: 200,
     width: 30,
     height: 60,
@@ -1266,8 +1277,8 @@ Kona.ready(function() {
     height: 60,
     color: '#00ffcc'
   });
-  level.addEntity(enemy);
-  level.addEntity(player);
+  level1_1.addEntity(enemy);
+  level1_1.addEntity(player);
   Kona.Keys.keydown = function(key) {
     switch (key) {
       case 'left':
@@ -1290,8 +1301,6 @@ Kona.ready(function() {
         return player.stop('dy');
     }
   };
-  tiles = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 1], [1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 2], [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3], [1, 0, 0, 2, 0, 0, 3, 2, 3, 0, 2], [3, 2, 1, 3, 1, 0, 0, 1, 2, 0, 1]];
-  Kona.TileManager.buildTiles('level-1', tiles);
   return Kona.Engine.start({
     id: 'canvas'
   });

@@ -9,11 +9,37 @@ Kona.ready ->
   # ----------------------
   #   SCENES
   # ----------------------
-  level = new Kona.Scene {
-    name: 'level-1'
-    background: 'lvl2.jpg',
+  level1_1 = new Kona.Scene {
+    name: 'level-1:s1'
+    background: 'lvl2.jpg'
     active: true
   }
+  level1_2 = new Kona.Scene {
+    name: 'level-1:s2'
+    background: 'lvl2.jpg'
+  }
+
+  Kona.TileManager.buildTiles 'level-1:s1', [
+    [0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0],
+    [1,3,0,0,0,0,0,0,0,0,0],
+    [2,0,0,0,0,0,0,0,0,0,0],
+    [1,0,0,2,0,0,3,2,3,0,2],
+    [3,2,1,3,1,0,0,1,2,0,1]
+  ]
+
+  Kona.TileManager.buildTiles 'level-1:s2', [
+    [0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,1,1,1,0,0,0],
+    [0,0,0,0,1,1,1,1,0,0,0],
+    [3,1,0,1,1,1,1,1,1,1,1],
+    [2,3,0,1,1,1,1,1,1,1,1]
+  ]
 
 
 
@@ -46,6 +72,12 @@ Kona.ready ->
 
       @die() if @top() > Kona.Canvas.height
 
+      # Transition to next screen
+      if @right() > Kona.Canvas.width - 20
+        Kona.Scenes.setCurrent('level-1:s2')
+        level1_2.addEntity(player)
+        player.setPosition(0, @top())
+
     draw: ->
       Kona.Canvas.safe =>
         Kona.Canvas.ctx.fillStyle = @color
@@ -70,7 +102,7 @@ Kona.ready ->
         startX = if @facing == 'right' then @right() + 1 else @left() - 30
         startY = @top() + 15
         color  = ['red','orange','blue'][Kona.Utils.randomFromTo(0, 2)]
-        level.addEntity(new Projectile { x: startX, y: startY, width: 20, height: 10, dx: projDx, color: color })
+        Kona.Scenes.currentScene.addEntity(new Projectile { x: startX, y: startY, width: 20, height: 10, dx: projDx, color: color })
 
         @canFire = false
         setTimeout =>
@@ -132,12 +164,11 @@ Kona.ready ->
         Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
 
-
-  player = new Player { x: 220, y: 200, width: 30, height: 60, color: 'black' }
+  player = new Player { x: 500, y: 200, width: 30, height: 60, color: 'black' }
   enemy  = new Enemy { x: 400, y: 250, width: 30, height: 60, color: '#00ffcc' }
 
-  level.addEntity(enemy)
-  level.addEntity(player)
+  level1_1.addEntity(enemy)
+  level1_1.addEntity(player)
 
 
 
@@ -159,76 +190,9 @@ Kona.ready ->
 
 
   # ----------------------
-  #   LAYOUT
-  # ----------------------
-  tiles = [
-    [0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,2,3,1],
-    [1,3,0,0,0,0,0,0,0,0,2],
-    [2,0,0,0,0,0,0,0,0,0,3],
-    [1,0,0,2,0,0,3,2,3,0,2],
-    [3,2,1,3,1,0,0,1,2,0,1]
-  ]
-  Kona.TileManager.buildTiles('level-1', tiles)
-
-
-
-  # ----------------------
   #   GAME START
   # ----------------------
   # Start the engine! The game is running after this point.
   Kona.Engine.start {
     id: 'canvas'
   }
-
-
-
-
-  # SOUND TESTS
-  # --------------------------------------------
-
-  # SOUND PLAY
-  # ----------------
-  # fire = new Kona.Sound('enemy_fire.ogg')
-  # setTimeout ->
-  #   fire.play()
-  # , 500
-  #
-  # music = new Kona.Sound('level1_music.ogg')
-  # music.play()
-
-  # MUTE
-  # ----------------
-  # setTimeout ->
-  #   console.log "muting"
-  #   music.toggleMute() # or music.mute()
-  # , 1000
-  # setTimeout ->
-  #   console.log "unmuting"
-  #   music.toggleMute() # or music.unmute()
-  # , 2000
-
-  # PAUSE
-  # ----------------
-  # setTimeout ->
-  #   music.pause()
-  #   console.log music.isPaused()
-  # , 1000
-  # setTimeout ->
-  #   music.play()
-  #   console.log music.isPaused()
-  # , 2000
-
-  # VOLUME MODIFIERS
-  # ----------------
-  # setInterval ->
-  #   music.decreaseVolume()
-  # , 100
-
-  # DURATION ACCESSORS
-  # ----------------
-  # setInterval ->
-  #   Kona.debug music.getTime()
-  # , 500
