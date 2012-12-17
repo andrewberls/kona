@@ -1147,7 +1147,7 @@ Kona.ready(function() {
         _this = this;
       if (this.canFire) {
         projDx = this.facing === 'right' ? 1 : -1;
-        startX = this.facing === 'right' ? this.right() + 1 : this.left() - 20;
+        startX = this.facing === 'right' ? this.right() + 1 : this.left() - 30;
         startY = this.top() + 15;
         color = ['red', 'orange', 'blue'][Kona.Utils.randomFromTo(0, 2)];
         level.addEntity(new Projectile({
@@ -1190,9 +1190,20 @@ Kona.ready(function() {
     }
 
     Projectile.prototype.update = function() {
+      var ent, entities, _i, _len,
+        _this = this;
       Projectile.__super__.update.apply(this, arguments);
       this.position.x += this.speed * this.direction.dx;
       if (this.leftCollision() || this.rightCollision()) {
+        entities = _.reject(Kona.Scenes.currentScene.entities, function(ent) {
+          return ent === _this;
+        });
+        for (_i = 0, _len = entities.length; _i < _len; _i++) {
+          ent = entities[_i];
+          if (this.right() > ent.left() && this.left() < ent.right() || this.left() < ent.right() && this.right() > ent.left()) {
+            ent.destroy();
+          }
+        }
         this.destroy();
       }
       if (this.position.x < 0 || this.position.x > Kona.Canvas.width) {

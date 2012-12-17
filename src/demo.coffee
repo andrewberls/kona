@@ -67,7 +67,7 @@ Kona.ready ->
     fire: ->
       if @canFire
         projDx = if @facing == 'right' then 1 else -1
-        startX = if @facing == 'right' then @right() + 1 else @left() - 20
+        startX = if @facing == 'right' then @right() + 1 else @left() - 30
         startY = @top() + 15
         color  = ['red','orange','blue'][Kona.Utils.randomFromTo(0, 2)]
         level.addEntity(new Projectile { x: startX, y: startY, width: 20, height: 10, dx: projDx, color: color })
@@ -96,7 +96,15 @@ Kona.ready ->
     update: ->
       super
       @position.x += @speed * @direction.dx
-      @destroy() if @leftCollision() || @rightCollision()
+      if @leftCollision() || @rightCollision()
+        # Detect collisions with other entities
+        # TODO: this is hacky
+        entities = _.reject Kona.Scenes.currentScene.entities, (ent) => ent == @
+        for ent in entities
+          if @right() > ent.left()  && @left()  < ent.right() ||
+             @left()  < ent.right() && @right() > ent.left()
+            ent.destroy()
+        @destroy()
       @destroy() if @position.x < 0 || @position.x > Kona.Canvas.width
 
     draw: ->
