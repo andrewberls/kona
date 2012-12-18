@@ -1,6 +1,4 @@
 # Sample code for a 'game', to test the various engine functions
-# in a more real environment. Kept in a single file for manageability
-# during development - no point in splitting things up here.
 
 Kona.ready ->
 
@@ -10,16 +8,16 @@ Kona.ready ->
   #   SCENES
   # ----------------------
   level1_1 = new Kona.Scene {
-    name: 'level-1:s1'
-    background: 'lvl2.jpg'
+    name: 'lvl1:s1',
+    background: 'lvl2.jpg',
     active: true
   }
   level1_2 = new Kona.Scene {
-    name: 'level-1:s2'
+    name: 'lvl1:s2',
     background: 'lvl2.jpg'
   }
 
-  Kona.TileManager.buildTiles 'level-1:s1', [
+  Kona.TileManager.buildTiles 'lvl1:s1', [
     [0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0],
@@ -30,7 +28,7 @@ Kona.ready ->
     [3,2,1,3,1,0,0,1,2,0,1]
   ]
 
-  Kona.TileManager.buildTiles 'level-1:s2', [
+  Kona.TileManager.buildTiles 'lvl1:s2', [
     [0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0],
@@ -74,7 +72,8 @@ Kona.ready ->
 
       # Transition to next screen
       if @right() > Kona.Canvas.width - 20
-        Kona.Scenes.setCurrent('level-1:s2')
+        # Kona.Scenes.setCurrent('lvl1:s2')
+        Kona.Scenes.nextScene()
         level1_2.addEntity(player)
         player.setPosition(0, @top())
 
@@ -117,6 +116,8 @@ Kona.ready ->
       , 400
 
 
+
+
   # PROJECTILE
   # ----------------
   class Projectile extends Kona.Entity
@@ -145,6 +146,8 @@ Kona.ready ->
         Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
 
+
+
   # ENEMY
   # ----------------
   class Enemy extends Kona.Entity
@@ -164,7 +167,9 @@ Kona.ready ->
         Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
 
-  player = new Player { x: 200, y: 200, width: 30, height: 60, color: 'black' }
+
+
+  player = new Player { x: 500, y: 200, width: 30, height: 60, color: 'black' }
   enemy  = new Enemy { x: 400, y: 250, width: 30, height: 60, color: '#00ffcc' }
 
   level1_1.addEntity(enemy)
@@ -193,6 +198,4 @@ Kona.ready ->
   #   GAME START
   # ----------------------
   # Start the engine! The game is running after this point.
-  Kona.Engine.start {
-    id: 'canvas'
-  }
+  Kona.Engine.start()

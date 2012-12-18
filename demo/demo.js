@@ -8,16 +8,16 @@ Kona.ready(function() {
     id: 'canvas'
   });
   level1_1 = new Kona.Scene({
-    name: 'level-1:s1',
+    name: 'lvl1:s1',
     background: 'lvl2.jpg',
     active: true
   });
   level1_2 = new Kona.Scene({
-    name: 'level-1:s2',
+    name: 'lvl1:s2',
     background: 'lvl2.jpg'
   });
-  Kona.TileManager.buildTiles('level-1:s1', [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0], [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 0, 2, 0, 0, 3, 2, 3, 0, 2], [3, 2, 1, 3, 1, 0, 0, 1, 2, 0, 1]]);
-  Kona.TileManager.buildTiles('level-1:s2', [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0], [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0], [3, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1], [2, 3, 0, 1, 1, 1, 1, 1, 1, 1, 1]]);
+  Kona.TileManager.buildTiles('lvl1:s1', [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0], [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 0, 2, 0, 0, 3, 2, 3, 0, 2], [3, 2, 1, 3, 1, 0, 0, 1, 2, 0, 1]]);
+  Kona.TileManager.buildTiles('lvl1:s2', [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0], [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0], [3, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1], [2, 3, 0, 1, 1, 1, 1, 1, 1, 1, 1]]);
   Player = (function(_super) {
 
     __extends(Player, _super);
@@ -47,7 +47,7 @@ Kona.ready(function() {
         this.die();
       }
       if (this.right() > Kona.Canvas.width - 20) {
-        Kona.Scenes.setCurrent('level-1:s2');
+        Kona.Scenes.nextScene();
         level1_2.addEntity(player);
         return player.setPosition(0, this.top());
       }
@@ -187,7 +187,7 @@ Kona.ready(function() {
 
   })(Kona.Entity);
   player = new Player({
-    x: 200,
+    x: 500,
     y: 200,
     width: 30,
     height: 60,
@@ -224,7 +224,5 @@ Kona.ready(function() {
         return player.stop('dy');
     }
   };
-  return Kona.Engine.start({
-    id: 'canvas'
-  });
+  return Kona.Engine.start();
 });

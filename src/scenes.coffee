@@ -5,7 +5,7 @@
 
 
 Kona.Scenes =
-  _scenes: []
+  scenes: []
 
   currentScene: {}
 
@@ -16,9 +16,19 @@ Kona.Scenes =
   # Ex: Kona.Scenes.setCurrent('level-2')
   setCurrent: (sceneName) ->
     @currentScene.active = false
-    @currentScene = Kona.Utils.findByKey(@_scenes, 'name', sceneName)
+    newScene = Kona.Utils.find(@scenes, { name: sceneName }) or throw new Error("Couldn't find scene: #{sceneName}")
+    @currentScene = newScene
     @currentScene.active = true
 
+  # Advance to the next scene for a level, assuming the name conforms to the format
+  # lvl<levelNum>:s<sceneNum>
+  # Ex: Level 1, Scene 2 -> 'lvl1:s2'
+  nextScene: ->
+    ids      = @currentScene.name.split(':')
+    levelId  = ids[0]
+    sceneId  = ids[1]
+    sceneNum = parseInt(sceneId.replace('s', '')) + 1
+    @setCurrent("#{levelId}:s#{sceneNum}")
 
 
 class Kona.Scene
@@ -29,7 +39,7 @@ class Kona.Scene
     @background.src = options.background || ''
     @entities       = []
 
-    Kona.Scenes._scenes.push(@)
+    Kona.Scenes.scenes.push(@)
 
   addEntity: (entity) ->
     @entities.push(entity)

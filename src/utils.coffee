@@ -1,14 +1,13 @@
 Kona.Utils =
 
-  # Find an object in a list of objects based on the value of one of its keys
-  # Returns the first matching object
+  # A thin wrapper for _.where()
+  # Return the first value containing all of the key-value pairs listed in props
   # Ex:
   #   cars = [ {color: 'red', owner: 'Jon'}, {color: 'green', owner: 'Jane'} ]
-  #   Kona.Utils.findByKey(cars, 'color', 'red')
+  #   Kona.Utils.find(cars, { 'color': 'red' })
   #   => { color: 'red', owner: 'Jon' }
-  findByKey: (list, key, value) ->
-    _.find list, (item) -> item[key] == value
-
+  find: (list, props) ->
+    _.where(list, props)[0]
 
   # Generate a random integer within range (inclusive)
   randomFromTo: (from, to) ->

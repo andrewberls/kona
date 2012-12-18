@@ -8,7 +8,7 @@ Kona.Engine =
 
   start: (opts={}) ->
     @fps = opts.fps || @defaults.fps
-    Kona.Scenes.currentScene = Kona.Utils.findByKey(Kona.Scenes._scenes, 'active', true)
+    Kona.Scenes.currentScene = Kona.Utils.find(Kona.Scenes.scenes, { active: true })
     @run()
 
   run: ->
