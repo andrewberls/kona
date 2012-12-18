@@ -5,6 +5,7 @@ class Kona.Entity
   @grav = 8
 
   constructor: (opts={}) ->
+    @group  = opts.group
     @solid  = true
     @speed  = 0
     @facing = ''
@@ -37,8 +38,8 @@ class Kona.Entity
 
   draw: ->
 
-  destroy: ->
-    Kona.Scenes.currentScene.removeEntity(@)
+  destroy: (name) ->
+    Kona.Scenes.currentScene.removeEntity(@group, @)
 
 
 
@@ -86,72 +87,75 @@ class Kona.Entity
   # Collision detection
   # ---------------------
   inRowSpace: (e) ->
-    # To collide with a tile from the left or right, you must be in its row
+    # To collide with an entity from the left or right, you must be in its row
     @futureBottom() > e.top() and @futureTop() < e.bottom()
 
   inColumnSpace: (e) ->
-    # To collide with a tile from the top or bottom, you must be in its column
+    # To collide with an entity from the top or bottom, you must be in its column
     @futureLeft() < e.right() and @futureRight() > e.left()
 
 
   eachSolidEntity: (fxn) =>
     # TODO: Remove duplication between this and onSurface()
-    # TODO: Use rows to avoid computing columns
     # TODO: Be smarter about computing which entities to test
-    # TODO: Shouldn't be getting undefined tiles here
-
-    for col in Kona.TileManager.columnsFor(@)
-      for tile in col
-        fxn(tile) if tile? && tile.solid
-
-    # All scene entities excluding self
-    entities = _.reject Kona.Scenes.currentScene.entities, (ent) => ent == @
-    for ent in entities
-      fxn(ent) if ent? && ent.solid?
+    for name, list of Kona.Scenes.currentScene.entities
+      list = _.reject list, (ent) => ent == @
+      for ent in list
+        fxn(ent) if ent? && ent.solid
 
 
-  # Loop over solid neighbor tiles and determine whether or not a collision occurs
+  # Loop over solid neighbor entities and determine whether or not a collision occurs
   # based on a condition function. Makes left/right/top/bottom detection more generic.
   isCollision: (checkFxn) ->
     collision = false
-    @eachSolidEntity (tile) =>
-      collision = true if checkFxn(tile)
+    @eachSolidEntity (ent) =>
+      collision = true if checkFxn(ent)
     collision
 
 
-  # Player's left hitting a tile's right
-  leftCollision: ->
-    return @isCollision (tile) =>
-      @right() >= tile.right() and @futureLeft() <= tile.right() and @inRowSpace(tile)
+  # Player's left hitting an entities right
+  # Collision with a specific entity
+  leftCollision: (ent) ->
+    @right() >= ent.right() and @futureLeft() <= ent.right() and @inRowSpace(ent)
+
+  # Collision with a nearby neighbor
+  leftCollisions: -> return @isCollision (ent) => @leftCollision(ent)
 
 
-  # Player's right hitting a tile's left
-  rightCollision: ->
-    return @isCollision (tile) =>
-      @left() <= tile.left() and @futureRight() >= tile.left() and @inRowSpace(tile)
+  # Player's right hitting an entities left
+  # Collision with a specific entity
+  rightCollision: (ent) ->
+    @left() <= ent.left() and @futureRight() >= ent.left() and @inRowSpace(ent)
+
+  # Collision with a nearby neighbor
+  rightCollisions: -> return @isCollision (ent) => @rightCollision(ent)
 
 
-  # Player's top hitting a tile's bottom
-  topCollision: ->
-    return @isCollision (tile) =>
-      @bottom() >= tile.bottom() and @futureTop() <= tile.bottom() and @inColumnSpace(tile)
+
+  # Player's top hitting an entities bottom
+  # Collision with a specific entity
+  topCollision: (ent) ->
+    @bottom() >= ent.bottom() and @futureTop() <= ent.bottom() and @inColumnSpace(ent)
+
+  # Collision with a nearby neighbor
+  topCollisions: -> return @isCollision (ent) => @topCollision(ent)
 
 
-  # Player's bottom hitting a tile's top
-  bottomCollision: ->
-    return @isCollision (tile) =>
-      @top() <= tile.top() and @futureBottom() >= tile.top() and @inColumnSpace(tile)
+
+  # Player's bottom hitting an entities top
+  # Collision with a specific entity
+  bottomCollision: (ent) ->
+    @top() <= ent.top() and @futureBottom() >= ent.top() and @inColumnSpace(ent)
+
+  # Collision with a nearby neighbor
+  bottomCollisions: -> return @isCollision (ent) => @bottomCollision(ent)
 
 
   onSurface: =>
-    for col in Kona.TileManager.columnsFor(@)
-      for tile in col
-        return true if tile.solid && tile.position.y == @bottom() + 1
-
-    # All scene entities excluding self
-    entities = _.reject Kona.Scenes.currentScene.entities, (ent) => ent == @
-    for ent in entities
-      return true if ent.solid && ent.position.y == @bottom() + 1
+    for name, list of Kona.Scenes.currentScene.entities
+      list = _.reject list, (ent) => ent == @
+      for ent in list
+        return true if ent.solid && ent.position.y == @bottom() + 1
 
     return false
 
@@ -161,7 +165,7 @@ class Kona.Entity
   # Collision correction
   # ---------------------
   # Resolve collisions after getting user input and applying transformations to entity
-  correctLeft:   -> @position.x += 1 while @leftCollision() || @left() < 0
-  correctRight:  -> @position.x -= 1 while @rightCollision()
-  correctTop:    -> @position.y += 1 while @topCollision()
-  correctBottom: -> @position.y -= 1 while @bottomCollision()
+  correctLeft:   -> @position.x += 1 while @leftCollisions() || @left() < 0
+  correctRight:  -> @position.x -= 1 while @rightCollisions()
+  correctTop:    -> @position.y += 1 while @topCollisions()
+  correctBottom: -> @position.y -= 1 while @bottomCollisions()

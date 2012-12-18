@@ -13,6 +13,13 @@ Kona.Utils =
   randomFromTo: (from, to) ->
     Math.floor(Math.random() * (to - from + 1) + from)
 
+  # Modify obj1 to also contain the contains of obj2
+  # The value for entries with duplciate keys will be that of obj2
+  merge: (obj1, obj2) ->
+    obj1[attr] = obj2[attr] for attr of obj2
+    obj1
+
+
 
   # ----------------------
   #   DEBUGGING UTILS
@@ -35,16 +42,11 @@ Kona.Utils =
 
     console.log "#{output}]"
 
-  colorFor: (num) ->
-    switch num
-      when 1 then 'red'
-      when 2 then 'orange'
-      when 3 then 'blue'
-      else 'blank'
-
 
 # Do something only once (useful for debugging within run loops).
 # Ex:
 #   while true
 #     once -> console.log "This will only be logged once"
 window._k_once = 0; window.once = (fxn) -> fxn() if window._k_once == 0; window._k_once++
+
+window.fail = (msg) -> throw new Error(msg)

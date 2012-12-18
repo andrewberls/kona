@@ -20,6 +20,7 @@ FILENAMES = [
   'engine',
   'scenes',
   'entity',
+  'layout',
   'tiles',
   'keys',
   'sound'

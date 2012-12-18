@@ -5,39 +5,18 @@ Kona.ready ->
   Kona.Canvas.init { id: 'canvas' }
 
   # ----------------------
-  #   SCENES
+  #   SCENE SETUP
   # ----------------------
   level1_1 = new Kona.Scene {
     name: 'lvl1:s1'
     background: 'lvl2.jpg'
     active: true
   }
+
   level1_2 = new Kona.Scene {
     name: 'lvl1:s2'
     background: 'lvl2.jpg'
   }
-
-  Kona.TileManager.buildTiles 'lvl1:s1', [
-    [0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,2,3],
-    [1,3,0,0,0,0,0,0,1,0,0],
-    [2,0,0,0,0,0,0,0,0,0,0],
-    [1,0,0,2,0,0,3,2,0,0,0],
-    [3,2,1,3,1,0,0,1,2,0,1]
-  ]
-
-  Kona.TileManager.buildTiles 'lvl1:s2', [
-    [0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0],
-    [3,1,2,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,1,1,1,0,0,0],
-    [0,0,0,0,1,1,0,0,0,0,0],
-    [0,0,0,1,1,0,0,0,0,1,1],
-    [2,3,0,1,1,1,1,1,1,1,1]
-  ]
 
 
 
@@ -51,7 +30,7 @@ Kona.ready ->
     constructor: (opts={}) ->
       super(opts)
 
-      @color = opts.color # TODO: FOR DEBUGGING
+      @color = opts.color
 
       @speed      = 3
       @jumpHeight = 12
@@ -72,15 +51,16 @@ Kona.ready ->
 
       # Transition to next screen
       if @right() > Kona.Canvas.width - 20
-        # Kona.Scenes.setCurrent('lvl1:s2')
         Kona.Scenes.nextScene()
         level1_2.addEntity(player)
         player.setPosition(0, @top())
+
 
     draw: ->
       Kona.Canvas.safe =>
         Kona.Canvas.ctx.fillStyle = @color
         Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
+
 
     jump: ->
       jumpDuration = 180
@@ -101,7 +81,8 @@ Kona.ready ->
         startX = if @facing == 'right' then @right() + 1 else @left() - 30
         startY = @top() + 15
         color  = ['red','orange','blue'][Kona.Utils.randomFromTo(0, 2)]
-        Kona.Scenes.currentScene.addEntity(new Projectile { x: startX, y: startY, width: 20, height: 10, dx: projDx, color: color })
+        proj   = new Projectile { x: startX, y: startY, width: 20, height: 10, dx: projDx, color: color, group: 'projectiles' }
+        Kona.Scenes.currentScene.addEntity(proj)
 
         @canFire = false
         setTimeout =>
@@ -125,20 +106,24 @@ Kona.ready ->
       super(opts)
       @color = opts.color
       @speed = 7
+      @destructibles = ['enemies']
+
 
     update: ->
       super
       @position.x += @speed * @direction.dx
-      if @leftCollision() || @rightCollision()
+      if @leftCollisions() || @rightCollisions()
         # Detect collisions with other entities
         # TODO: this is hacky
-        entities = _.reject Kona.Scenes.currentScene.entities, (ent) => ent == @
-        for ent in entities
-          if @right() > ent.left()  && @left()  < ent.right() ||
-             @left()  < ent.right() && @right() > ent.left()
-            ent.destroy()
-        @destroy()
+        for name, list of Kona.Scenes.currentScene.entities
+          list = _.reject list, (ent) => ent == @
+          for ent in list
+            if @leftCollision(ent) || @rightCollision(ent)
+              ent.destroy() if _.contains(@destructibles, name)
+              @destroy()
+
       @destroy() if @position.x < 0 || @position.x > Kona.Canvas.width
+
 
     draw: ->
       Kona.Canvas.safe =>
@@ -168,11 +153,8 @@ Kona.ready ->
 
 
 
-
-  player = new Player { x: 200, y: 200, width: 30, height: 55, color: 'black' }
-  enemy  = new Enemy { x: 400, y: 250, width: 30, height: 55, color: '#00ffcc' }
-
-  level1_1.addEntity(enemy)
+  # Add the player manually so we can have a reference object to bind keys to
+  player = new Player { x: 200, y: 200, width: 30, height: 55, color: 'black', group: 'player' }
   level1_1.addEntity(player)
 
 
@@ -192,6 +174,40 @@ Kona.ready ->
       when 'left', 'right' then player.stop('dx')
       when 'up', 'down'    then player.stop('dy')
 
+
+
+  # ----------------------
+  #   LAYOUT
+  # ----------------------
+  Kona.Layout.definitionMap = {
+    '-': { group: 'tiles',   klass: Kona.BlankTile }
+    'r': { group: 'tiles',   klass: Kona.Tile, opts: { color: 'red' } }
+    'o': { group: 'tiles',   klass: Kona.Tile, opts: { color: 'orange' } }
+    'b': { group: 'tiles',   klass: Kona.Tile, opts: { color: 'blue' } }
+    'x': { group: 'enemies', klass: Enemy, opts: { width: 30, height: 55, color: '#00ffcc' } }
+  }
+
+  Kona.Layout.buildScene 'lvl1:s1', [
+    ['-','-','-','-','-','-','-','-','-','-','-'],
+    ['-','-','-','-','-','-','-','-','-','-','-'],
+    ['-','-','-','-','-','-','-','-','-','-','-'],
+    ['-','-','-','-','-','-','-','-','-','o','b'],
+    ['r','b','-','-','-','-','-','-','r','-','-'],
+    ['o','-','-','-','-','-','x','-','-','-','-'],
+    ['r','-','-','o','-','-','b','o','-','-','-'],
+    ['b','o','r','b','r','-','-','r','o','-','r']
+  ]
+
+  Kona.Layout.buildScene 'lvl1:s2', [
+    ['-','-','-','-','-','-','-','-','-','-','-'],
+    ['-','-','-','-','-','-','-','-','-','-','-'],
+    ['-','-','-','-','-','-','-','-','-','-','-'],
+    ['b','r','o','-','-','-','-','-','-','-','-'],
+    ['-','-','-','-','-','r','r','r','-','-','-'],
+    ['-','-','-','-','r','r','-','-','-','-','-'],
+    ['-','-','-','r','r','-','-','-','-','r','r'],
+    ['o','b','-','r','r','r','r','r','r','r','r']
+  ]
 
 
   # ----------------------

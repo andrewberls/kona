@@ -3,7 +3,7 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Kona.ready(function() {
-  var Enemy, Player, Projectile, enemy, level1_1, level1_2, player;
+  var Enemy, Player, Projectile, level1_1, level1_2, player;
   Kona.Canvas.init({
     id: 'canvas'
   });
@@ -16,8 +16,6 @@ Kona.ready(function() {
     name: 'lvl1:s2',
     background: 'lvl2.jpg'
   });
-  Kona.TileManager.buildTiles('lvl1:s1', [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3], [1, 3, 0, 0, 0, 0, 0, 0, 1, 0, 0], [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 0, 2, 0, 0, 3, 2, 0, 0, 0], [3, 2, 1, 3, 1, 0, 0, 1, 2, 0, 1]]);
-  Kona.TileManager.buildTiles('lvl1:s2', [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [3, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0], [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0], [0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1], [2, 3, 0, 1, 1, 1, 1, 1, 1, 1, 1]]);
   Player = (function(_super) {
 
     __extends(Player, _super);
@@ -77,21 +75,23 @@ Kona.ready(function() {
     };
 
     Player.prototype.fire = function() {
-      var color, projDx, startX, startY,
+      var color, proj, projDx, startX, startY,
         _this = this;
       if (this.canFire) {
         projDx = this.facing === 'right' ? 1 : -1;
         startX = this.facing === 'right' ? this.right() + 1 : this.left() - 30;
         startY = this.top() + 15;
         color = ['red', 'orange', 'blue'][Kona.Utils.randomFromTo(0, 2)];
-        Kona.Scenes.currentScene.addEntity(new Projectile({
+        proj = new Projectile({
           x: startX,
           y: startY,
           width: 20,
           height: 10,
           dx: projDx,
-          color: color
-        }));
+          color: color,
+          group: 'projectiles'
+        });
+        Kona.Scenes.currentScene.addEntity(proj);
         this.canFire = false;
         return setTimeout(function() {
           return _this.canFire = true;
@@ -121,24 +121,31 @@ Kona.ready(function() {
       Projectile.__super__.constructor.call(this, opts);
       this.color = opts.color;
       this.speed = 7;
+      this.destructibles = ['enemies'];
     }
 
     Projectile.prototype.update = function() {
-      var ent, entities, _i, _len,
+      var ent, list, name, _i, _len, _ref,
         _this = this;
       Projectile.__super__.update.apply(this, arguments);
       this.position.x += this.speed * this.direction.dx;
-      if (this.leftCollision() || this.rightCollision()) {
-        entities = _.reject(Kona.Scenes.currentScene.entities, function(ent) {
-          return ent === _this;
-        });
-        for (_i = 0, _len = entities.length; _i < _len; _i++) {
-          ent = entities[_i];
-          if (this.right() > ent.left() && this.left() < ent.right() || this.left() < ent.right() && this.right() > ent.left()) {
-            ent.destroy();
+      if (this.leftCollisions() || this.rightCollisions()) {
+        _ref = Kona.Scenes.currentScene.entities;
+        for (name in _ref) {
+          list = _ref[name];
+          list = _.reject(list, function(ent) {
+            return ent === _this;
+          });
+          for (_i = 0, _len = list.length; _i < _len; _i++) {
+            ent = list[_i];
+            if (this.leftCollision(ent) || this.rightCollision(ent)) {
+              if (_.contains(this.destructibles, name)) {
+                ent.destroy();
+              }
+              this.destroy();
+            }
           }
         }
-        this.destroy();
       }
       if (this.position.x < 0 || this.position.x > Kona.Canvas.width) {
         return this.destroy();
@@ -191,16 +198,9 @@ Kona.ready(function() {
     y: 200,
     width: 30,
     height: 55,
-    color: 'black'
+    color: 'black',
+    group: 'player'
   });
-  enemy = new Enemy({
-    x: 400,
-    y: 250,
-    width: 30,
-    height: 55,
-    color: '#00ffcc'
-  });
-  level1_1.addEntity(enemy);
   level1_1.addEntity(player);
   Kona.Keys.keydown = function(key) {
     switch (key) {
@@ -224,5 +224,43 @@ Kona.ready(function() {
         return player.stop('dy');
     }
   };
+  Kona.Layout.definitionMap = {
+    '-': {
+      group: 'tiles',
+      klass: Kona.BlankTile
+    },
+    'r': {
+      group: 'tiles',
+      klass: Kona.Tile,
+      opts: {
+        color: 'red'
+      }
+    },
+    'o': {
+      group: 'tiles',
+      klass: Kona.Tile,
+      opts: {
+        color: 'orange'
+      }
+    },
+    'b': {
+      group: 'tiles',
+      klass: Kona.Tile,
+      opts: {
+        color: 'blue'
+      }
+    },
+    'x': {
+      group: 'enemies',
+      klass: Enemy,
+      opts: {
+        width: 30,
+        height: 55,
+        color: '#00ffcc'
+      }
+    }
+  };
+  Kona.Layout.buildScene('lvl1:s1', [['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', 'o', 'b'], ['r', 'b', '-', '-', '-', '-', '-', '-', 'r', '-', '-'], ['o', '-', '-', '-', '-', '-', 'x', '-', '-', '-', '-'], ['r', '-', '-', 'o', '-', '-', 'b', 'o', '-', '-', '-'], ['b', 'o', 'r', 'b', 'r', '-', '-', 'r', 'o', '-', 'r']]);
+  Kona.Layout.buildScene('lvl1:s2', [['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['b', 'r', 'o', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', 'r', 'r', 'r', '-', '-', '-'], ['-', '-', '-', '-', 'r', 'r', '-', '-', '-', '-', '-'], ['-', '-', '-', 'r', 'r', '-', '-', '-', '-', 'r', 'r'], ['o', 'b', '-', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r']]);
   return Kona.Engine.start();
 });

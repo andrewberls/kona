@@ -38,12 +38,3 @@ Kona.Canvas =
       size = Kona.Tile.tileSize
       left = size * Math.floor(x / size)
       Kona.Canvas.ctx.fillRect(left, 0, size, Kona.Canvas.height)
-
-  # Highlight a row at a y-coordinate
-  # highlightRow: (y) ->
-  #   Kona.Canvas.safe =>
-  #     @ctx.fillStyle   = 'red'
-  #     @ctx.globalAlpha = 0.1
-  #     size = Kona.Tile.tileSize
-  #     top  = size * Math.floor(y / size)
-  #     Kona.Canvas.ctx.fillRect(0, top, Kona.Canvas.width, size)
