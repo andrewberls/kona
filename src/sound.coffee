@@ -1,4 +1,22 @@
-# Interface for defining and playing sound assets
+# Ex:
+#   Kona.Sounds.load {
+#     'fire' : 'enemy_fire.ogg'
+#   }
+#   Kona.Sounds.play('fire')
+
+Kona.Sounds =
+  sounds: {}
+
+  load: (sounds={}) ->
+    for name, src of sounds
+      @sounds[name] = new Kona.Sound(src)
+
+  play: (name) ->
+    @sounds[name].play()
+
+
+
+
 # Ex:
 #   fire = new Kona.Sound('enemy_fire.ogg')
 #   fire.play()
@@ -22,8 +40,6 @@ class Kona.Sound
     'wav': 'audio/wav'
     'aac': 'audio/aac'
     'm4a': 'audio/x-m4a'
-
-  @sounds: []
 
   @testEl: document.createElement('audio')
   @isSupported:    -> return !!@testEl.canPlayType
@@ -52,6 +68,12 @@ class Kona.Sound
   # --------------------
   # Instance methods
   # --------------------
+  # Options:
+  #  - formats
+  #  - (x) loop
+  #  - autoplay
+  #  - preload
+  #  - volume
   constructor: (src, options={}) ->
     @supported  = Kona.Sound.isSupported()
 
@@ -70,24 +92,17 @@ class Kona.Sound
       @addSource(@el, src)
 
     # @loop() if options.loop
-
     @el.autoplay = 'autoplay' if options.autoplay == true
-
-    if options.preload == true
-      @el.preload = 'auto'
-    else if options.preload == false
-      @el.preload = 'none'
-
+    @el.preload  = if options.preload == true then 'auto' else 'none'
     @setVolume(options.volume)
-    @el.addEventListener "loadedmetadata", =>
-      @duration = @el.duration
-    Kona.Sound.sounds.push(@)
+
+    @el.addEventListener "loadedmetadata", => @duration = @el.duration
 
 
   getExt: (filename) -> filename.split('.').pop()
 
   addSource: (el, src) ->
-    source = document.createElement('source')
+    source     = document.createElement('source')
     source.src = src
     ext = @getExt(src)
     if Kona.Sound.types[ext]?

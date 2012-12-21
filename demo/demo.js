@@ -7,6 +7,9 @@ Kona.ready(function() {
   Kona.Canvas.init({
     id: 'canvas'
   });
+  Kona.Sounds.load({
+    'fire': 'enemy_fire.ogg'
+  });
   level1_1 = new Kona.Scene({
     name: 'lvl1:s1',
     background: 'lvl2.jpg',
@@ -92,6 +95,7 @@ Kona.ready(function() {
           group: 'projectiles'
         });
         Kona.Scenes.currentScene.addEntity(proj);
+        Kona.Sounds.play('fire');
         this.canFire = false;
         return setTimeout(function() {
           return _this.canFire = true;

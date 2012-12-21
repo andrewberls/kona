@@ -2,11 +2,15 @@
 
 Kona.ready ->
 
+  # ----------------------
+  #   INITIALIZATION
+  # ----------------------
   Kona.Canvas.init { id: 'canvas' }
 
-  # ----------------------
-  #   SCENE SETUP
-  # ----------------------
+  Kona.Sounds.load {
+    'fire' : 'enemy_fire.ogg'
+  }
+
   level1_1 = new Kona.Scene {
     name: 'lvl1:s1'
     background: 'lvl2.jpg'
@@ -81,6 +85,7 @@ Kona.ready ->
         color  = ['red','orange','blue'][Kona.Utils.randomFromTo(0, 2)]
         proj   = new Projectile { x: startX, y: startY, width: 20, height: 10, dx: projDx, color: color, group: 'projectiles' }
         Kona.Scenes.currentScene.addEntity(proj)
+        Kona.Sounds.play('fire')
 
         @canFire = false
         setTimeout =>
