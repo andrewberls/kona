@@ -5,10 +5,13 @@ class Kona.Entity
   @grav = 8
 
   constructor: (opts={}) ->
-    @group  = opts.group
-    @solid  = true
-    @speed  = 0
-    @facing = ''
+    @group   = opts.group
+    @solid   = opts.solid   || true
+    @gravity = opts.gravity || true
+    @speed   = opts.speed   || 0
+    @facing  = opts.facing  || ''
+
+    @color   = opts.color # TODO
 
     @position =
       x: opts.x || 0
@@ -68,8 +71,9 @@ class Kona.Entity
   movingRight: -> @direction.dx > 0
 
   addGravity: ->
-    @position.y += Kona.Entity.grav
-    @correctBottom()
+    if @gravity
+      @position.y += Kona.Entity.grav
+      @correctBottom()
 
   setPosition: (x, y) ->
     @position.x = x
@@ -151,6 +155,13 @@ class Kona.Entity
   bottomCollisions: -> return @isCollision (ent) => @bottomCollision(ent)
 
 
+
+  # Collision from any side with another entity
+  intersecting: (ent) ->
+    @leftCollision(ent) || @rightCollision(ent) ||@topCollision(ent) || @bottomCollision(ent)
+
+
+  # Is this entity standing on a surface?
   onSurface: =>
     for name, list of Kona.Scenes.currentScene.entities
       list = _.reject list, (ent) => ent == @
@@ -169,3 +180,12 @@ class Kona.Entity
   correctRight:  -> @position.x -= 1 while @rightCollisions()
   correctTop:    -> @position.y += 1 while @topCollisions()
   correctBottom: -> @position.y -= 1 while @bottomCollisions()
+
+
+
+  # ---------------------
+  # Collectables
+  # ---------------------
+  collects: (names...) ->
+    for name in names
+      Kona.Collectors.add(name, @)

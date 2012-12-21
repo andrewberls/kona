@@ -3,7 +3,7 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Kona.ready(function() {
-  var Enemy, Player, Projectile, level1_1, level1_2, player;
+  var Coin, Enemy, Player, Projectile, level1_1, level1_2, player;
   Kona.Canvas.init({
     id: 'canvas'
   });
@@ -25,12 +25,12 @@ Kona.ready(function() {
         opts = {};
       }
       Player.__super__.constructor.call(this, opts);
-      this.color = opts.color;
       this.speed = 3;
       this.jumpHeight = 12;
       this.isJumping = false;
       this.facing = 'right';
       this.canFire = true;
+      this.collects('coins');
     }
 
     Player.prototype.update = function() {
@@ -119,7 +119,6 @@ Kona.ready(function() {
         opts = {};
       }
       Projectile.__super__.constructor.call(this, opts);
-      this.color = opts.color;
       this.speed = 7;
       this.destructibles = ['enemies'];
     }
@@ -172,13 +171,11 @@ Kona.ready(function() {
         opts = {};
       }
       Enemy.__super__.constructor.call(this, opts);
-      this.color = opts.color;
       this.speed = 2;
     }
 
     Enemy.prototype.update = function() {
       Enemy.__super__.update.apply(this, arguments);
-      this.position.x += this.speed * this.direction.dx;
       return this.addGravity();
     };
 
@@ -193,6 +190,38 @@ Kona.ready(function() {
     return Enemy;
 
   })(Kona.Entity);
+  Coin = (function(_super) {
+
+    __extends(Coin, _super);
+
+    function Coin(opts) {
+      if (opts == null) {
+        opts = {};
+      }
+      Coin.__super__.constructor.call(this, opts);
+      this.speed = 2;
+    }
+
+    Coin.prototype.update = function() {
+      Coin.__super__.update.apply(this, arguments);
+      return this.addGravity();
+    };
+
+    Coin.prototype.draw = function() {
+      var _this = this;
+      return Kona.Canvas.safe(function() {
+        Kona.Canvas.ctx.fillStyle = _this.color;
+        return Kona.Canvas.ctx.fillRect(_this.position.x, _this.position.y, _this.box.width, _this.box.height);
+      });
+    };
+
+    Coin.prototype.activate = function() {
+      return puts("Coin activated!");
+    };
+
+    return Coin;
+
+  })(Kona.Collectable);
   player = new Player({
     x: 200,
     y: 200,
@@ -224,7 +253,7 @@ Kona.ready(function() {
         return player.stop('dy');
     }
   };
-  Kona.Layout.definitionMap = {
+  Kona.Scenes.definitionMap = {
     '-': {
       group: 'tiles',
       klass: Kona.BlankTile
@@ -256,11 +285,27 @@ Kona.ready(function() {
       opts: {
         width: 30,
         height: 55,
-        color: '#00ffcc'
+        color: '#00ffcc',
+        offset: {
+          x: 15
+        }
+      }
+    },
+    'c': {
+      group: 'coins',
+      klass: Coin,
+      opts: {
+        width: 30,
+        height: 30,
+        color: 'yellow',
+        offset: {
+          x: 15,
+          y: 15
+        }
       }
     }
   };
-  Kona.Layout.buildScene('lvl1:s1', [['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', 'o', 'b'], ['r', 'b', '-', '-', '-', '-', '-', '-', 'r', '-', '-'], ['o', '-', '-', '-', '-', '-', 'x', '-', '-', '-', '-'], ['r', '-', '-', 'o', '-', '-', 'b', 'o', '-', '-', '-'], ['b', 'o', 'r', 'b', 'r', '-', '-', 'r', 'o', '-', 'r']]);
-  Kona.Layout.buildScene('lvl1:s2', [['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['b', 'r', 'o', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', 'r', 'r', 'r', '-', '-', '-'], ['-', '-', '-', '-', 'r', 'r', '-', '-', '-', '-', '-'], ['-', '-', '-', 'r', 'r', '-', '-', '-', '-', 'r', 'r'], ['o', 'b', '-', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r']]);
+  Kona.Scenes.buildScene('lvl1:s1', [['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', 'o', 'b'], ['r', 'b', '-', '-', '-', '-', '-', '-', 'r', '-', '-'], ['o', '-', '-', '-', '-', '-', 'x', '-', '-', '-', '-'], ['r', '-', 'c', 'o', '-', '-', 'b', 'o', '-', '-', '-'], ['b', 'o', 'r', 'b', 'r', '-', '-', 'r', 'o', '-', 'r']]);
+  Kona.Scenes.buildScene('lvl1:s2', [['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['b', 'r', 'o', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', 'r', 'r', 'r', '-', '-', '-'], ['-', '-', '-', '-', 'r', 'r', '-', '-', '-', '-', '-'], ['-', '-', '-', 'r', 'r', 'c', '-', '-', '-', 'r', 'r'], ['o', 'b', '-', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r']]);
   return Kona.Engine.start();
 });

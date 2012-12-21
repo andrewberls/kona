@@ -6,9 +6,34 @@
 Kona.Scenes =
   scenes: []
   currentScene: {}
+  definitionMap: null
+
+  buildScene: (sceneName, grid) ->
+    @definitionMap? or fail("No definition map found")
+    x = 0
+    y = Kona.Canvas.height - (grid.length * Kona.Tile.tileSize)
+
+    for row in grid
+      for def in row
+        rule   = @definitionMap[def] or fail("No mapping found for rule: #{def}")
+
+        offset = if rule.opts then rule.opts.offset else {}
+        startX = if offset? then x + (offset.x || 0) else x
+        startY = if offset? then y + (offset.y || 0) else y
+
+        opts  = Kona.Utils.merge { x: startX, y: startY, group: rule.group  }, rule.opts
+        obj   = new rule.klass(opts)
+        scene = Kona.Utils.find(Kona.Scenes.scenes, { name: sceneName })
+        scene.addEntity(obj)
+        x += Kona.Tile.tileSize
+
+      x = 0
+      y += Kona.Tile.tileSize
+
 
   drawCurrent: ->
     @currentScene.draw()
+
 
   # Find the new scene by name and set it to active to start rendering
   # Ex: Kona.Scenes.setCurrent('lvl1:s2')
@@ -17,6 +42,7 @@ Kona.Scenes =
     newScene = Kona.Utils.find(@scenes, { name: sceneName }) or throw new Error("Couldn't find scene: #{sceneName}")
     @currentScene = newScene
     @currentScene.active = true
+
 
   # Advance to the next scene for a level, assuming the name conforms to the format
   # lvl<levelNum>:s<sceneNum>
@@ -30,6 +56,7 @@ Kona.Scenes =
 
 
 
+
 class Kona.Scene
   constructor: (options={}) ->
     @active         = options.active || false
@@ -37,7 +64,6 @@ class Kona.Scene
     @background     = new Image()
     @background.src = options.background || ''
     @entities       = {}
-
     Kona.Scenes.scenes.push(@)
 
   # Add an entity to a namespace

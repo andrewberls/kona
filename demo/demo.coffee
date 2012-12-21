@@ -29,14 +29,12 @@ Kona.ready ->
   class Player extends Kona.Entity
     constructor: (opts={}) ->
       super(opts)
-
-      @color = opts.color
-
       @speed      = 3
       @jumpHeight = 12
       @isJumping  = false
       @facing     = 'right'
       @canFire    = true
+      @collects('coins')
 
     update: ->
       super
@@ -104,7 +102,6 @@ Kona.ready ->
   class Projectile extends Kona.Entity
     constructor: (opts={}) ->
       super(opts)
-      @color = opts.color
       @speed = 7
       @destructibles = ['enemies']
 
@@ -138,18 +135,39 @@ Kona.ready ->
   class Enemy extends Kona.Entity
     constructor: (opts={}) ->
       super(opts)
-      @color = opts.color
       @speed = 2
 
     update: ->
       super
-      @position.x += @speed * @direction.dx
       @addGravity()
 
     draw: ->
       Kona.Canvas.safe =>
         Kona.Canvas.ctx.fillStyle = @color
         Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
+
+
+
+
+  # Coin
+  # ----------------
+  class Coin extends Kona.Collectable
+    constructor: (opts={}) ->
+      super(opts)
+      @speed = 2
+
+    update: ->
+      super
+      @addGravity()
+
+    draw: ->
+      Kona.Canvas.safe =>
+        Kona.Canvas.ctx.fillStyle = @color
+        Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
+
+    activate: ->
+      puts "Coin activated!"
+
 
 
 
@@ -179,33 +197,34 @@ Kona.ready ->
   # ----------------------
   #   LAYOUT
   # ----------------------
-  Kona.Layout.definitionMap = {
+  Kona.Scenes.definitionMap = {
     '-': { group: 'tiles',   klass: Kona.BlankTile }
     'r': { group: 'tiles',   klass: Kona.Tile, opts: { color: 'red' } }
     'o': { group: 'tiles',   klass: Kona.Tile, opts: { color: 'orange' } }
     'b': { group: 'tiles',   klass: Kona.Tile, opts: { color: 'blue' } }
-    'x': { group: 'enemies', klass: Enemy, opts: { width: 30, height: 55, color: '#00ffcc' } }
+    'x': { group: 'enemies', klass: Enemy, opts: { width: 30, height: 55, color: '#00ffcc', offset: { x: 15 } } }
+    'c': { group: 'coins',   klass: Coin, opts: { width: 30, height: 30, color: 'yellow', offset: { x: 15, y: 15 } } }
   }
 
-  Kona.Layout.buildScene 'lvl1:s1', [
+  Kona.Scenes.buildScene 'lvl1:s1', [
     ['-','-','-','-','-','-','-','-','-','-','-'],
     ['-','-','-','-','-','-','-','-','-','-','-'],
     ['-','-','-','-','-','-','-','-','-','-','-'],
     ['-','-','-','-','-','-','-','-','-','o','b'],
     ['r','b','-','-','-','-','-','-','r','-','-'],
     ['o','-','-','-','-','-','x','-','-','-','-'],
-    ['r','-','-','o','-','-','b','o','-','-','-'],
+    ['r','-','c','o','-','-','b','o','-','-','-'],
     ['b','o','r','b','r','-','-','r','o','-','r']
   ]
 
-  Kona.Layout.buildScene 'lvl1:s2', [
+  Kona.Scenes.buildScene 'lvl1:s2', [
     ['-','-','-','-','-','-','-','-','-','-','-'],
     ['-','-','-','-','-','-','-','-','-','-','-'],
     ['-','-','-','-','-','-','-','-','-','-','-'],
     ['b','r','o','-','-','-','-','-','-','-','-'],
     ['-','-','-','-','-','r','r','r','-','-','-'],
     ['-','-','-','-','r','r','-','-','-','-','-'],
-    ['-','-','-','r','r','-','-','-','-','r','r'],
+    ['-','-','-','r','r','c','-','-','-','r','r'],
     ['o','b','-','r','r','r','r','r','r','r','r']
   ]
 
@@ -213,5 +232,4 @@ Kona.ready ->
   # ----------------------
   #   GAME START
   # ----------------------
-  # Start the engine! The game is running after this point.
   Kona.Engine.start()
