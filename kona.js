@@ -108,14 +108,11 @@ window.fail = function(msg) {
 
 Kona.Canvas = {
   defaults: {
-    width: 640,
+    width: 660,
     height: 480
   },
-  init: function(opts) {
-    if (opts == null) {
-      opts = {};
-    }
-    this.elem = document.getElementById(opts.id) || (function() {
+  init: function(id) {
+    this.elem = document.getElementById(id) || (function() {
       throw new Error("can't find element with id: " + id);
     })();
     this.ctx = this.elem.getContext('2d');
@@ -132,24 +129,6 @@ Kona.Canvas = {
     return this.safe(function() {
       _this.ctx.fillStyle = 'white';
       return _this.ctx.fillRect(0, 0, _this.width, _this.height);
-    });
-  },
-  verticalLine: function(x) {
-    var _this = this;
-    return this.safe(function() {
-      _this.ctx.fillStyle = 'red';
-      return _this.ctx.fillRect(x, 0, 2, _this.height);
-    });
-  },
-  highlightColumn: function(x) {
-    var _this = this;
-    return Kona.Canvas.safe(function() {
-      var left, size;
-      _this.ctx.fillStyle = 'red';
-      _this.ctx.globalAlpha = 0.01;
-      size = Kona.Tile.tileSize;
-      left = size * Math.floor(x / size);
-      return Kona.Canvas.ctx.fillRect(left, 0, size, Kona.Canvas.height);
     });
   }
 };
@@ -190,37 +169,6 @@ Kona.Scenes = {
   scenes: [],
   currentScene: {},
   definitionMap: null,
-  buildScene: function(sceneName, grid) {
-    var def, obj, offset, opts, row, rule, scene, startX, startY, x, y, _i, _j, _len, _len1, _results;
-    (this.definitionMap != null) || fail("No definition map found");
-    x = 0;
-    y = Kona.Canvas.height - (grid.length * Kona.Tile.tileSize);
-    _results = [];
-    for (_i = 0, _len = grid.length; _i < _len; _i++) {
-      row = grid[_i];
-      for (_j = 0, _len1 = row.length; _j < _len1; _j++) {
-        def = row[_j];
-        rule = this.definitionMap[def] || fail("No mapping found for rule: " + def);
-        offset = rule.opts ? rule.opts.offset : {};
-        startX = offset != null ? x + (offset.x || 0) : x;
-        startY = offset != null ? y + (offset.y || 0) : y;
-        opts = Kona.Utils.merge({
-          x: startX,
-          y: startY,
-          group: rule.group
-        }, rule.opts);
-        obj = new rule.klass(opts);
-        scene = Kona.Utils.find(Kona.Scenes.scenes, {
-          name: sceneName
-        });
-        scene.addEntity(obj);
-        x += Kona.Tile.tileSize;
-      }
-      x = 0;
-      _results.push(y += Kona.Tile.tileSize);
-    }
-    return _results;
-  },
   drawCurrent: function() {
     return this.currentScene.draw();
   },
@@ -236,13 +184,12 @@ Kona.Scenes = {
     return this.currentScene.active = true;
   },
   nextScene: function() {
-    var ids, levelId, sceneId, sceneNum;
-    ids = this.currentScene.name.split(':');
-    levelId = ids[0];
-    sceneId = ids[1];
+    var levelId, sceneId, sceneNum, _ref;
+    _ref = this.currentScene.name.split(':'), levelId = _ref[0], sceneId = _ref[1];
     sceneNum = parseInt(sceneId.replace('s', '')) + 1;
     return this.setCurrent("" + levelId + ":s" + sceneNum);
-  }
+  },
+  nextLevel: function() {}
 };
 
 Kona.Scene = (function() {
@@ -263,9 +210,38 @@ Kona.Scene = (function() {
 
   Scene.prototype.addEntity = function(entity) {
     var group, _base;
-    group = entity.group || fail("Error adding entity - must have a group");
+    group = entity.group;
     (_base = this.entities)[group] || (_base[group] = []);
     return this.entities[group].push(entity);
+  };
+
+  Scene.prototype.load = function(grid) {
+    var def, obj, offset, opts, row, rule, startX, startY, x, y, _i, _j, _len, _len1, _results;
+    (Kona.Scenes.definitionMap != null) || fail("No definition map found");
+    x = 0;
+    y = Kona.Canvas.height - (grid.length * Kona.Tile.tileSize);
+    _results = [];
+    for (_i = 0, _len = grid.length; _i < _len; _i++) {
+      row = grid[_i];
+      for (_j = 0, _len1 = row.length; _j < _len1; _j++) {
+        def = row[_j];
+        rule = Kona.Scenes.definitionMap[def] || fail("No mapping found for rule: " + def);
+        offset = rule.opts ? rule.opts.offset : {};
+        startX = offset != null ? x + (offset.x || 0) : x;
+        startY = offset != null ? y + (offset.y || 0) : y;
+        opts = Kona.Utils.merge({
+          x: startX,
+          y: startY,
+          group: rule.group
+        }, rule.opts);
+        obj = new rule.klass(opts);
+        this.addEntity(obj);
+        x += Kona.Tile.tileSize;
+      }
+      x = 0;
+      _results.push(y += Kona.Tile.tileSize);
+    }
+    return _results;
   };
 
   Scene.prototype.removeEntity = function(group, entity) {
@@ -329,7 +305,7 @@ Kona.Entity = (function() {
 
     this.eachSolidEntity = __bind(this.eachSolidEntity, this);
 
-    this.group = opts.group;
+    this.group = opts.group || fail("Error - entity must have a group");
     this.solid = opts.solid || true;
     this.gravity = opts.gravity || true;
     this.speed = opts.speed || 0;
@@ -384,22 +360,6 @@ Kona.Entity = (function() {
     return this.position.x + this.box.width;
   };
 
-  Entity.prototype.futureTop = function() {
-    return this.top() + this.direction.dy;
-  };
-
-  Entity.prototype.futureBottom = function() {
-    return this.bottom() + this.direction.dy;
-  };
-
-  Entity.prototype.futureLeft = function() {
-    return this.left() + this.direction.dx;
-  };
-
-  Entity.prototype.futureRight = function() {
-    return this.right() + this.direction.dx;
-  };
-
   Entity.prototype.movingLeft = function() {
     return this.direction.dx < 0;
   };
@@ -429,11 +389,11 @@ Kona.Entity = (function() {
   };
 
   Entity.prototype.inRowSpace = function(e) {
-    return this.futureBottom() > e.top() && this.futureTop() < e.bottom();
+    return this.bottom() > e.top() && this.top() < e.bottom();
   };
 
   Entity.prototype.inColumnSpace = function(e) {
-    return this.futureLeft() < e.right() && this.futureRight() > e.left();
+    return this.left() < e.right() && this.right() > e.left();
   };
 
   Entity.prototype.eachSolidEntity = function(fxn) {
@@ -476,7 +436,7 @@ Kona.Entity = (function() {
   };
 
   Entity.prototype.leftCollision = function(ent) {
-    return this.right() >= ent.right() && this.futureLeft() <= ent.right() && this.inRowSpace(ent);
+    return this.right() >= ent.right() && this.left() <= ent.right() && this.inRowSpace(ent);
   };
 
   Entity.prototype.leftCollisions = function() {
@@ -487,7 +447,7 @@ Kona.Entity = (function() {
   };
 
   Entity.prototype.rightCollision = function(ent) {
-    return this.left() <= ent.left() && this.futureRight() >= ent.left() && this.inRowSpace(ent);
+    return this.left() <= ent.left() && this.right() >= ent.left() && this.inRowSpace(ent);
   };
 
   Entity.prototype.rightCollisions = function() {
@@ -498,7 +458,7 @@ Kona.Entity = (function() {
   };
 
   Entity.prototype.topCollision = function(ent) {
-    return this.bottom() >= ent.bottom() && this.futureTop() <= ent.bottom() && this.inColumnSpace(ent);
+    return this.bottom() >= ent.bottom() && this.top() <= ent.bottom() && this.inColumnSpace(ent);
   };
 
   Entity.prototype.topCollisions = function() {
@@ -509,7 +469,7 @@ Kona.Entity = (function() {
   };
 
   Entity.prototype.bottomCollision = function(ent) {
-    return this.top() <= ent.top() && this.futureBottom() >= ent.top() && this.inColumnSpace(ent);
+    return this.top() <= ent.top() && this.bottom() >= ent.top() && this.inColumnSpace(ent);
   };
 
   Entity.prototype.bottomCollisions = function() {

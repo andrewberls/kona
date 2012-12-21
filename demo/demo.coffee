@@ -5,7 +5,7 @@ Kona.ready ->
   # ----------------------
   #   INITIALIZATION
   # ----------------------
-  Kona.Canvas.init { id: 'canvas' }
+  Kona.Canvas.init('canvas')
 
   Kona.Sounds.load {
     'fire' : 'enemy_fire.ogg'
@@ -199,7 +199,9 @@ Kona.ready ->
 
 
 
-  # ----------------------
+
+
+  #----------------------
   #   LAYOUT
   # ----------------------
   Kona.Scenes.definitionMap = {
@@ -211,7 +213,7 @@ Kona.ready ->
     'c': { group: 'coins',   klass: Coin, opts: { width: 30, height: 30, color: 'yellow', offset: { x: 15, y: 15 } } }
   }
 
-  Kona.Scenes.buildScene 'lvl1:s1', [
+  level1_1.load [
     ['-','-','-','-','-','-','-','-','-','-','-'],
     ['-','-','-','-','-','-','-','-','-','-','-'],
     ['-','-','-','-','-','-','-','-','-','-','-'],
@@ -222,7 +224,7 @@ Kona.ready ->
     ['b','o','r','b','r','-','-','r','o','-','r']
   ]
 
-  Kona.Scenes.buildScene 'lvl1:s2', [
+  level1_2.load [
     ['-','-','-','-','-','-','-','-','-','-','-'],
     ['-','-','-','-','-','-','-','-','-','-','-'],
     ['-','-','-','-','-','-','-','-','-','-','-'],

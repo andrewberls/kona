@@ -1,11 +1,19 @@
 Kona.Utils =
 
-  # A thin wrapper for _.where()
-  # Return the first value containing all of the key-value pairs listed in props
+  # A thin wrapper for _.where(). Returns the first value containing
+  # all of the key-value pairs listed in `props`
+  #
+  # * __list__: (Array) A list of values
+  # * __props__: (Object) A set of key-value properties to search for
+  #
   # Ex:
-  #   cars = [ {color: 'red', owner: 'Jon'}, {color: 'green', owner: 'Jane'} ]
-  #   Kona.Utils.find(cars, { 'color': 'red' })
-  #   => { color: 'red', owner: 'Jon' }
+  #
+  #     cars = [
+  #       { color: 'red', owner: 'Jon' },
+  #       { color: 'green', owner: 'Jane' }
+  #     ]
+  #     Kona.Utils.find(cars, { 'color': 'red' })
+  #     => { color: 'red', owner: 'Jon' }
   find: (list, props) ->
     _.where(list, props)[0]
 
@@ -25,11 +33,14 @@ Kona.Utils =
   #   DEBUGGING UTILS
   # ----------------------
   # Print a 2d array in a grid format
-  # ex: printGrid [[1,2], [3,4]]
-  #   [
-  #     [1, 2]
-  #     [3, 4]
-  #   ]
+  #
+  # Ex:
+  #
+  #     printGrid [[1,2], [3,4]]
+  #       [
+  #         [1, 2]
+  #         [3, 4]
+  #       ]
   printGrid: (grid) ->
     output = "[\n"
 
@@ -44,9 +55,15 @@ Kona.Utils =
 
 
 # Do something only once (useful for debugging within run loops).
+#
 # Ex:
-#   while true
-#     once -> console.log "This will only be logged once"
+#
+#     while true
+#       once -> console.log "This will only be logged once"
 window._k_once = 0; window.once = (fxn) -> fxn() if window._k_once == 0; window._k_once++
 
+
+# Throw an exception with a message
+#
+# Ex: `player.name? or fail("Name is required")`
 window.fail = (msg) -> throw new Error(msg)

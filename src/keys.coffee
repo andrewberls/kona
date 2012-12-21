@@ -1,29 +1,36 @@
-# Listen for keypresses and dispatch to handlers
-# Based on keymaster.js by Thomas Fuchs
-# https://github.com/madrobby/keymaster/
+# An interface for binding actions to keypresses, loosely
+# based on [keymaster.js by Thomas Fuchs](https://github.com/madrobby/keymaster/)
 #
-# Two ways to bind actions to keys:
+# __There are two ways to bind actions to keys:__
 #
-# 1. Directly on the keydown event
-#   Kona.Keys.keydown = (key) ->
-#     switch key
-#       when 'left'  then shape.direction.dx = -moveSpeed
-#       when 'right' then shape.direction.dx = moveSpeed
-#       when 'up'    then shape.jump()
+# 1) Define the `Kona.Keys.keydown()` function to handle events
 #
-# 2. Bind a handler function to a keypress
-#     Kona.keys.bind 'a', ->
-#       console.log "You pressed a!"
+# This function is directly bound the DOM keydown event, and will be
+# called with the __name__ of each pressed key. For example:
+#
+#       Kona.Keys.keydown = (key) ->
+#         switch key
+#           when 'left'  then player.direction.dx = -1
+#           when 'right' then player.direction.dx = 1
+#           when 'up'    then player.jump()
+#           when 'space' then player.fire()
+#
+# 2) Bind a handler function to a specific key. The method takes a string name and
+# callback function invoked whenever that key is pressed.
+#
+#       Kona.Keys.bind 'a', ->
+#         console.log "You pressed a!"
 
 
 Kona.Keys =
   # Contains info on keys and their associated handler(s)
-  # Ex format:
-  #   65: [ <function>, <function> ]
-  #   17: [ <function> ]
+  # Example structure:
+  #
+  #       65: [ <function>, <function> ]
+  #       17: [ <function> ]
   _handlers: {}
 
-  # Name --> Keycode
+  # Mapping of special names --> keycode
   _keycodes: {
     'enter': 13, 'return': 13,
     'esc'  : 27, 'escape': 27,
@@ -34,7 +41,7 @@ Kona.Keys =
     'space': 32
   }
 
-  # Keycode --> Name
+  # Mapping of Keycodes --> Names
   _names: {
     13: 'enter',
     16: 'shift',
@@ -85,37 +92,39 @@ Kona.Keys =
 
 
   # Parse and save key binding/handler function pair
+  #
+  # * __key__ - (String) The key to bind the function to, ex: `'b'`
+  #
+  # Strips whitespace from key selector and converts to an internal keycode
   bind: (key, handler) ->
-    # Strip whitespace from key selector and convert to keycode
     key     = key.replace(/\s/g, '')
     keycode = @_keycodes[key] || key.toUpperCase().charCodeAt(0)
-
-    # Store handler
     @_handlers[keycode] ||= []
     @_handlers[keycode].push(handler)
 
 
-  # Invoke the associated handler function when a bound key is pressed
+  # Internally invoke the associated handler function when a bound key is pressed,
+  # and stops further event propagation
   dispatch: (event) ->
     keycode = @eventKeyCode(event)
     return if @reject(event) || !@_handlers[keycode]?
 
-    # Call the handler and stop further event propagation
     for handler in @_handlers[keycode]
       handler.call(event)
       false
 
 
-  # Ignore keypresses from elements that take keyboard data input
+  # Ignore keypresses from elements that take keyboard data input,
+  # such as textareas. Returns Boolean
   reject: (event) ->
     _.contains ['INPUT', 'SELECT', 'TEXTAREA'], event.target.tagName
 
 
-  # Get the name of a key from an event
+  # Get the name of a key from a DOM event. Returns String
   keycodeName: (event) ->
     @_names[ @eventKeyCode(event) ]
 
-  # Cross-browser access for the keycode of a keyboard event
+  # Get the keycode for a DOM keyboard event. Returns Integer
   eventKeyCode: (event) -> event.which || event.keyCode
 
 
@@ -125,10 +134,10 @@ Kona.ready ->
     name = Kona.Keys.keycodeName(e)
     Kona.Keys.keydown(name) if Kona.Keys.keydown
 
+  # Set global key dispatch on the document bound to Kona.Keys context
   document.body.onkeyup = (e) ->
     name = Kona.Keys.keycodeName(e)
     Kona.Keys.keyup(name) if Kona.Keys.keyup
 
-  # Set global key dispatch on the document bound to Kona.Keys context
   document.addEventListener('keydown', Kona.Keys.dispatch.bind(Kona.Keys), false)
 

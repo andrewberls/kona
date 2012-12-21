@@ -1,0 +1,114 @@
+<!DOCTYPE html>  <html> <head>   <title>keys.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="canvas.html">                 canvas.coffee               </a>                                           <a class="source" href="collectable.html">                 collectable.coffee               </a>                                           <a class="source" href="engine.html">                 engine.coffee               </a>                                           <a class="source" href="entity.html">                 entity.coffee               </a>                                           <a class="source" href="events.html">                 events.coffee               </a>                                           <a class="source" href="keys.html">                 keys.coffee               </a>                                           <a class="source" href="kona.html">                 kona.coffee               </a>                                           <a class="source" href="scenes.html">                 scenes.coffee               </a>                                           <a class="source" href="sound.html">                 sound.coffee               </a>                                           <a class="source" href="tiles.html">                 tiles.coffee               </a>                                           <a class="source" href="utils.html">                 utils.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               keys.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p>An interface for binding actions to keypresses, loosely
+based on <a href="https://github.com/madrobby/keymaster/">keymaster.js by Thomas Fuchs</a></p>
+
+<p><strong>There are two ways to bind actions to keys:</strong></p>
+
+<p>1) Define the <code>Kona.Keys.keydown()</code> function to handle events</p>
+
+<p>This function is directly bound the DOM keydown event, and will be
+called with the <strong>name</strong> of each pressed key. For example:</p>
+
+<pre><code>  Kona.Keys.keydown = (key) -&gt;
+    switch key
+      when 'left'  then player.direction.dx = -1
+      when 'right' then player.direction.dx = 1
+      when 'up'    then player.jump()
+      when 'space' then player.fire()
+</code></pre>
+
+<p>2) Bind a handler function to a specific key. The method takes a string name and
+callback function invoked whenever that key is pressed.</p>
+
+<pre><code>  Kona.Keys.bind 'a', -&gt;
+    console.log "You pressed a!"
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">Kona.Keys =</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Contains info on keys and their associated handler(s)
+Example structure:</p>
+
+<pre><code>  65: [ &lt;function&gt;, &lt;function&gt; ]
+  17: [ &lt;function&gt; ]
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">_handlers: </span><span class="p">{}</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Mapping of special names --> keycode</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">_keycodes: </span><span class="p">{</span>
+    <span class="s">&#39;enter&#39;</span><span class="o">:</span> <span class="mi">13</span><span class="p">,</span> <span class="s">&#39;return&#39;</span><span class="o">:</span> <span class="mi">13</span><span class="p">,</span>
+    <span class="s">&#39;esc&#39;</span>  <span class="o">:</span> <span class="mi">27</span><span class="p">,</span> <span class="s">&#39;escape&#39;</span><span class="o">:</span> <span class="mi">27</span><span class="p">,</span>
+    <span class="s">&#39;ctrl&#39;</span> <span class="o">:</span> <span class="mi">17</span><span class="p">,</span> <span class="s">&#39;control&#39;</span><span class="o">:</span> <span class="mi">17</span><span class="p">,</span>
+    <span class="s">&#39;left&#39;</span> <span class="o">:</span> <span class="mi">37</span><span class="p">,</span> <span class="s">&#39;up&#39;</span>     <span class="o">:</span> <span class="mi">38</span><span class="p">,</span>
+    <span class="s">&#39;right&#39;</span><span class="o">:</span> <span class="mi">39</span><span class="p">,</span> <span class="s">&#39;down&#39;</span>   <span class="o">:</span> <span class="mi">40</span><span class="p">,</span>
+    <span class="s">&#39;shift&#39;</span><span class="o">:</span> <span class="mi">16</span><span class="p">,</span>
+    <span class="s">&#39;space&#39;</span><span class="o">:</span> <span class="mi">32</span>
+  <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Mapping of Keycodes --> Names</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">_names: </span><span class="p">{</span>
+    <span class="mi">13</span><span class="o">:</span> <span class="s">&#39;enter&#39;</span><span class="p">,</span>
+    <span class="mi">16</span><span class="o">:</span> <span class="s">&#39;shift&#39;</span><span class="p">,</span>
+    <span class="mi">17</span><span class="o">:</span> <span class="s">&#39;ctrl&#39;</span><span class="p">,</span>
+    <span class="mi">27</span><span class="o">:</span> <span class="s">&#39;esc&#39;</span><span class="p">,</span>
+    <span class="mi">32</span><span class="o">:</span> <span class="s">&#39;space&#39;</span><span class="p">,</span>
+    <span class="mi">37</span><span class="o">:</span> <span class="s">&#39;left&#39;</span><span class="p">,</span>
+    <span class="mi">38</span><span class="o">:</span> <span class="s">&#39;up&#39;</span><span class="p">,</span>
+    <span class="mi">39</span><span class="o">:</span> <span class="s">&#39;right&#39;</span><span class="p">,</span>
+    <span class="mi">40</span><span class="o">:</span> <span class="s">&#39;down&#39;</span><span class="p">,</span>
+    <span class="mi">48</span><span class="o">:</span> <span class="s">&#39;0&#39;</span><span class="p">,</span>
+    <span class="mi">49</span><span class="o">:</span> <span class="s">&#39;1&#39;</span><span class="p">,</span>
+    <span class="mi">50</span><span class="o">:</span> <span class="s">&#39;2&#39;</span><span class="p">,</span>
+    <span class="mi">51</span><span class="o">:</span> <span class="s">&#39;3&#39;</span><span class="p">,</span>
+    <span class="mi">52</span><span class="o">:</span> <span class="s">&#39;4&#39;</span><span class="p">,</span>
+    <span class="mi">53</span><span class="o">:</span> <span class="s">&#39;5&#39;</span><span class="p">,</span>
+    <span class="mi">54</span><span class="o">:</span> <span class="s">&#39;6&#39;</span><span class="p">,</span>
+    <span class="mi">55</span><span class="o">:</span> <span class="s">&#39;7&#39;</span><span class="p">,</span>
+    <span class="mi">56</span><span class="o">:</span> <span class="s">&#39;8&#39;</span><span class="p">,</span>
+    <span class="mi">57</span><span class="o">:</span> <span class="s">&#39;9&#39;</span><span class="p">,</span>
+    <span class="mi">65</span><span class="o">:</span> <span class="s">&#39;a&#39;</span><span class="p">,</span>
+    <span class="mi">66</span><span class="o">:</span> <span class="s">&#39;b&#39;</span><span class="p">,</span>
+    <span class="mi">67</span><span class="o">:</span> <span class="s">&#39;c&#39;</span><span class="p">,</span>
+    <span class="mi">68</span><span class="o">:</span> <span class="s">&#39;d&#39;</span><span class="p">,</span>
+    <span class="mi">69</span><span class="o">:</span> <span class="s">&#39;e&#39;</span><span class="p">,</span>
+    <span class="mi">70</span><span class="o">:</span> <span class="s">&#39;f&#39;</span><span class="p">,</span>
+    <span class="mi">71</span><span class="o">:</span> <span class="s">&#39;g&#39;</span><span class="p">,</span>
+    <span class="mi">72</span><span class="o">:</span> <span class="s">&#39;h&#39;</span><span class="p">,</span>
+    <span class="mi">73</span><span class="o">:</span> <span class="s">&#39;i&#39;</span><span class="p">,</span>
+    <span class="mi">74</span><span class="o">:</span> <span class="s">&#39;j&#39;</span><span class="p">,</span>
+    <span class="mi">75</span><span class="o">:</span> <span class="s">&#39;k&#39;</span><span class="p">,</span>
+    <span class="mi">76</span><span class="o">:</span> <span class="s">&#39;l&#39;</span><span class="p">,</span>
+    <span class="mi">77</span><span class="o">:</span> <span class="s">&#39;m&#39;</span><span class="p">,</span>
+    <span class="mi">78</span><span class="o">:</span> <span class="s">&#39;n&#39;</span><span class="p">,</span>
+    <span class="mi">79</span><span class="o">:</span> <span class="s">&#39;o&#39;</span><span class="p">,</span>
+    <span class="mi">80</span><span class="o">:</span> <span class="s">&#39;p&#39;</span><span class="p">,</span>
+    <span class="mi">81</span><span class="o">:</span> <span class="s">&#39;q&#39;</span><span class="p">,</span>
+    <span class="mi">82</span><span class="o">:</span> <span class="s">&#39;r&#39;</span><span class="p">,</span>
+    <span class="mi">83</span><span class="o">:</span> <span class="s">&#39;s&#39;</span><span class="p">,</span>
+    <span class="mi">84</span><span class="o">:</span> <span class="s">&#39;t&#39;</span><span class="p">,</span>
+    <span class="mi">85</span><span class="o">:</span> <span class="s">&#39;u&#39;</span><span class="p">,</span>
+    <span class="mi">86</span><span class="o">:</span> <span class="s">&#39;v&#39;</span><span class="p">,</span>
+    <span class="mi">87</span><span class="o">:</span> <span class="s">&#39;w&#39;</span><span class="p">,</span>
+    <span class="mi">88</span><span class="o">:</span> <span class="s">&#39;x&#39;</span><span class="p">,</span>
+    <span class="mi">89</span><span class="o">:</span> <span class="s">&#39;y&#39;</span><span class="p">,</span>
+    <span class="mi">90</span><span class="o">:</span> <span class="s">&#39;z&#39;</span>
+  <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Parse and save key binding/handler function pair</p>
+
+<ul>
+<li><strong>key</strong> - (String) The key to bind the function to, ex: <code>'b'</code></li>
+</ul>
+
+<p>Strips whitespace from key selector and converts to an internal keycode</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">bind: </span><span class="nf">(key, handler) -&gt;</span>
+    <span class="nv">key     = </span><span class="nx">key</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\s/g</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+    <span class="nv">keycode = </span><span class="nx">@_keycodes</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">||</span> <span class="nx">key</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">().</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="nx">@_handlers</span><span class="p">[</span><span class="nx">keycode</span><span class="p">]</span> <span class="o">||=</span> <span class="p">[]</span>
+    <span class="nx">@_handlers</span><span class="p">[</span><span class="nx">keycode</span><span class="p">].</span><span class="nx">push</span><span class="p">(</span><span class="nx">handler</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>Internally invoke the associated handler function when a bound key is pressed,
+and stops further event propagation</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">dispatch: </span><span class="nf">(event) -&gt;</span>
+    <span class="nv">keycode = </span><span class="nx">@eventKeyCode</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span>
+    <span class="k">return</span> <span class="k">if</span> <span class="nx">@reject</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">||</span> <span class="o">!</span><span class="nx">@_handlers</span><span class="p">[</span><span class="nx">keycode</span><span class="p">]</span><span class="o">?</span>
+
+    <span class="k">for</span> <span class="nx">handler</span> <span class="k">in</span> <span class="nx">@_handlers</span><span class="p">[</span><span class="nx">keycode</span><span class="p">]</span>
+      <span class="nx">handler</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span>
+      <span class="kc">false</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Ignore keypresses from elements that take keyboard data input,
+such as textareas. Returns Boolean</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">reject: </span><span class="nf">(event) -&gt;</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">contains</span> <span class="p">[</span><span class="s">&#39;INPUT&#39;</span><span class="p">,</span> <span class="s">&#39;SELECT&#39;</span><span class="p">,</span> <span class="s">&#39;TEXTAREA&#39;</span><span class="p">],</span> <span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">tagName</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Get the name of a key from a DOM event. Returns String</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">keycodeName: </span><span class="nf">(event) -&gt;</span>
+    <span class="nx">@_names</span><span class="p">[</span> <span class="nx">@eventKeyCode</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">]</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>Get the keycode for a DOM keyboard event. Returns Integer</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">eventKeyCode: </span><span class="nf">(event) -&gt;</span> <span class="nx">event</span><span class="p">.</span><span class="nx">which</span> <span class="o">||</span> <span class="nx">event</span><span class="p">.</span><span class="nx">keyCode</span>
+
+
+<span class="nx">Kona</span><span class="p">.</span><span class="nx">ready</span> <span class="o">-&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>Wire up keydown and keyup events to associated handlers if they exist</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nb">document</span><span class="p">.</span><span class="nv">body.onkeydown = </span><span class="nf">(e) -&gt;</span>
+    <span class="nv">name = </span><span class="nx">Kona</span><span class="p">.</span><span class="nx">Keys</span><span class="p">.</span><span class="nx">keycodeName</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span>
+    <span class="nx">Kona</span><span class="p">.</span><span class="nx">Keys</span><span class="p">.</span><span class="nx">keydown</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="k">if</span> <span class="nx">Kona</span><span class="p">.</span><span class="nx">Keys</span><span class="p">.</span><span class="nx">keydown</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>Set global key dispatch on the document bound to Kona.Keys context</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nb">document</span><span class="p">.</span><span class="nv">body.onkeyup = </span><span class="nf">(e) -&gt;</span>
+    <span class="nv">name = </span><span class="nx">Kona</span><span class="p">.</span><span class="nx">Keys</span><span class="p">.</span><span class="nx">keycodeName</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span>
+    <span class="nx">Kona</span><span class="p">.</span><span class="nx">Keys</span><span class="p">.</span><span class="nx">keyup</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="k">if</span> <span class="nx">Kona</span><span class="p">.</span><span class="nx">Keys</span><span class="p">.</span><span class="nx">keyup</span>
+
+  <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s">&#39;keydown&#39;</span><span class="p">,</span> <span class="nx">Kona</span><span class="p">.</span><span class="nx">Keys</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">Kona</span><span class="p">.</span><span class="nx">Keys</span><span class="p">),</span> <span class="kc">false</span><span class="p">)</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

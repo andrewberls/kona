@@ -1,0 +1,154 @@
+<!DOCTYPE html>  <html> <head>   <title>sound.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="canvas.html">                 canvas.coffee               </a>                                           <a class="source" href="collectable.html">                 collectable.coffee               </a>                                           <a class="source" href="engine.html">                 engine.coffee               </a>                                           <a class="source" href="entity.html">                 entity.coffee               </a>                                           <a class="source" href="events.html">                 events.coffee               </a>                                           <a class="source" href="keys.html">                 keys.coffee               </a>                                           <a class="source" href="kona.html">                 kona.coffee               </a>                                           <a class="source" href="scenes.html">                 scenes.coffee               </a>                                           <a class="source" href="sound.html">                 sound.coffee               </a>                                           <a class="source" href="tiles.html">                 tiles.coffee               </a>                                           <a class="source" href="utils.html">                 utils.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               sound.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p>Ex:
+  Kona.Sounds.load {
+    'fire' : 'enemy_fire.ogg'
+  }
+  Kona.Sounds.play('fire')</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">Kona.Sounds =</span>
+  <span class="nv">sounds: </span><span class="p">{}</span>
+
+  <span class="nv">load: </span><span class="nf">(sounds={}) -&gt;</span>
+    <span class="k">for</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">src</span> <span class="k">of</span> <span class="nx">sounds</span>
+      <span class="nx">@sounds</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Kona</span><span class="p">.</span><span class="nx">Sound</span><span class="p">(</span><span class="nx">src</span><span class="p">)</span>
+
+  <span class="nv">play: </span><span class="nf">(name) -&gt;</span>
+    <span class="nx">@sounds</span><span class="p">[</span><span class="nx">name</span><span class="p">].</span><span class="nx">play</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Ex:
+  fire = new Kona.Sound('enemy_fire.ogg')
+  fire.play()</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="k">class</span> <span class="nx">Kona</span><span class="p">.</span><span class="nx">Sound</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <hr />
+
+<h2>Class methods</h2>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="vi">@defaults:</span>
+    <span class="nv">autoplay: </span><span class="kc">false</span>
+    <span class="nv">duration: </span><span class="mi">5000</span>
+    <span class="nv">formats: </span><span class="p">[]</span>
+    <span class="nv">loop: </span><span class="kc">false</span>
+    <span class="nv">placeholder: </span><span class="s">&#39;--&#39;</span>
+    <span class="nv">preload: </span><span class="s">&#39;metadata&#39;</span>
+    <span class="nv">volume: </span><span class="mi">100</span>
+
+  <span class="vi">@types:</span>
+    <span class="s">&#39;mp3&#39;</span><span class="o">:</span> <span class="s">&#39;audio/mpeg&#39;</span>
+    <span class="s">&#39;ogg&#39;</span><span class="o">:</span> <span class="s">&#39;audio/ogg&#39;</span>
+    <span class="s">&#39;wav&#39;</span><span class="o">:</span> <span class="s">&#39;audio/wav&#39;</span>
+    <span class="s">&#39;aac&#39;</span><span class="o">:</span> <span class="s">&#39;audio/aac&#39;</span>
+    <span class="s">&#39;m4a&#39;</span><span class="o">:</span> <span class="s">&#39;audio/x-m4a&#39;</span>
+
+  <span class="vi">@testEl: </span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s">&#39;audio&#39;</span><span class="p">)</span>
+  <span class="vi">@isSupported: </span>   <span class="o">-&gt;</span> <span class="k">return</span> <span class="o">!!</span><span class="nx">@testEl</span><span class="p">.</span><span class="nx">canPlayType</span>
+  <span class="vi">@isOGGSupported: </span><span class="o">-&gt;</span> <span class="nx">@testEl</span><span class="p">.</span><span class="nx">canPlayType</span><span class="p">(</span><span class="s">&#39;audio/ogg codecs=&quot;vorbis&quot;&#39;</span><span class="p">)</span>
+  <span class="vi">@isWAVSupported: </span><span class="o">-&gt;</span> <span class="nx">@testEl</span><span class="p">.</span><span class="nx">canPlayType</span><span class="p">(</span><span class="s">&#39;audio/wav codecs=&quot;1&quot;&#39;</span><span class="p">)</span>
+  <span class="vi">@isMP3Supported: </span><span class="o">-&gt;</span> <span class="nx">@testEl</span><span class="p">.</span><span class="nx">canPlayType</span><span class="p">(</span><span class="s">&#39;audio/mpeg codecs=&quot;mp3&quot;&#39;</span><span class="p">)</span>
+  <span class="vi">@isAACSupported: </span><span class="o">-&gt;</span> <span class="p">(</span><span class="nx">@testEl</span><span class="p">.</span><span class="nx">canPlayType</span><span class="p">(</span><span class="s">&#39;audio/x-m4a&#39;</span><span class="p">)</span> <span class="o">||</span> <span class="nx">@testEl</span><span class="p">.</span><span class="nx">canPlayType</span><span class="p">(</span><span class="s">&#39;audio/aac&#39;</span><span class="p">))</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Run tests for supported audio formats
+Ex for Chrome 23.0.1271.64:
+Kona.Sound.supportedFormats()
+  OGG: yes
+  WAV: yes
+  MP3: yes
+  AAC: maybe</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="vi">@supportedFormats: </span><span class="o">-&gt;</span>
+    <span class="nv">supported = </span><span class="nf">(check) -&gt;</span> <span class="k">if</span> <span class="nx">check</span> <span class="o">==</span> <span class="s">&#39;&#39;</span> <span class="k">then</span> <span class="s">&#39;yes&#39;</span> <span class="k">else</span> <span class="nx">check</span>
+    <span class="nx">Kona</span><span class="p">.</span><span class="nx">debug</span> <span class="s">&quot;Audio format compatability:&quot;</span>
+    <span class="nx">Kona</span><span class="p">.</span><span class="nx">debug</span> <span class="s">&quot;  OGG: </span><span class="si">#{</span> <span class="nx">supported</span><span class="p">(</span><span class="nx">@isOGGSupported</span><span class="p">())</span> <span class="si">}</span><span class="s">&quot;</span>
+    <span class="nx">Kona</span><span class="p">.</span><span class="nx">debug</span> <span class="s">&quot;  WAV: </span><span class="si">#{</span> <span class="nx">supported</span><span class="p">(</span><span class="nx">@isWAVSupported</span><span class="p">())</span> <span class="si">}</span><span class="s">&quot;</span>
+    <span class="nx">Kona</span><span class="p">.</span><span class="nx">debug</span> <span class="s">&quot;  MP3: </span><span class="si">#{</span> <span class="nx">supported</span><span class="p">(</span><span class="nx">@isMP3Supported</span><span class="p">())</span> <span class="si">}</span><span class="s">&quot;</span>
+    <span class="nx">Kona</span><span class="p">.</span><span class="nx">debug</span> <span class="s">&quot;  AAC: </span><span class="si">#{</span> <span class="nx">supported</span><span class="p">(</span><span class="nx">@isAACSupported</span><span class="p">())</span> <span class="si">}</span><span class="s">&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <hr />
+
+<h2>Instance methods</h2>
+
+<p>Options:
+ - formats
+ - (x) loop
+ - autoplay
+ - preload
+ - volume</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">constructor: </span><span class="nf">(src, options={}) -&gt;</span>
+    <span class="vi">@supported  = </span><span class="nx">Kona</span><span class="p">.</span><span class="nx">Sound</span><span class="p">.</span><span class="nx">isSupported</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nx">@supported</span> <span class="o">&amp;&amp;</span> <span class="nx">src</span><span class="o">?</span>
+      <span class="k">for</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span> <span class="k">of</span> <span class="nx">Kona</span><span class="p">.</span><span class="nx">Sound</span><span class="p">.</span><span class="nx">defaults</span>
+        <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">options</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">||</span> <span class="nx">value</span>
+
+    <span class="vi">@el = </span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s">&#39;audio&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">src</span><span class="p">)</span>
+      <span class="nx">@addSource</span><span class="p">(</span><span class="nx">@el</span><span class="p">,</span> <span class="nx">s</span><span class="p">)</span> <span class="k">for</span> <span class="nx">s</span> <span class="k">in</span> <span class="nx">src</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">formats</span><span class="o">?</span> <span class="o">&amp;&amp;</span> <span class="nx">options</span><span class="p">.</span><span class="nx">formats</span><span class="p">.</span><span class="nx">length</span>
+      <span class="k">for</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span> <span class="k">in</span> <span class="nx">options</span><span class="p">.</span><span class="nx">formats</span>
+        <span class="nx">@addSource</span><span class="p">(</span><span class="nx">@el</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">src</span><span class="si">}</span><span class="s">.</span><span class="si">#{</span><span class="nx">key</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="k">else</span>
+      <span class="nx">@addSource</span><span class="p">(</span><span class="nx">@el</span><span class="p">,</span> <span class="nx">src</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>@loop() if options.loop</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="vi">@el.autoplay = </span><span class="s">&#39;autoplay&#39;</span> <span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">autoplay</span> <span class="o">==</span> <span class="kc">true</span>
+    <span class="vi">@el.preload  = </span><span class="k">if</span> <span class="nx">options</span><span class="p">.</span><span class="nx">preload</span> <span class="o">==</span> <span class="kc">true</span> <span class="k">then</span> <span class="s">&#39;auto&#39;</span> <span class="k">else</span> <span class="s">&#39;none&#39;</span>
+    <span class="nx">@setVolume</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">volume</span><span class="p">)</span>
+
+    <span class="nx">@el</span><span class="p">.</span><span class="nx">addEventListener</span> <span class="s">&quot;loadedmetadata&quot;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="vi">@duration = </span><span class="nx">@el</span><span class="p">.</span><span class="nx">duration</span>
+
+
+  <span class="nv">getExt: </span><span class="nf">(filename) -&gt;</span> <span class="nx">filename</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">).</span><span class="nx">pop</span><span class="p">()</span>
+
+  <span class="nv">addSource: </span><span class="nf">(el, src) -&gt;</span>
+    <span class="nv">source     = </span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s">&#39;source&#39;</span><span class="p">)</span>
+    <span class="nv">source.src = </span><span class="nx">src</span>
+    <span class="nv">ext = </span><span class="nx">@getExt</span><span class="p">(</span><span class="nx">src</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">Kona</span><span class="p">.</span><span class="nx">Sound</span><span class="p">.</span><span class="nx">types</span><span class="p">[</span><span class="nx">ext</span><span class="p">]</span><span class="o">?</span>
+      <span class="nv">source.type = </span><span class="nx">Kona</span><span class="p">.</span><span class="nx">Sound</span><span class="p">.</span><span class="nx">types</span><span class="p">[</span><span class="nx">ext</span><span class="p">]</span>
+    <span class="nx">el</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">source</span><span class="p">)</span>
+
+  <span class="nv">load: </span><span class="o">-&gt;</span> <span class="k">if</span> <span class="nx">@supported</span> <span class="k">then</span> <span class="nx">@el</span><span class="p">.</span><span class="nx">load</span><span class="p">()</span> <span class="k">else</span> <span class="nx">@</span>
+
+  <span class="nv">play: </span><span class="o">-&gt;</span> <span class="k">if</span> <span class="nx">@supported</span> <span class="k">then</span> <span class="nx">@el</span><span class="p">.</span><span class="nx">play</span><span class="p">()</span> <span class="k">else</span> <span class="nx">@</span>
+
+  <span class="nv">togglePlay: </span><span class="o">-&gt;</span>
+    <span class="k">return</span> <span class="nx">@</span> <span class="k">if</span> <span class="o">!</span><span class="nx">@supported</span>
+    <span class="k">if</span> <span class="nx">@el</span><span class="p">.</span><span class="nx">paused</span> <span class="k">then</span> <span class="nx">@el</span><span class="p">.</span><span class="nx">play</span><span class="p">()</span> <span class="k">else</span> <span class="nx">@el</span><span class="p">.</span><span class="nx">pause</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nx">@</span>
+
+  <span class="nv">pause: </span><span class="o">-&gt;</span> <span class="k">if</span> <span class="nx">@supported</span> <span class="k">then</span> <span class="nx">@el</span><span class="p">.</span><span class="nx">pause</span><span class="p">()</span> <span class="k">else</span> <span class="nx">@</span>
+
+  <span class="nv">isPaused: </span><span class="o">-&gt;</span> <span class="k">if</span> <span class="nx">@supported</span> <span class="k">then</span> <span class="nx">@el</span><span class="p">.</span><span class="nx">paused</span> <span class="k">else</span> <span class="kc">null</span>
+
+  <span class="nv">stop: </span><span class="o">-&gt;</span>
+    <span class="k">if</span> <span class="nx">@supported</span>
+      <span class="vi">@el.currentTime = </span><span class="nx">@el</span><span class="p">.</span><span class="nx">duration</span>
+      <span class="nx">@el</span><span class="p">.</span><span class="nx">pause</span><span class="p">()</span>
+    <span class="k">else</span>
+      <span class="kc">null</span>
+
+  <span class="nv">isEnded: </span><span class="o">-&gt;</span> <span class="k">if</span> <span class="nx">@supported</span> <span class="k">then</span> <span class="nx">@el</span><span class="p">.</span><span class="nx">ended</span> <span class="k">else</span> <span class="kc">null</span>
+
+  <span class="nv">getDuration: </span><span class="o">-&gt;</span> <span class="k">if</span> <span class="nx">@supported</span> <span class="k">then</span> <span class="nx">@duration</span> <span class="k">else</span> <span class="kc">null</span>
+
+  <span class="nv">mute: </span><span class="o">-&gt;</span> <span class="k">if</span> <span class="nx">@supported</span> <span class="k">then</span> <span class="vi">@el.muted = </span><span class="kc">true</span> <span class="k">else</span> <span class="kc">null</span>
+
+  <span class="nv">unmute: </span><span class="o">-&gt;</span> <span class="k">if</span> <span class="nx">@supported</span> <span class="k">then</span> <span class="vi">@el.muted = </span><span class="kc">false</span> <span class="k">else</span> <span class="kc">null</span>
+
+  <span class="nv">isMuted: </span><span class="o">-&gt;</span> <span class="k">if</span> <span class="nx">@supported</span> <span class="k">then</span> <span class="nx">@el</span><span class="p">.</span><span class="nx">muted</span> <span class="k">else</span> <span class="kc">null</span>
+
+  <span class="nv">toggleMute: </span><span class="o">-&gt;</span> <span class="k">if</span> <span class="nx">@supported</span> <span class="k">then</span> <span class="vi">@el.muted = </span><span class="o">!</span><span class="nx">@el</span><span class="p">.</span><span class="nx">muted</span> <span class="k">else</span> <span class="kc">null</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Set volume, on a scale of 1-100.
+Value is automatically scaled for audio tag</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">setVolume: </span><span class="nf">(volume) -&gt;</span>
+    <span class="k">return</span> <span class="nx">@</span> <span class="k">if</span> <span class="o">!</span><span class="nx">@supported</span>
+    <span class="nv">volume  = </span><span class="mi">0</span>   <span class="k">if</span> <span class="nx">volume</span> <span class="o">&lt;</span> <span class="mi">0</span>
+    <span class="nv">volume  = </span><span class="mi">100</span> <span class="k">if</span> <span class="nx">volume</span> <span class="o">&gt;</span> <span class="mi">100</span>
+    <span class="vi">@volume = </span><span class="nx">volume</span>
+    <span class="vi">@el.volume = </span><span class="nx">volume</span> <span class="o">/</span> <span class="mi">100</span>
+    <span class="k">return</span> <span class="nx">@</span>
+
+  <span class="nv">getVolume: </span><span class="o">-&gt;</span> <span class="k">if</span> <span class="nx">@supported</span> <span class="k">then</span> <span class="nx">@volume</span> <span class="k">else</span> <span class="kc">null</span>
+
+  <span class="nv">increaseVolume: </span><span class="nf">(value=1) -&gt;</span> <span class="nx">@setVolume</span><span class="p">(</span><span class="nx">@volume</span> <span class="o">+</span> <span class="nx">value</span><span class="p">)</span>
+
+  <span class="nv">decreaseVolume: </span><span class="nf">(value=1) -&gt;</span> <span class="nx">@setVolume</span><span class="p">(</span><span class="nx">@volume</span> <span class="o">-</span> <span class="nx">value</span><span class="p">)</span>
+
+  <span class="nv">getTime: </span><span class="o">-&gt;</span>
+    <span class="k">return</span> <span class="kc">null</span> <span class="k">if</span> <span class="o">!</span><span class="nx">@supported</span>
+    <span class="nv">time = </span><span class="nb">Math</span><span class="p">.</span><span class="nx">round</span><span class="p">(</span><span class="nx">@el</span><span class="p">.</span><span class="nx">currentTime</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
+    <span class="k">if</span> <span class="nb">isNaN</span><span class="p">(</span><span class="nx">time</span><span class="p">)</span> <span class="k">then</span> <span class="nx">Kona</span><span class="p">.</span><span class="nx">Sound</span><span class="p">.</span><span class="nx">defaults</span><span class="p">.</span><span class="nx">placeholder</span> <span class="k">else</span> <span class="nx">time</span>
+
+  <span class="nv">getDuration: </span><span class="o">-&gt;</span> <span class="k">if</span> <span class="nx">@supported</span> <span class="k">then</span> <span class="nx">@el</span><span class="p">.</span><span class="nx">duration</span> <span class="k">else</span> <span class="kc">null</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>setTime: (time) ->
+  return @ if !@supported
+  @whenReady ->
+    @el.currentTime = time
+    return @</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>setPercent: (percent) ->
+  return @ if !@supported
+  return @setTime(Kona.Sound.fromPercent(percent, @el.duration))</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>getPercent: ->
+  return @ if !@supported
+  percent = Math.round(Kona.Sound.toPercent(@el.currentTime, @el.duration))
+  return (if isNaN(percent) then Kona.Sound.defaults.placeholder else percent)</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>toPercent: (value, total, decimal) ->
+  r = Math.pow(10, decimal || 0)
+  return Math.round(((value * 100) / total) * r) / r</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>fromPercent: (percent, total, decimal) ->
+  r = Math.pow(10, decimal || 0)
+  return Math.round(((total / 100) * percent) * r) / r</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>loop: -></p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <p>unloop: -></p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

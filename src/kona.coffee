@@ -1,3 +1,7 @@
+# Initialize the main Kona object, as well as a few miscellaneous helper functions
+
+
+# Set the main object on the window
 Kona = window.Kona = {}
 
 # Set this to true to log info to the console
@@ -10,6 +14,13 @@ window.puts = (obj) -> Kona.debug obj
 Kona.readyCallbacks = []
 Kona.isReady = false
 
+# Invoke a callback function when the document has fully loaded. Can be invoked
+# multiple times - callbacks will be pushed onto a list
+#
+# Ex:
+#
+#     Kona.ready ->
+#       console.log "Ready to go!"
 Kona.ready = (callback) ->
   if document.readyState == 'complete'
     Kona.isReady = true
@@ -21,9 +32,9 @@ Kona.ready = (callback) ->
   Kona.readyCallbacks.push(callback)
 
 
-# Internal function hooked to the DOM's ready event.
+# Internal function hooked to the DOM's ready event. Do nothing if already ready
 Kona.DOMContentLoaded = ->
-  return if Kona.isReady # Do nothing if already ready
+  return if Kona.isReady
   Kona.isReady = true
   for callback in Kona.readyCallbacks
     callback.call()

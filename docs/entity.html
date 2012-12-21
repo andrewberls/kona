@@ -1,0 +1,189 @@
+<!DOCTYPE html>  <html> <head>   <title>entity.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="canvas.html">                 canvas.coffee               </a>                                           <a class="source" href="collectable.html">                 collectable.coffee               </a>                                           <a class="source" href="engine.html">                 engine.coffee               </a>                                           <a class="source" href="entity.html">                 entity.coffee               </a>                                           <a class="source" href="events.html">                 events.coffee               </a>                                           <a class="source" href="keys.html">                 keys.coffee               </a>                                           <a class="source" href="kona.html">                 kona.coffee               </a>                                           <a class="source" href="scenes.html">                 scenes.coffee               </a>                                           <a class="source" href="sound.html">                 sound.coffee               </a>                                           <a class="source" href="tiles.html">                 tiles.coffee               </a>                                           <a class="source" href="utils.html">                 utils.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               entity.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p>An abstract class representing a renderable screen object belonging to a scene</p>
+
+<p>Basics such as position, direction, box model, and collision detection/resolution
+are handled within this class.</p>
+
+<p>All distinct objects on the canvas should inherit from this class -
+players, enemies, projectiles, collectables, etc.</p>
+
+<p>Ex:</p>
+
+<pre><code>class Enemy extends Kona.Entity
+  constructor: (opts={}) -&gt;
+    super(opts)
+    # custom code here ...
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>A superconstructor initializing some basic fields.
+Game object constructors should call this. For example:</p>
+
+<pre><code>class Enemy extends Kona.Entity
+  constructor: (opts={}) -&gt;
+    super(opts)
+    @isEvil = true
+</code></pre>
+
+<p>Options:</p>
+
+<ul>
+<li><strong>group</strong> - (String) The group this entity belongs to, ex: <code>'enemies'</code></li>
+<li><strong>solid</strong> - (Boolean) Whether or not this entity is solid, e.g., can this collide with other entities. Default: true.</li>
+<li><strong>gravity</strong> - (Boolean) Whether or not this entity is subject to gravity. Default: true</li>
+<li><strong>speed</strong> - (Integer) The speed of this entity when moving.</li>
+<li><strong>facing</strong> - (String) The direction this entity is facing. Possible values: <code>'left'</code> or <code>'right'</code></li>
+<li><strong>position</strong> - (Object)
+<ul><li>x: integer x-coordinate on the canvas</li>
+<li>y: integer y-coordinate on the canvas</li></ul></li>
+<li><strong>direction</strong> - (Object) Values representing the current direction of the entity.
+<ul><li>dx: <code>-1 = left, 1 = right, 0 = stationary</code></li>
+<li>dy: <code>-1 = up, 1 = down, 0 = stationary</code></li></ul></li>
+<li><strong>box</strong> - (Object) Values representing the dimensions of the entity. Collisions
+are resolved in terms of a rectangular box model.
+<ul><li>width: An integer width, in pixels</li>
+<li>height: An integer height, in pixels</li></ul></li>
+<li><strong>sprite</strong> - (Type)</li>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre> <span class="k">class</span> <span class="nx">Kona</span><span class="p">.</span><span class="nx">Entity</span>
+  <span class="vi">@grav = </span><span class="mi">8</span>
+
+  <span class="nv">constructor: </span><span class="nf">(opts={}) -&gt;</span>
+    <span class="vi">@group   = </span><span class="nx">opts</span><span class="p">.</span><span class="nx">group</span> <span class="o">or</span> <span class="nx">fail</span> <span class="p">(</span><span class="s">&quot;Error - entity must have a group&quot;</span><span class="p">)</span>
+    <span class="vi">@solid   = </span><span class="nx">opts</span><span class="p">.</span><span class="nx">solid</span>   <span class="o">||</span> <span class="kc">true</span>
+    <span class="vi">@gravity = </span><span class="nx">opts</span><span class="p">.</span><span class="nx">gravity</span> <span class="o">||</span> <span class="kc">true</span>
+    <span class="vi">@speed   = </span><span class="nx">opts</span><span class="p">.</span><span class="nx">speed</span>   <span class="o">||</span> <span class="mi">0</span>
+    <span class="vi">@facing  = </span><span class="nx">opts</span><span class="p">.</span><span class="nx">facing</span>  <span class="o">||</span> <span class="s">&#39;&#39;</span>
+
+    <span class="vi">@color   = </span><span class="nx">opts</span><span class="p">.</span><span class="nx">color</span>
+
+    <span class="vi">@position =</span>
+      <span class="nv">x: </span><span class="nx">opts</span><span class="p">.</span><span class="nx">x</span> <span class="o">||</span> <span class="mi">0</span>
+      <span class="nv">y: </span><span class="nx">opts</span><span class="p">.</span><span class="nx">y</span> <span class="o">||</span> <span class="mi">0</span>
+
+    <span class="vi">@direction =</span>
+      <span class="nv">dx: </span><span class="nx">opts</span><span class="p">.</span><span class="nx">dx</span> <span class="o">||</span> <span class="mi">0</span>
+      <span class="nv">dy: </span><span class="nx">opts</span><span class="p">.</span><span class="nx">dy</span> <span class="o">||</span> <span class="mi">0</span>
+
+    <span class="vi">@box =</span>
+      <span class="nv">width: </span> <span class="nx">opts</span><span class="p">.</span><span class="nx">width</span>  <span class="o">||</span> <span class="mi">0</span>
+      <span class="nv">height: </span><span class="nx">opts</span><span class="p">.</span><span class="nx">height</span> <span class="o">||</span> <span class="mi">0</span>
+
+    <span class="vi">@sprite = </span><span class="k">new</span> <span class="nx">Image</span><span class="p">()</span>
+    <span class="vi">@sprite.src = </span><span class="s">&#39;&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Apply any directional changes each frame, and resolve any
+resulting collisions (ex running into a wall)
+Note that only the x direction is handled automatically
+<strong>Gravity or other vertical effects must be applied manually
+in a child function.</strong></p>
+
+<p>Ex:</p>
+
+<pre><code>class Enemy extends Kona.Entity
+  update: -&gt;
+    super
+    @addGravity()
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">update: </span><span class="o">-&gt;</span>
+    <span class="k">if</span> <span class="nx">@direction</span><span class="p">.</span><span class="nx">dx</span> <span class="o">&gt;</span> <span class="mi">0</span>
+      <span class="vi">@facing = </span><span class="s">&#39;right&#39;</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="nx">@direction</span><span class="p">.</span><span class="nx">dx</span> <span class="o">&lt;</span> <span class="mi">0</span>
+      <span class="vi">@facing = </span><span class="s">&#39;left&#39;</span>
+
+    <span class="nx">@position</span><span class="p">.</span><span class="nx">x</span> <span class="o">+=</span> <span class="nx">@speed</span> <span class="o">*</span> <span class="nx">@direction</span><span class="p">.</span><span class="nx">dx</span>
+    <span class="nx">@correctLeft</span><span class="p">()</span>
+    <span class="nx">@correctRight</span><span class="p">()</span>
+
+  <span class="nv">draw: </span><span class="o">-&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Destroy an instance by removing it from the current scene</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">destroy: </span><span class="nf">(name) -&gt;</span>
+    <span class="nx">Kona</span><span class="p">.</span><span class="nx">Scenes</span><span class="p">.</span><span class="nx">currentScene</span><span class="p">.</span><span class="nx">removeEntity</span><span class="p">(</span><span class="nx">@group</span><span class="p">,</span> <span class="nx">@</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <hr />
+
+<h2>Edge Accessors</h2>
+
+<p>Return the coordinates of bounding box edges, in pixels</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">top: </span>   <span class="o">-&gt;</span> <span class="nx">@position</span><span class="p">.</span><span class="nx">y</span>
+  <span class="nv">bottom: </span><span class="o">-&gt;</span> <span class="nx">@position</span><span class="p">.</span><span class="nx">y</span> <span class="o">+</span> <span class="nx">@box</span><span class="p">.</span><span class="nx">height</span>
+  <span class="nv">left: </span>  <span class="o">-&gt;</span> <span class="nx">@position</span><span class="p">.</span><span class="nx">x</span>
+  <span class="nv">right: </span> <span class="o">-&gt;</span> <span class="nx">@position</span><span class="p">.</span><span class="nx">x</span> <span class="o">+</span> <span class="nx">@box</span><span class="p">.</span><span class="nx">width</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <hr />
+
+<h2>Motion</h2>
+
+<p>Booleans indicating whether or not the entity is moving</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">movingLeft: </span> <span class="o">-&gt;</span> <span class="nx">@direction</span><span class="p">.</span><span class="nx">dx</span> <span class="o">&lt;</span> <span class="mi">0</span>
+  <span class="nv">movingRight: </span><span class="o">-&gt;</span> <span class="nx">@direction</span><span class="p">.</span><span class="nx">dx</span> <span class="o">&gt;</span> <span class="mi">0</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Add gravity to the entities position, and resolve any resulting collisions
+ex, prevent falling through the floor.
+Intended to be called in an <code>update()</code> function</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">addGravity: </span><span class="o">-&gt;</span>
+    <span class="k">if</span> <span class="nx">@gravity</span>
+      <span class="nx">@position</span><span class="p">.</span><span class="nx">y</span> <span class="o">+=</span> <span class="nx">Kona</span><span class="p">.</span><span class="nx">Entity</span><span class="p">.</span><span class="nx">grav</span>
+      <span class="nx">@correctBottom</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Move the entity to a specified pair of coordinates</p>
+
+<ul>
+<li>x: An integer x-coordinate in pixels</li>
+<li>y: An integer y-coordinate in pixels</li>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">setPosition: </span><span class="nf">(x, y) -&gt;</span>
+    <span class="vi">@position.x = </span><span class="nx">x</span>
+    <span class="vi">@position.y = </span><span class="nx">y</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>Stop all motion on an axis. Motion is stopped in all directions if one is not provided.</p>
+
+<p>Ex: <code>player.stop('dx')</code></p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">stop: </span><span class="nf">(axis) -&gt;</span>
+    <span class="k">if</span> <span class="nx">axis</span><span class="o">?</span>
+      <span class="nx">@direction</span><span class="p">[</span><span class="nx">axis</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span>
+      <span class="vi">@direction.dx = @direction.dy = </span><span class="mi">0</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <hr />
+
+<h2>Collision detection</h2>
+
+<p>To collide with an entity from the left or right, you must be in its row</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">inRowSpace: </span><span class="nf">(e) -&gt;</span>
+    <span class="nx">@bottom</span><span class="p">()</span> <span class="o">&gt;</span> <span class="nx">e</span><span class="p">.</span><span class="nx">top</span><span class="p">()</span> <span class="o">and</span> <span class="nx">@top</span><span class="p">()</span> <span class="o">&lt;</span> <span class="nx">e</span><span class="p">.</span><span class="nx">bottom</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>To collide with an entity from the top or bottom, you must be in its column</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">inColumnSpace: </span><span class="nf">(e) -&gt;</span>
+    <span class="nx">@left</span><span class="p">()</span> <span class="o">&lt;</span> <span class="nx">e</span><span class="p">.</span><span class="nx">right</span><span class="p">()</span> <span class="o">and</span> <span class="nx">@right</span><span class="p">()</span> <span class="o">&gt;</span> <span class="nx">e</span><span class="p">.</span><span class="nx">left</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>Loop over solid entities in the current scene, and invoke
+a function on them.
+TODO: Remove duplication between this and onSurface()
+TODO: Be smarter about computing which entities to test</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">eachSolidEntity: </span><span class="p">(</span><span class="nx">fxn</span><span class="p">)</span> <span class="o">=&gt;</span>
+    <span class="k">for</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">list</span> <span class="k">of</span> <span class="nx">Kona</span><span class="p">.</span><span class="nx">Scenes</span><span class="p">.</span><span class="nx">currentScene</span><span class="p">.</span><span class="nx">entities</span>
+      <span class="nv">list = </span><span class="nx">_</span><span class="p">.</span><span class="nx">reject</span> <span class="nx">list</span><span class="p">,</span> <span class="p">(</span><span class="nx">ent</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">ent</span> <span class="o">==</span> <span class="nx">@</span>
+      <span class="k">for</span> <span class="nx">ent</span> <span class="k">in</span> <span class="nx">list</span>
+        <span class="nx">fxn</span><span class="p">(</span><span class="nx">ent</span><span class="p">)</span> <span class="k">if</span> <span class="nx">ent</span><span class="o">?</span> <span class="o">&amp;&amp;</span> <span class="nx">ent</span><span class="p">.</span><span class="nx">solid</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>Loop over solid neighbor entities and determine whether or not a collision occurs
+based on a condition function. Makes detection more generic.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">isCollision: </span><span class="nf">(checkFxn) -&gt;</span>
+    <span class="nv">collision = </span><span class="kc">false</span>
+    <span class="nx">@eachSolidEntity</span> <span class="p">(</span><span class="nx">ent</span><span class="p">)</span> <span class="o">=&gt;</span>
+      <span class="nv">collision = </span><span class="kc">true</span> <span class="k">if</span> <span class="nx">checkFxn</span><span class="p">(</span><span class="nx">ent</span><span class="p">)</span>
+    <span class="nx">collision</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <p>The following methods may cause some confusion.</p>
+
+<p>For each edge (left, right, top, bottom), there are 2 methods for
+detecting collisions on that edge.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <p><strong>Plural methods</strong>, ex <code>leftCollisions</code>, check for collisions with any other entities
+in the scene.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <p><strong>Singular</strong> methods, ex <code>leftCollision</code>, check for collisions with a specified
+entity passed as a parameter</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <p><strong>Left collision</strong>: left edge hitting an entities right</p>
+
+<p>Collision with a specific entity</p>
+
+<p>Returns Boolean</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">leftCollision: </span><span class="nf">(ent) -&gt;</span>
+    <span class="nx">@right</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="nx">ent</span><span class="p">.</span><span class="nx">right</span><span class="p">()</span> <span class="o">and</span> <span class="nx">@left</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="nx">ent</span><span class="p">.</span><span class="nx">right</span><span class="p">()</span> <span class="o">and</span> <span class="nx">@inRowSpace</span><span class="p">(</span><span class="nx">ent</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <p>Collision with a nearby neighbor. Returns Boolean</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">leftCollisions: </span><span class="o">-&gt;</span> <span class="k">return</span> <span class="nx">@isCollision</span> <span class="p">(</span><span class="nx">ent</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">@leftCollision</span><span class="p">(</span><span class="nx">ent</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <p><strong>Right collision</strong>: right edge hitting an entities left</p>
+
+<p>Collision with a specific entity. Returns Boolean</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">rightCollision: </span><span class="nf">(ent) -&gt;</span>
+    <span class="nx">@left</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="nx">ent</span><span class="p">.</span><span class="nx">left</span><span class="p">()</span> <span class="o">and</span> <span class="nx">@right</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="nx">ent</span><span class="p">.</span><span class="nx">left</span><span class="p">()</span> <span class="o">and</span> <span class="nx">@inRowSpace</span><span class="p">(</span><span class="nx">ent</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <p>Collision with a nearby neighbor. Returns Boolean</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">rightCollisions: </span><span class="o">-&gt;</span> <span class="k">return</span> <span class="nx">@isCollision</span> <span class="p">(</span><span class="nx">ent</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">@rightCollision</span><span class="p">(</span><span class="nx">ent</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <p><strong>Top collision</strong>: top edge hitting an entities bottom</p>
+
+<p>Collision with a specific entity. Returns Boolean</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">topCollision: </span><span class="nf">(ent) -&gt;</span>
+    <span class="nx">@bottom</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="nx">ent</span><span class="p">.</span><span class="nx">bottom</span><span class="p">()</span> <span class="o">and</span> <span class="nx">@top</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="nx">ent</span><span class="p">.</span><span class="nx">bottom</span><span class="p">()</span> <span class="o">and</span> <span class="nx">@inColumnSpace</span><span class="p">(</span><span class="nx">ent</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <p>Collision with a nearby neighbor. Returns Boolean</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">topCollisions: </span><span class="o">-&gt;</span> <span class="k">return</span> <span class="nx">@isCollision</span> <span class="p">(</span><span class="nx">ent</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">@topCollision</span><span class="p">(</span><span class="nx">ent</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-23">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-23">&#182;</a>               </div>               <p><strong>Bottom collision</strong>: bottom edge hitting an entities top</p>
+
+<p>Collision with a specific entity. Returns Boolean</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">bottomCollision: </span><span class="nf">(ent) -&gt;</span>
+    <span class="nx">@top</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="nx">ent</span><span class="p">.</span><span class="nx">top</span><span class="p">()</span> <span class="o">and</span> <span class="nx">@bottom</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="nx">ent</span><span class="p">.</span><span class="nx">top</span><span class="p">()</span> <span class="o">and</span> <span class="nx">@inColumnSpace</span><span class="p">(</span><span class="nx">ent</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-24">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-24">&#182;</a>               </div>               <p>Collision with a nearby neighbor. Returns Boolean</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">bottomCollisions: </span><span class="o">-&gt;</span> <span class="k">return</span> <span class="nx">@isCollision</span> <span class="p">(</span><span class="nx">ent</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">@bottomCollision</span><span class="p">(</span><span class="nx">ent</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-25">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-25">&#182;</a>               </div>               <p>Collision from any side with another entity. Returns Boolean</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">intersecting: </span><span class="nf">(ent) -&gt;</span>
+    <span class="nx">@leftCollision</span><span class="p">(</span><span class="nx">ent</span><span class="p">)</span> <span class="o">||</span> <span class="nx">@rightCollision</span><span class="p">(</span><span class="nx">ent</span><span class="p">)</span> <span class="o">||</span><span class="nx">@topCollision</span><span class="p">(</span><span class="nx">ent</span><span class="p">)</span> <span class="o">||</span> <span class="nx">@bottomCollision</span><span class="p">(</span><span class="nx">ent</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-26">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-26">&#182;</a>               </div>               <p>Is this entity standing on a surface?</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">onSurface: </span><span class="o">=&gt;</span>
+    <span class="k">for</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">list</span> <span class="k">of</span> <span class="nx">Kona</span><span class="p">.</span><span class="nx">Scenes</span><span class="p">.</span><span class="nx">currentScene</span><span class="p">.</span><span class="nx">entities</span>
+      <span class="nv">list = </span><span class="nx">_</span><span class="p">.</span><span class="nx">reject</span> <span class="nx">list</span><span class="p">,</span> <span class="p">(</span><span class="nx">ent</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">ent</span> <span class="o">==</span> <span class="nx">@</span>
+      <span class="k">for</span> <span class="nx">ent</span> <span class="k">in</span> <span class="nx">list</span>
+        <span class="k">return</span> <span class="kc">true</span> <span class="k">if</span> <span class="nx">ent</span><span class="p">.</span><span class="nx">solid</span> <span class="o">&amp;&amp;</span> <span class="nx">ent</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">y</span> <span class="o">==</span> <span class="nx">@bottom</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="kc">false</span></pre></div>             </td>           </tr>                               <tr id="section-27">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-27">&#182;</a>               </div>               <hr />
+
+<h2>Collision correction</h2>
+
+<p>Resolve collisions after getting user input and applying transformations to entity</p>
+
+<p>For example, prevent a player from falling through the floor after applying
+gravity.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">correctLeft: </span>  <span class="o">-&gt;</span> <span class="nx">@position</span><span class="p">.</span><span class="nx">x</span> <span class="o">+=</span> <span class="mi">1</span> <span class="k">while</span> <span class="nx">@leftCollisions</span><span class="p">()</span> <span class="o">||</span> <span class="nx">@left</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">0</span>
+  <span class="nv">correctRight: </span> <span class="o">-&gt;</span> <span class="nx">@position</span><span class="p">.</span><span class="nx">x</span> <span class="o">-=</span> <span class="mi">1</span> <span class="k">while</span> <span class="nx">@rightCollisions</span><span class="p">()</span>
+  <span class="nv">correctTop: </span>   <span class="o">-&gt;</span> <span class="nx">@position</span><span class="p">.</span><span class="nx">y</span> <span class="o">+=</span> <span class="mi">1</span> <span class="k">while</span> <span class="nx">@topCollisions</span><span class="p">()</span>
+  <span class="nv">correctBottom: </span><span class="o">-&gt;</span> <span class="nx">@position</span><span class="p">.</span><span class="nx">y</span> <span class="o">-=</span> <span class="mi">1</span> <span class="k">while</span> <span class="nx">@bottomCollisions</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-28">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-28">&#182;</a>               </div>               <hr />
+
+<h2>Collectables</h2>
+
+<p>Mark this entity as a collector for a group of collectables.
+Intended for initialization in a constructor.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-29">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-29">&#182;</a>               </div>               <p>After calling, this entity will automatically collect ('activate')
+the specified collectables on contact.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-30">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-30">&#182;</a>               </div>               <p>See docs for Kona.Collectable.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-31">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-31">&#182;</a>               </div>               <p>Ex:</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-32">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-32">&#182;</a>               </div>               <pre><code>class Player extends Kona.Entity
+  constructor: (opts={}) -&gt;
+    super(opts)
+    @collects('coins')
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">collects: </span><span class="nf">(names...) -&gt;</span>
+    <span class="k">for</span> <span class="nx">name</span> <span class="k">in</span> <span class="nx">names</span>
+      <span class="nx">Kona</span><span class="p">.</span><span class="nx">Collectors</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">@</span><span class="p">)</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

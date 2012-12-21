@@ -108,7 +108,14 @@ task :clean do
 end
 
 
-# Build the demo
+
+desc 'Generate docs'
+task :docs do
+  system "docco #{SRC_PATH}/*.coffee"
+end
+
+
+
 desc 'Build the demo'
 task :demo do
   files = [
