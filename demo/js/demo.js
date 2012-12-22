@@ -31,12 +31,14 @@ Kona.ready(function() {
       this.isJumping = false;
       this.facing = 'right';
       this.canFire = false;
+      this.sprite = new Kona.Sprite('img/entities/player.png');
       this.currentWeapon = null;
       this.collects('coins', 'weapons');
     }
 
     Player.prototype.update = function() {
       Player.__super__.update.apply(this, arguments);
+      this.sprite.setSrc("img/entities/player_" + this.facing + ".png");
       if (this.isJumping) {
         this.position.y -= this.jumpHeight;
         this.correctTop();
@@ -51,14 +53,6 @@ Kona.ready(function() {
         level1_2.addEntity(player);
         return player.setPosition(0, this.top());
       }
-    };
-
-    Player.prototype.draw = function() {
-      var _this = this;
-      return Kona.Canvas.safe(function() {
-        Kona.Canvas.ctx.fillStyle = _this.color;
-        return Kona.Canvas.ctx.fillRect(_this.position.x, _this.position.y, _this.box.width, _this.box.height);
-      });
     };
 
     Player.prototype.jump = function() {
@@ -97,25 +91,13 @@ Kona.ready(function() {
 
     __extends(Enemy, _super);
 
-    function Enemy(opts) {
-      if (opts == null) {
-        opts = {};
-      }
-      Enemy.__super__.constructor.call(this, opts);
-      this.speed = 2;
+    function Enemy() {
+      return Enemy.__super__.constructor.apply(this, arguments);
     }
 
     Enemy.prototype.update = function() {
       Enemy.__super__.update.apply(this, arguments);
       return this.addGravity();
-    };
-
-    Enemy.prototype.draw = function() {
-      var _this = this;
-      return Kona.Canvas.safe(function() {
-        Kona.Canvas.ctx.fillStyle = _this.color;
-        return Kona.Canvas.ctx.fillRect(_this.position.x, _this.position.y, _this.box.width, _this.box.height);
-      });
     };
 
     return Enemy;
@@ -128,14 +110,6 @@ Kona.ready(function() {
     function Coin() {
       return Coin.__super__.constructor.apply(this, arguments);
     }
-
-    Coin.prototype.draw = function() {
-      var _this = this;
-      return Kona.Canvas.safe(function() {
-        Kona.Canvas.ctx.fillStyle = _this.color;
-        return Kona.Canvas.ctx.fillRect(_this.position.x, _this.position.y, _this.box.width, _this.box.height);
-      });
-    };
 
     Coin.prototype.activate = function(collector) {
       return puts("Coin activated!");
@@ -197,10 +171,10 @@ Kona.ready(function() {
       this.recharge = 150;
       this.projType = PistolProj;
       this.projSound = 'fire';
+      this.sprite = new Kona.Sprite('img/weapons/pistol.png');
     }
 
     Pistol.prototype.activate = function(collector) {
-      puts("Pistol activated!");
       this.holder = collector;
       return collector.currentWeapon = this;
     };
@@ -263,13 +237,21 @@ Kona.ready(function() {
       };
     }
 
+    PistolProj.prototype.draw = function() {
+      var _this = this;
+      return Kona.Canvas.safe(function() {
+        Kona.Canvas.ctx.fillStyle = 'red';
+        return Kona.Canvas.ctx.fillRect(_this.position.x, _this.position.y, _this.box.width, _this.box.height);
+      });
+    };
+
     return PistolProj;
 
   })(Projectile);
   player = new Player({
     x: 200,
     y: 200,
-    width: 30,
+    width: 40,
     height: 55,
     color: 'black',
     group: 'player'
@@ -306,55 +288,54 @@ Kona.ready(function() {
       group: 'tiles',
       klass: Kona.Tile,
       opts: {
-        color: 'red'
+        sprite: ''
       }
     },
     'o': {
       group: 'tiles',
       klass: Kona.Tile,
       opts: {
-        color: 'orange'
+        sprite: ''
       }
     },
     'b': {
       group: 'tiles',
       klass: Kona.Tile,
       opts: {
-        color: 'blue'
+        sprite: ''
       }
     },
     'x': {
       group: 'enemies',
       klass: Enemy,
       opts: {
-        width: 30,
-        height: 55,
-        color: '#00ffcc',
+        width: 40,
+        height: 60,
         offset: {
           x: 15
-        }
+        },
+        sprite: 'img/entities/ninja1.png'
       }
     },
     'c': {
       group: 'coins',
       klass: Coin,
       opts: {
-        width: 30,
-        height: 30,
-        color: 'yellow',
+        width: 25,
+        height: 25,
         offset: {
-          x: 15,
-          y: 15
-        }
+          x: 20,
+          y: 20
+        },
+        sprite: 'img/powerups/coin.png'
       }
     },
     'p': {
       group: 'weapons',
       klass: Pistol,
       opts: {
-        width: 30,
-        height: 10,
-        color: 'black',
+        width: 50,
+        height: 25,
         offset: {
           x: 15,
           y: 15
@@ -362,7 +343,7 @@ Kona.ready(function() {
       }
     }
   };
-  level1_1.load([['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', 'o', 'b'], ['r', 'b', '-', '-', '-', '-', '-', '-', 'r', '-', '-'], ['o', '-', '-', '-', '-', '-', 'x', '-', '-', '-', '-'], ['r', '-', 'c', 'o', 'p', '-', 'b', 'o', '-', '-', '-'], ['b', 'o', 'r', 'b', 'r', '-', '-', 'r', 'o', '-', 'r']]);
+  level1_1.load([['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', 'o', 'b'], ['r', 'b', '-', '-', '-', '-', '-', '-', 'r', '-', '-'], ['o', '-', '-', '-', '-', '-', 'x', '-', '-', '-', '-'], ['r', 'c', 'c', 'o', 'p', '-', 'b', 'o', '-', '-', '-'], ['b', 'o', 'r', 'b', 'r', '-', '-', 'r', 'o', '-', 'r']]);
   level1_2.load([['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['b', 'r', 'o', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', 'r', 'r', 'r', '-', '-', '-'], ['-', '-', '-', '-', 'r', 'r', '-', '-', '-', '-', '-'], ['-', '-', '-', 'r', 'r', 'c', '-', '-', '-', 'r', 'r'], ['o', 'b', '-', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r']]);
   return Kona.Engine.start();
 });

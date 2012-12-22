@@ -51,8 +51,6 @@
     @speed   = opts.speed   || 0
     @facing  = opts.facing  || ''
 
-    @color   = opts.color
-
     @position =
       x: opts.x || 0
       y: opts.y || 0
@@ -65,8 +63,7 @@
       width:  opts.width  || 0
       height: opts.height || 0
 
-    @sprite = new Image()
-    @sprite.src = ''
+    @sprite = new Kona.Sprite(opts.sprite)
 
 
   # Apply any directional changes each frame, and resolve any
@@ -93,9 +90,7 @@
     @correctRight()
 
   draw: ->
-    Kona.Canvas.safe =>
-      Kona.Canvas.ctx.fillStyle = @color
-      Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
+    @sprite.draw(@position.x, @position.y, @box.width, @box.height)
 
   # Destroy an instance by removing it from the current scene
   destroy: (name) ->

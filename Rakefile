@@ -19,6 +19,7 @@ FILENAMES = [
   'canvas',
   'engine',
   'scenes',
+  'sprite',
   'entity',
   'tiles',
   'collectable',

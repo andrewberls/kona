@@ -20,11 +20,6 @@ class Kona.Collectable extends Kona.Entity
           @activate(entity)
           @destroy()
 
-  draw: ->
-    Kona.Canvas.safe =>
-      Kona.Canvas.ctx.fillStyle = @color
-      Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
-
   # Callback invoked when picked up by the player
   activate: -> fail("Implement activate() in a derived Collectable class")
 

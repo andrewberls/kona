@@ -39,11 +39,14 @@ Kona.ready ->
       @isJumping  = false
       @facing     = 'right'
       @canFire    = false
+      @sprite     = new Kona.Sprite('img/entities/player.png')
       @currentWeapon = null
       @collects('coins', 'weapons')
 
     update: ->
       super
+
+      @sprite.setSrc("img/entities/player_#{@facing}.png")
 
       if @isJumping
         @position.y -= @jumpHeight
@@ -58,13 +61,6 @@ Kona.ready ->
         Kona.Scenes.nextScene()
         level1_2.addEntity(player)
         player.setPosition(0, @top())
-
-
-    draw: ->
-      Kona.Canvas.safe =>
-        Kona.Canvas.ctx.fillStyle = @color
-        Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
-
 
     jump: ->
       jumpDuration = 180
@@ -95,19 +91,9 @@ Kona.ready ->
   # ENEMY
   # ----------------
   class Enemy extends Kona.Entity
-    constructor: (opts={}) ->
-      super(opts)
-      @speed = 2
-
     update: ->
       super
       @addGravity()
-
-    draw: ->
-      Kona.Canvas.safe =>
-        Kona.Canvas.ctx.fillStyle = @color
-        Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
-
 
 
 
@@ -119,11 +105,6 @@ Kona.ready ->
   # Coin
   # ----------------
   class Coin extends Kona.Collectable
-    draw: ->
-      Kona.Canvas.safe =>
-        Kona.Canvas.ctx.fillStyle = @color
-        Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
-
     activate: (collector) ->
       puts "Coin activated!"
 
@@ -169,9 +150,9 @@ Kona.ready ->
       @recharge  = 150
       @projType  = PistolProj
       @projSound = 'fire'
+      @sprite    = new Kona.Sprite('img/weapons/pistol.png')
 
     activate: (collector) ->
-      puts "Pistol activated!"
       @holder = collector
       collector.currentWeapon = @
 
@@ -208,11 +189,17 @@ Kona.ready ->
         width: 15
         height: 10
 
+    draw: ->
+      Kona.Canvas.safe =>
+        Kona.Canvas.ctx.fillStyle = 'red'
+        Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
+
+
 
 
 
   # Add the player manually so we can have a reference object to bind keys to
-  player = new Player { x: 200, y: 200, width: 30, height: 55, color: 'black', group: 'player' }
+  player = new Player { x: 200, y: 200, width: 40, height: 55, color: 'black', group: 'player' }
   level1_1.addEntity(player)
 
 
@@ -240,13 +227,13 @@ Kona.ready ->
   #   LAYOUT
   # ----------------------
   Kona.Scenes.definitionMap = {
-    '-': { group: 'tiles',   klass: Kona.BlankTile }
-    'r': { group: 'tiles',   klass: Kona.Tile, opts: { color: 'red' } }
-    'o': { group: 'tiles',   klass: Kona.Tile, opts: { color: 'orange' } }
-    'b': { group: 'tiles',   klass: Kona.Tile, opts: { color: 'blue' } }
-    'x': { group: 'enemies', klass: Enemy, opts: { width: 30, height: 55, color: '#00ffcc', offset: { x: 15 } } }
-    'c': { group: 'coins',   klass: Coin, opts: { width: 30, height: 30, color: 'yellow', offset: { x: 15, y: 15 } } }
-    'p': { group: 'weapons',  klass: Pistol, opts: { width: 30, height: 10, color: 'black', offset: { x: 15, y: 15 } } }
+    '-': { group: 'tiles',    klass: Kona.BlankTile }
+    'r': { group: 'tiles',    klass: Kona.Tile, opts: { sprite: '' } }
+    'o': { group: 'tiles',    klass: Kona.Tile, opts: { sprite: '' } }
+    'b': { group: 'tiles',    klass: Kona.Tile, opts: { sprite: '' } }
+    'x': { group: 'enemies',  klass: Enemy,  opts: { width: 40, height: 60, offset: { x: 15 }, sprite: 'img/entities/ninja1.png' } }
+    'c': { group: 'coins',    klass: Coin,   opts: { width: 25, height: 25, offset: { x: 20, y: 20 }, sprite: 'img/powerups/coin.png' } }
+    'p': { group: 'weapons',  klass: Pistol, opts: { width: 50, height: 25, offset: { x: 15, y: 15 } } }
   }
 
   level1_1.load [
@@ -256,7 +243,7 @@ Kona.ready ->
     ['-','-','-','-','-','-','-','-','-','o','b'],
     ['r','b','-','-','-','-','-','-','r','-','-'],
     ['o','-','-','-','-','-','x','-','-','-','-'],
-    ['r','-','c','o','p','-','b','o','-','-','-'],
+    ['r','c','c','o','p','-','b','o','-','-','-'],
     ['b','o','r','b','r','-','-','r','o','-','r']
   ]
 
