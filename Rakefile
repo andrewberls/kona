@@ -121,5 +121,5 @@ task :demo do
   files = [
     'demo/demo.coffee'
   ]
-  `coffee -b --output demo --compile #{files.join}`
+  `coffee -b --output demo/js --compile #{files.join}`
 end

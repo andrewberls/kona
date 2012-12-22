@@ -338,7 +338,13 @@ Kona.Entity = (function() {
     return this.correctRight();
   };
 
-  Entity.prototype.draw = function() {};
+  Entity.prototype.draw = function() {
+    var _this = this;
+    return Kona.Canvas.safe(function() {
+      Kona.Canvas.ctx.fillStyle = _this.color;
+      return Kona.Canvas.ctx.fillRect(_this.position.x, _this.position.y, _this.box.width, _this.box.height);
+    });
+  };
 
   Entity.prototype.destroy = function(name) {
     return Kona.Scenes.currentScene.removeEntity(this.group, this);
@@ -396,16 +402,29 @@ Kona.Entity = (function() {
     return this.left() < e.right() && this.right() > e.left();
   };
 
-  Entity.prototype.eachSolidEntity = function(fxn) {
-    var ent, list, name, _ref, _results,
-      _this = this;
+  Entity.prototype.neighborEntities = function() {
+    var ent, list, name, neighbors, _i, _len, _ref;
+    neighbors = {};
     _ref = Kona.Scenes.currentScene.entities;
+    for (name in _ref) {
+      list = _ref[name];
+      for (_i = 0, _len = list.length; _i < _len; _i++) {
+        ent = list[_i];
+        neighbors[name] || (neighbors[name] = []);
+        if (ent !== this) {
+          neighbors[name].push(ent);
+        }
+      }
+    }
+    return neighbors;
+  };
+
+  Entity.prototype.eachSolidEntity = function(fxn) {
+    var ent, list, name, _ref, _results;
+    _ref = this.neighborEntities();
     _results = [];
     for (name in _ref) {
       list = _ref[name];
-      list = _.reject(list, function(ent) {
-        return ent === _this;
-      });
       _results.push((function() {
         var _i, _len, _results1;
         _results1 = [];
@@ -484,14 +503,10 @@ Kona.Entity = (function() {
   };
 
   Entity.prototype.onSurface = function() {
-    var ent, list, name, _i, _len, _ref,
-      _this = this;
-    _ref = Kona.Scenes.currentScene.entities;
+    var ent, list, name, _i, _len, _ref;
+    _ref = this.neighborEntities();
     for (name in _ref) {
       list = _ref[name];
-      list = _.reject(list, function(ent) {
-        return ent === _this;
-      });
       for (_i = 0, _len = list.length; _i < _len; _i++) {
         ent = list[_i];
         if (ent.solid && ent.position.y === this.bottom() + 1) {
@@ -638,19 +653,21 @@ Kona.Collectable = (function(_super) {
   }
 
   Collectable.prototype.update = function() {
-    var entity, _i, _len, _ref, _results;
-    _ref = Kona.Collectors[this.group];
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      entity = _ref[_i];
-      if (this.intersecting(entity)) {
-        this.activate();
-        _results.push(this.destroy());
-      } else {
-        _results.push(void 0);
+    var collectors, entity, _i, _len, _results;
+    collectors = Kona.Collectors[this.group];
+    if (collectors != null) {
+      _results = [];
+      for (_i = 0, _len = collectors.length; _i < _len; _i++) {
+        entity = collectors[_i];
+        if (this.intersecting(entity)) {
+          this.activate(entity);
+          _results.push(this.destroy());
+        } else {
+          _results.push(void 0);
+        }
       }
+      return _results;
     }
-    return _results;
   };
 
   Collectable.prototype.draw = function() {

@@ -3,19 +3,19 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Kona.ready(function() {
-  var Coin, Enemy, Player, Projectile, level1_1, level1_2, player;
+  var Coin, Enemy, Pistol, PistolProj, Player, Projectile, Weapon, level1_1, level1_2, player;
   Kona.Canvas.init('canvas');
   Kona.Sounds.load({
-    'fire': 'enemy_fire.ogg'
+    'fire': 'audio/enemy_fire.ogg'
   });
   level1_1 = new Kona.Scene({
     name: 'lvl1:s1',
-    background: 'lvl2.jpg',
+    background: 'img/backgrounds/lvl2.jpg',
     active: true
   });
   level1_2 = new Kona.Scene({
     name: 'lvl1:s2',
-    background: 'lvl2.jpg'
+    background: 'img/backgrounds/lvl2.jpg'
   });
   Player = (function(_super) {
 
@@ -30,8 +30,9 @@ Kona.ready(function() {
       this.jumpHeight = 12;
       this.isJumping = false;
       this.facing = 'right';
-      this.canFire = true;
-      this.collects('coins');
+      this.canFire = false;
+      this.currentWeapon = null;
+      this.collects('coins', 'weapons');
     }
 
     Player.prototype.update = function() {
@@ -76,28 +77,8 @@ Kona.ready(function() {
     };
 
     Player.prototype.fire = function() {
-      var color, proj, projDx, startX, startY,
-        _this = this;
-      if (this.canFire) {
-        projDx = this.facing === 'right' ? 1 : -1;
-        startX = this.facing === 'right' ? this.right() + 1 : this.left() - 30;
-        startY = this.top() + 15;
-        color = ['red', 'orange', 'blue'][Kona.Utils.randomFromTo(0, 2)];
-        proj = new Projectile({
-          x: startX,
-          y: startY,
-          width: 20,
-          height: 10,
-          dx: projDx,
-          color: color,
-          group: 'projectiles'
-        });
-        Kona.Scenes.currentScene.addEntity(proj);
-        Kona.Sounds.play('fire');
-        this.canFire = false;
-        return setTimeout(function() {
-          return _this.canFire = true;
-        }, 150);
+      if (this.currentWeapon != null) {
+        return this.currentWeapon.fire();
       }
     };
 
@@ -110,58 +91,6 @@ Kona.ready(function() {
     };
 
     return Player;
-
-  })(Kona.Entity);
-  Projectile = (function(_super) {
-
-    __extends(Projectile, _super);
-
-    function Projectile(opts) {
-      if (opts == null) {
-        opts = {};
-      }
-      Projectile.__super__.constructor.call(this, opts);
-      this.speed = 7;
-      this.destructibles = ['enemies'];
-    }
-
-    Projectile.prototype.update = function() {
-      var ent, list, name, _i, _len, _ref,
-        _this = this;
-      Projectile.__super__.update.apply(this, arguments);
-      this.position.x += this.speed * this.direction.dx;
-      if (this.leftCollisions() || this.rightCollisions()) {
-        _ref = Kona.Scenes.currentScene.entities;
-        for (name in _ref) {
-          list = _ref[name];
-          list = _.reject(list, function(ent) {
-            return ent === _this;
-          });
-          for (_i = 0, _len = list.length; _i < _len; _i++) {
-            ent = list[_i];
-            if (this.leftCollision(ent) || this.rightCollision(ent)) {
-              if (_.contains(this.destructibles, name)) {
-                ent.destroy();
-              }
-              this.destroy();
-            }
-          }
-        }
-      }
-      if (this.position.x < 0 || this.position.x > Kona.Canvas.width) {
-        return this.destroy();
-      }
-    };
-
-    Projectile.prototype.draw = function() {
-      var _this = this;
-      return Kona.Canvas.safe(function() {
-        Kona.Canvas.ctx.fillStyle = _this.color;
-        return Kona.Canvas.ctx.fillRect(_this.position.x, _this.position.y, _this.box.width, _this.box.height);
-      });
-    };
-
-    return Projectile;
 
   })(Kona.Entity);
   Enemy = (function(_super) {
@@ -196,18 +125,9 @@ Kona.ready(function() {
 
     __extends(Coin, _super);
 
-    function Coin(opts) {
-      if (opts == null) {
-        opts = {};
-      }
-      Coin.__super__.constructor.call(this, opts);
-      this.speed = 2;
+    function Coin() {
+      return Coin.__super__.constructor.apply(this, arguments);
     }
-
-    Coin.prototype.update = function() {
-      Coin.__super__.update.apply(this, arguments);
-      return this.addGravity();
-    };
 
     Coin.prototype.draw = function() {
       var _this = this;
@@ -217,13 +137,135 @@ Kona.ready(function() {
       });
     };
 
-    Coin.prototype.activate = function() {
+    Coin.prototype.activate = function(collector) {
       return puts("Coin activated!");
     };
 
     return Coin;
 
   })(Kona.Collectable);
+  Weapon = (function(_super) {
+
+    __extends(Weapon, _super);
+
+    function Weapon(opts) {
+      if (opts == null) {
+        opts = {};
+      }
+      Weapon.__super__.constructor.call(this, opts);
+      this.canFire = true;
+      this.recharge = 150;
+      this.projType = null;
+      this.projSound = '';
+      this.holder = null;
+    }
+
+    Weapon.prototype.fire = function() {
+      var proj, projDx, startX, startY,
+        _this = this;
+      if (this.canFire) {
+        projDx = this.holder.facing === 'right' ? 1 : -1;
+        startX = this.holder.facing === 'right' ? this.holder.right() + 1 : this.holder.left() - 30;
+        startY = this.holder.top() + 15;
+        proj = new this.projType({
+          group: 'projectiles',
+          x: startX,
+          y: startY,
+          dx: projDx
+        });
+        Kona.Scenes.currentScene.addEntity(proj);
+        Kona.Sounds.play(this.projSound);
+        this.canFire = false;
+        return setTimeout(function() {
+          return _this.canFire = true;
+        }, this.recharge);
+      }
+    };
+
+    return Weapon;
+
+  })(Kona.Collectable);
+  Pistol = (function(_super) {
+
+    __extends(Pistol, _super);
+
+    function Pistol(opts) {
+      if (opts == null) {
+        opts = {};
+      }
+      Pistol.__super__.constructor.call(this, opts);
+      this.recharge = 150;
+      this.projType = PistolProj;
+      this.projSound = 'fire';
+    }
+
+    Pistol.prototype.activate = function(collector) {
+      puts("Pistol activated!");
+      this.holder = collector;
+      return collector.currentWeapon = this;
+    };
+
+    return Pistol;
+
+  })(Weapon);
+  Projectile = (function(_super) {
+
+    __extends(Projectile, _super);
+
+    function Projectile(opts) {
+      if (opts == null) {
+        opts = {};
+      }
+      Projectile.__super__.constructor.call(this, opts);
+      this.speed = 7;
+      this.destructibles = ['enemies'];
+    }
+
+    Projectile.prototype.update = function() {
+      var ent, list, name, _i, _len, _ref;
+      Projectile.__super__.update.apply(this, arguments);
+      this.position.x += this.speed * this.direction.dx;
+      if (this.leftCollisions() || this.rightCollisions()) {
+        _ref = this.neighborEntities();
+        for (name in _ref) {
+          list = _ref[name];
+          for (_i = 0, _len = list.length; _i < _len; _i++) {
+            ent = list[_i];
+            if (this.leftCollision(ent) || this.rightCollision(ent)) {
+              if (_.contains(this.destructibles, name)) {
+                ent.destroy();
+              }
+              this.destroy();
+            }
+          }
+        }
+      }
+      if (this.position.x < 0 || this.position.x > Kona.Canvas.width) {
+        return this.destroy();
+      }
+    };
+
+    return Projectile;
+
+  })(Kona.Entity);
+  PistolProj = (function(_super) {
+
+    __extends(PistolProj, _super);
+
+    function PistolProj(opts) {
+      if (opts == null) {
+        opts = {};
+      }
+      PistolProj.__super__.constructor.call(this, opts);
+      this.box = {
+        width: 15,
+        height: 10
+      };
+    }
+
+    return PistolProj;
+
+  })(Projectile);
   player = new Player({
     x: 200,
     y: 200,
@@ -305,9 +347,22 @@ Kona.ready(function() {
           y: 15
         }
       }
+    },
+    'p': {
+      group: 'weapons',
+      klass: Pistol,
+      opts: {
+        width: 30,
+        height: 10,
+        color: 'black',
+        offset: {
+          x: 15,
+          y: 15
+        }
+      }
     }
   };
-  level1_1.load([['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', 'o', 'b'], ['r', 'b', '-', '-', '-', '-', '-', '-', 'r', '-', '-'], ['o', '-', '-', '-', '-', '-', 'x', '-', '-', '-', '-'], ['r', '-', 'c', 'o', '-', '-', 'b', 'o', '-', '-', '-'], ['b', 'o', 'r', 'b', 'r', '-', '-', 'r', 'o', '-', 'r']]);
+  level1_1.load([['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', 'o', 'b'], ['r', 'b', '-', '-', '-', '-', '-', '-', 'r', '-', '-'], ['o', '-', '-', '-', '-', '-', 'x', '-', '-', '-', '-'], ['r', '-', 'c', 'o', 'p', '-', 'b', 'o', '-', '-', '-'], ['b', 'o', 'r', 'b', 'r', '-', '-', 'r', 'o', '-', 'r']]);
   level1_2.load([['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['b', 'r', 'o', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', 'r', 'r', 'r', '-', '-', '-'], ['-', '-', '-', '-', 'r', 'r', '-', '-', '-', '-', '-'], ['-', '-', '-', 'r', 'r', 'c', '-', '-', '-', 'r', 'r'], ['o', 'b', '-', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r']]);
   return Kona.Engine.start();
 });

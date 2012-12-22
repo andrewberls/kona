@@ -13,10 +13,12 @@ class Kona.Collectable extends Kona.Entity
 
   # TODO: bob up and down?
   update: ->
-    for entity in Kona.Collectors[@group]
-      if @intersecting(entity)
-        @activate()
-        @destroy()
+    collectors = Kona.Collectors[@group]
+    if collectors?
+      for entity in collectors
+        if @intersecting(entity)
+          @activate(entity)
+          @destroy()
 
   draw: ->
     Kona.Canvas.safe =>

@@ -40,6 +40,7 @@
   #     * width: An integer width, in pixels
   #     * height: An integer height, in pixels
   #   * __sprite__ - (Type)
+  #
  class Kona.Entity
   @grav = 8
 
@@ -80,6 +81,7 @@
   #       update: ->
   #         super
   #         @addGravity()
+  #
   update: ->
     if @direction.dx > 0
       @facing = 'right'
@@ -91,6 +93,9 @@
     @correctRight()
 
   draw: ->
+    Kona.Canvas.safe =>
+      Kona.Canvas.ctx.fillStyle = @color
+      Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
   # Destroy an instance by removing it from the current scene
   destroy: (name) ->
@@ -155,14 +160,21 @@
   inColumnSpace: (e) ->
     @left() < e.right() and @right() > e.left()
 
+  # All entities in a scene besides self
+  # TODO: be smarter about which entities to examine?
+  neighborEntities: ->
+    neighbors = {}
+    for name, list of Kona.Scenes.currentScene.entities
+      for ent in list
+        neighbors[name] ||= []
+        neighbors[name].push(ent) unless ent == @
+    neighbors
 
   # Loop over solid entities in the current scene, and invoke
   # a function on them.
   # TODO: Remove duplication between this and onSurface()
-  # TODO: Be smarter about computing which entities to test
   eachSolidEntity: (fxn) =>
-    for name, list of Kona.Scenes.currentScene.entities
-      list = _.reject list, (ent) => ent == @
+    for name, list of @neighborEntities()
       for ent in list
         fxn(ent) if ent? && ent.solid
 
@@ -247,8 +259,7 @@
 
   # Is this entity standing on a surface?
   onSurface: =>
-    for name, list of Kona.Scenes.currentScene.entities
-      list = _.reject list, (ent) => ent == @
+    for name, list of @neighborEntities()
       for ent in list
         return true if ent.solid && ent.position.y == @bottom() + 1
 
@@ -275,19 +286,19 @@
   # ---------------------
   # Mark this entity as a collector for a group of collectables.
   # Intended for initialization in a constructor.
-
+  #
   # After calling, this entity will automatically collect ('activate')
   # the specified collectables on contact.
-
+  #
   # See docs for Kona.Collectable.
-
+  #
   # Ex:
-
+  #
   #     class Player extends Kona.Entity
   #       constructor: (opts={}) ->
   #         super(opts)
   #         @collects('coins')
-
+  #
   collects: (names...) ->
     for name in names
       Kona.Collectors.add(name, @)

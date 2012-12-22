@@ -8,19 +8,20 @@ Kona.ready ->
   Kona.Canvas.init('canvas')
 
   Kona.Sounds.load {
-    'fire' : 'enemy_fire.ogg'
+    'fire' : 'audio/enemy_fire.ogg'
   }
 
   level1_1 = new Kona.Scene {
     name: 'lvl1:s1'
-    background: 'lvl2.jpg'
+    background: 'img/backgrounds/lvl2.jpg'
     active: true
   }
 
   level1_2 = new Kona.Scene {
     name: 'lvl1:s2'
-    background: 'lvl2.jpg'
+    background: 'img/backgrounds/lvl2.jpg'
   }
+
 
 
 
@@ -37,8 +38,9 @@ Kona.ready ->
       @jumpHeight = 12
       @isJumping  = false
       @facing     = 'right'
-      @canFire    = true
-      @collects('coins')
+      @canFire    = false
+      @currentWeapon = null
+      @collects('coins', 'weapons')
 
     update: ->
       super
@@ -78,19 +80,7 @@ Kona.ready ->
 
 
     fire: ->
-      if @canFire
-        projDx = if @facing == 'right' then 1 else -1
-        startX = if @facing == 'right' then @right() + 1 else @left() - 30
-        startY = @top() + 15
-        color  = ['red','orange','blue'][Kona.Utils.randomFromTo(0, 2)]
-        proj   = new Projectile { x: startX, y: startY, width: 20, height: 10, dx: projDx, color: color, group: 'projectiles' }
-        Kona.Scenes.currentScene.addEntity(proj)
-        Kona.Sounds.play('fire')
-
-        @canFire = false
-        setTimeout =>
-          @canFire = true
-        , 150
+      @currentWeapon.fire() if @currentWeapon?
 
 
     die: ->
@@ -98,39 +88,6 @@ Kona.ready ->
         @facing = 'right'
         @setPosition(195, 200)
       , 400
-
-
-
-
-  # PROJECTILE
-  # ----------------
-  class Projectile extends Kona.Entity
-    constructor: (opts={}) ->
-      super(opts)
-      @speed = 7
-      @destructibles = ['enemies']
-
-
-    update: ->
-      super
-      @position.x += @speed * @direction.dx
-      if @leftCollisions() || @rightCollisions()
-        # Detect collisions with other entities
-        # TODO: this is hacky
-        for name, list of Kona.Scenes.currentScene.entities
-          list = _.reject list, (ent) => ent == @
-          for ent in list
-            if @leftCollision(ent) || @rightCollision(ent)
-              ent.destroy() if _.contains(@destructibles, name)
-              @destroy()
-
-      @destroy() if @position.x < 0 || @position.x > Kona.Canvas.width
-
-
-    draw: ->
-      Kona.Canvas.safe =>
-        Kona.Canvas.ctx.fillStyle = @color
-        Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
 
 
@@ -154,24 +111,102 @@ Kona.ready ->
 
 
 
+
+  # ----------------------
+  #   COLLECTABLES
+  # ----------------------
+
   # Coin
   # ----------------
   class Coin extends Kona.Collectable
-    constructor: (opts={}) ->
-      super(opts)
-      @speed = 2
-
-    update: ->
-      super
-      @addGravity()
-
     draw: ->
       Kona.Canvas.safe =>
         Kona.Canvas.ctx.fillStyle = @color
         Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
-    activate: ->
+    activate: (collector) ->
       puts "Coin activated!"
+
+
+
+
+  # ----------------------
+  #   WEAPONS/PROJECTILES
+  # ----------------------
+
+  # WEAPON (ABSTRACT)
+  # ----------------
+  class Weapon extends Kona.Collectable
+    constructor: (opts={}) ->
+      super(opts)
+      @canFire   = true
+      @recharge  = 150
+      @projType  = null
+      @projSound = ''
+      @holder    = null
+
+    fire: ->
+      if @canFire
+        projDx = if @holder.facing == 'right' then 1 else -1
+        startX = if @holder.facing == 'right' then @holder.right() + 1 else @holder.left() - 30
+        startY = @holder.top() + 15
+        proj   = new @projType { group: 'projectiles', x: startX, y: startY, dx: projDx }
+        Kona.Scenes.currentScene.addEntity(proj)
+        Kona.Sounds.play(@projSound)
+
+        @canFire = false
+        setTimeout =>
+          @canFire = true
+        , @recharge
+
+
+
+  # PISTOL
+  # ----------------
+  class Pistol extends Weapon
+    constructor: (opts={}) ->
+      super(opts)
+      @recharge  = 150
+      @projType  = PistolProj
+      @projSound = 'fire'
+
+    activate: (collector) ->
+      puts "Pistol activated!"
+      @holder = collector
+      collector.currentWeapon = @
+
+
+
+  # PROJECTILE (ABSTRACT)
+  # ----------------
+  class Projectile extends Kona.Entity
+    constructor: (opts={}) ->
+      super(opts)
+      @speed = 7
+      @destructibles = ['enemies']
+
+    update: ->
+      super
+      @position.x += @speed * @direction.dx
+      if @leftCollisions() || @rightCollisions()
+        for name, list of @neighborEntities()
+          for ent in list
+            if @leftCollision(ent) || @rightCollision(ent)
+              ent.destroy() if _.contains(@destructibles, name)
+              @destroy()
+
+      @destroy() if @position.x < 0 || @position.x > Kona.Canvas.width
+
+
+
+  # PISTOL PROJ
+  # ----------------
+  class PistolProj extends Projectile
+    constructor: (opts={}) ->
+      super(opts)
+      @box =
+        width: 15
+        height: 10
 
 
 
@@ -179,6 +214,7 @@ Kona.ready ->
   # Add the player manually so we can have a reference object to bind keys to
   player = new Player { x: 200, y: 200, width: 30, height: 55, color: 'black', group: 'player' }
   level1_1.addEntity(player)
+
 
 
 
@@ -200,7 +236,6 @@ Kona.ready ->
 
 
 
-
   #----------------------
   #   LAYOUT
   # ----------------------
@@ -211,6 +246,7 @@ Kona.ready ->
     'b': { group: 'tiles',   klass: Kona.Tile, opts: { color: 'blue' } }
     'x': { group: 'enemies', klass: Enemy, opts: { width: 30, height: 55, color: '#00ffcc', offset: { x: 15 } } }
     'c': { group: 'coins',   klass: Coin, opts: { width: 30, height: 30, color: 'yellow', offset: { x: 15, y: 15 } } }
+    'p': { group: 'weapons',  klass: Pistol, opts: { width: 30, height: 10, color: 'black', offset: { x: 15, y: 15 } } }
   }
 
   level1_1.load [
@@ -220,7 +256,7 @@ Kona.ready ->
     ['-','-','-','-','-','-','-','-','-','o','b'],
     ['r','b','-','-','-','-','-','-','r','-','-'],
     ['o','-','-','-','-','-','x','-','-','-','-'],
-    ['r','-','c','o','-','-','b','o','-','-','-'],
+    ['r','-','c','o','p','-','b','o','-','-','-'],
     ['b','o','r','b','r','-','-','r','o','-','r']
   ]
 
@@ -234,6 +270,8 @@ Kona.ready ->
     ['-','-','-','r','r','c','-','-','-','r','r'],
     ['o','b','-','r','r','r','r','r','r','r','r']
   ]
+
+
 
 
   # ----------------------
