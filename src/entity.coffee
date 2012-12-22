@@ -86,6 +86,9 @@
       @facing = 'left'
 
     @position.x += @speed * @direction.dx
+
+    @position.y += @speed * @direction.dy
+
     @correctLeft()
     @correctRight()
 
@@ -93,7 +96,7 @@
     @sprite.draw(@position.x, @position.y, @box.width, @box.height)
 
   # Destroy an instance by removing it from the current scene
-  destroy: (name) ->
+  destroy: ->
     Kona.Scenes.currentScene.removeEntity(@group, @)
 
 
@@ -108,6 +111,8 @@
   right:  -> @position.x + @box.width
 
 
+  midx: -> @position.x + Math.ceil(@box.width  / 2)
+  midy: -> @position.y + Math.ceil(@box.height / 2)
 
 
   # ---------------------
@@ -149,6 +154,7 @@
   # ---------------------
   # To collide with an entity from the left or right, you must be in its row
   inRowSpace: (e) ->
+    # TODO: INCORRECT IF TALLER THAN TARGET
     @bottom() > e.top() and @top() < e.bottom()
 
   # To collide with an entity from the top or bottom, you must be in its column
@@ -297,3 +303,7 @@
   collects: (names...) ->
     for name in names
       Kona.Collectors.add(name, @)
+
+
+  active: ->
+    _.contains Kona.Scenes.currentScene.entities[@group], @

@@ -39,13 +39,12 @@ Kona.ready ->
       @isJumping  = false
       @facing     = 'right'
       @canFire    = false
-      @sprite     = new Kona.Sprite('img/entities/player.png')
+      @sprite     = new Kona.Sprite("img/entities/player_#{@facing}.png")
       @currentWeapon = null
       @collects('coins', 'weapons')
 
     update: ->
       super
-
       @sprite.setSrc("img/entities/player_#{@facing}.png")
 
       if @isJumping
@@ -91,9 +90,18 @@ Kona.ready ->
   # ENEMY
   # ----------------
   class Enemy extends Kona.Entity
+    constructor: (opts={}) ->
+      super(opts)
+      @currentWeapon = new EnemyPistol { group: 'enemy_weapons', holder: @ }
+      level1_1.addEntity(@currentWeapon)
+
     update: ->
       super
       @addGravity()
+
+    destroy: ->
+      @currentWeapon.destroy()
+      super
 
 
 
@@ -115,36 +123,9 @@ Kona.ready ->
   #   WEAPONS/PROJECTILES
   # ----------------------
 
-  # WEAPON (ABSTRACT)
-  # ----------------
-  class Weapon extends Kona.Collectable
-    constructor: (opts={}) ->
-      super(opts)
-      @canFire   = true
-      @recharge  = 150
-      @projType  = null
-      @projSound = ''
-      @holder    = null
-
-    fire: ->
-      if @canFire
-        projDx = if @holder.facing == 'right' then 1 else -1
-        startX = if @holder.facing == 'right' then @holder.right() + 1 else @holder.left() - 30
-        startY = @holder.top() + 15
-        proj   = new @projType { group: 'projectiles', x: startX, y: startY, dx: projDx }
-        Kona.Scenes.currentScene.addEntity(proj)
-        Kona.Sounds.play(@projSound)
-
-        @canFire = false
-        setTimeout =>
-          @canFire = true
-        , @recharge
-
-
-
   # PISTOL
   # ----------------
-  class Pistol extends Weapon
+  class Pistol extends Kona.Weapon
     constructor: (opts={}) ->
       super(opts)
       @recharge  = 150
@@ -152,55 +133,53 @@ Kona.ready ->
       @projSound = 'fire'
       @sprite    = new Kona.Sprite('img/weapons/pistol.png')
 
-    activate: (collector) ->
-      @holder = collector
-      collector.currentWeapon = @
-
-
-
-  # PROJECTILE (ABSTRACT)
-  # ----------------
-  class Projectile extends Kona.Entity
-    constructor: (opts={}) ->
-      super(opts)
-      @speed = 7
-      @destructibles = ['enemies']
-
-    update: ->
-      super
-      @position.x += @speed * @direction.dx
-      if @leftCollisions() || @rightCollisions()
-        for name, list of @neighborEntities()
-          for ent in list
-            if @leftCollision(ent) || @rightCollision(ent)
-              ent.destroy() if _.contains(@destructibles, name)
-              @destroy()
-
-      @destroy() if @position.x < 0 || @position.x > Kona.Canvas.width
-
-
 
   # PISTOL PROJ
   # ----------------
-  class PistolProj extends Projectile
+  class PistolProj extends Kona.Projectile
     constructor: (opts={}) ->
       super(opts)
+      @destructibles = ['enemies']
       @box =
         width: 15
         height: 10
 
     draw: ->
       Kona.Canvas.safe =>
-        Kona.Canvas.ctx.fillStyle = 'red'
+        Kona.Canvas.ctx.fillStyle = 'blue'
         Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
 
+  # ENEMY PROJ
+  # ----------------
+  class EnemyProj extends PistolProj
+    constructor: (opts={}) ->
+      super(opts)
+      @destructibles = []
 
 
+  # ENEMY PISTOL
+  # ----------------
+  class EnemyPistol extends Kona.EnemyWeapon
+    constructor: (opts={}) ->
+      super(opts)
+      @target    = player
+      @recharge  = 1000
+      @projType  = EnemyProj
+      @projSound = 'fire'
+      setInterval =>
+        @fire()
+      , @recharge
+
+    draw: ->
+      Kona.Canvas.safe =>
+        Kona.Canvas.ctx.fillStyle = 'red'
+        Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
   # Add the player manually so we can have a reference object to bind keys to
-  player = new Player { x: 200, y: 200, width: 40, height: 55, color: 'black', group: 'player' }
+  player = new Player { x: 200, y: 200, width: 40, height: 55, color: 'black', group: 'player' } #490
   level1_1.addEntity(player)
+
 
 
 
@@ -246,6 +225,7 @@ Kona.ready ->
     ['r','c','c','o','p','-','b','o','-','-','-'],
     ['b','o','r','b','r','-','-','r','o','-','r']
   ]
+
 
   level1_2.load [
     ['-','-','-','-','-','-','-','-','-','-','-'],

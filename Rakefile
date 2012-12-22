@@ -24,7 +24,9 @@ FILENAMES = [
   'tiles',
   'collectable',
   'keys',
-  'sound'
+  'sound',
+  'weapons',
+  'projectiles'
 ]
 
 # Accepts an array of filenames and an optional
@@ -122,5 +124,5 @@ task :demo do
   files = [
     'demo/demo.coffee'
   ]
-  `coffee -b --output demo/js --compile #{files.join}`
+  `coffee -b --output demo/js --compile #{files.join(' ')}`
 end

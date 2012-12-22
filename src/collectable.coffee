@@ -4,7 +4,7 @@
 # A callback is automatically activated when
 # a collector entity intersects with the collectable.
 
-# See Entity#collects for more info on collectors.
+# See `entity.collects()` for more info on collectors.
 class Kona.Collectable extends Kona.Entity
   constructor: (opts={}) ->
     super(opts)
@@ -28,13 +28,7 @@ class Kona.Collectable extends Kona.Entity
 # For example, a player could pick up coins,
 # and both players and enemies could pick up food.
 #
-# Usage: `Kona.Collectors.add('coins', player)`
-#
-# Would result in a collector structure of:
-#
-#     {
-#       'coins' : [<Player>]
-#     }
+# Use `entity.collects()` to set collectors instead of calling this directly.
 Kona.Collectors =
   add: (group, entity) ->
     @[group] ||= []
