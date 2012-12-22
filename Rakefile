@@ -3,10 +3,11 @@
 
 require 'uglifier'
 require 'listen'
+require 'fileutils'
 
 SRC_PATH   = './src'   # Path to source files
-BUILD_PATH = './build' # All individual coffeescript files are compiled to indiv. js files in this path
-DIST_PATH  = './kona'  # Produces kona.js and kona.min.js in this path
+BUILD_PATH = './build' # Intermediate compiled source files will be stored here
+DIST_PATH  = './kona'  # Produces kona.js and kona.min.js at this path
 
 VENDOR_FILENAMES = [
   # Hack here to support plain JS files
@@ -38,7 +39,7 @@ end
 
 
 
-desc 'Compiles and concatenates source coffeescript files'
+desc 'Compiles and concatenates all coffeescript source files'
 task :build do
   vendor_files = join_filenames(
     VENDOR_FILENAMES.map { |file| "#{file}.js" }
@@ -68,6 +69,8 @@ task :build do
     minjs = Uglifier.new.compile(js)
     File.open("#{DIST_PATH}.js", 'w') { |f| f.write(js) }
     File.open("#{DIST_PATH}.min.js", 'w') { |f| f.write(minjs) }
+
+    FileUtils.rm_rf BUILD_PATH
   else
     # Send a growl notification on failure if enabled
     system "growlnotify -m 'An error occured while compiling!' 2>/dev/null"
@@ -75,8 +78,6 @@ task :build do
 end
 
 
-
-# Watch and wait for changes, then call `rake build` to compile the changes
 desc 'Waits for changes to files, then recompiles.'
 task :watch do
   puts "Compiling and watching for changes in #{SRC_PATH}"
@@ -89,34 +90,10 @@ task :watch do
 end
 
 
-
-desc 'Remove all files in the build directory'
-task :clean do
-  count = 0
-  [DIST_PATH, "#{DIST_PATH}.min"].each do |f|
-    # Top level dist files
-    File.delete(File.path("#{f}.js"))
-    count += 1
-  end
-
-  Dir.foreach(BUILD_PATH) do |f|
-    # Individual compiled files
-    unless File.directory?(f)
-      File.delete(File.join(BUILD_PATH, f))
-      count += 1
-    end
-  end
-
-  puts "Removed #{count} files."
-end
-
-
-
 desc 'Generate docs'
 task :docs do
   system "docco #{SRC_PATH}/*.coffee"
 end
-
 
 
 desc 'Build the demo'
