@@ -1,6 +1,14 @@
-# Initialize the main Kona object, as well as a few miscellaneous helper functions
-
-
+#    _  __                                _
+#   | |/ /   ___    _ __     __ _        (_)  ___
+#   | ' /   / _ \  | '_ \   / _` |       | | / __|
+#   | . \  | (_) | | | | | | (_| |  _    | | \__ \
+#   |_|\_\  \___/  |_| |_|  \__,_| (_)  _/ | |___/
+#                                      |__/
+#
+#
+#   https://github.com/andrewberls/kona
+#
+#
 # Set the main object on the window
 Kona = window.Kona = {}
 
