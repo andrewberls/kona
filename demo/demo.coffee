@@ -177,7 +177,7 @@ Kona.ready ->
         Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
   # Add the player manually so we can have a reference object to bind keys to
-  player = new Player { x: 200, y: 200, width: 40, height: 55, color: 'black', group: 'player' } #490
+  player = new Player { x: 200, y: 200, width: 40, height: 55, color: 'black', group: 'player' }
   level1_1.addEntity(player)
 
 
@@ -225,7 +225,6 @@ Kona.ready ->
     ['r','c','c','o','p','-','b','o','-','-','-'],
     ['b','o','r','b','r','-','-','r','o','-','r']
   ]
-
 
   level1_2.load [
     ['-','-','-','-','-','-','-','-','-','-','-'],
