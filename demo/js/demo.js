@@ -254,9 +254,7 @@ Kona.ready(function() {
   });
   player.loadAnimations({
     'idle': {
-      sheet: 'img/entities/robot_sheet.png',
-      width: 200,
-      height: 200
+      sheet: 'img/entities/robot_sheet.png'
     }
   });
   player.setAnimation('idle');
