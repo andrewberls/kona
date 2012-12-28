@@ -3,7 +3,6 @@ class Kona.Tile extends Kona.Entity
 
   constructor: (opts={}) ->
     super(opts)
-    @sprite    = new Kona.Sprite('img/tiles/dirt1.png')
     @size = Kona.Tile.tileSize
     @box =
       width:  @size

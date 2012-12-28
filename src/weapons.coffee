@@ -7,10 +7,10 @@ class Kona.Weapon extends Kona.Collectable
   constructor: (opts={}) ->
     super(opts)
     @canFire   = true
-    @recharge  = 150
-    @projType  = null
-    @projSound = ''
-    @holder    = opts.holder || null
+    @recharge  = opts.recharge || 150
+    @projType  = opts.projType || null
+    @projSound = opts.sound    || ''
+    @holder    = opts.holder   || null
 
   activate: (collector) ->
     @holder = collector
@@ -23,7 +23,7 @@ class Kona.Weapon extends Kona.Collectable
       startY = @holder.top() + 15
       proj   = new @projType { group: 'projectiles', x: startX, y: startY, dx: projDx }
       Kona.Scenes.currentScene.addEntity(proj)
-      Kona.Sounds.play(@projSound)
+      Kona.Sounds.play(@projSound) if @projSound != ''
 
       @canFire = false
       setTimeout =>
@@ -43,7 +43,7 @@ class Kona.EnemyWeapon extends Kona.Weapon
       targetUp   = @holder.position.y >= @target.midy()
 
       angle = Math.atan2(y, x) + (if targetUp then 0.5 else 0) # Angle between enemy and target in radians
-      speed = 0.5 # TODO
+      speed = 1
 
       projDx = speed * Math.cos(angle) * (if targetLeft then -1 else 1)
       projDy = speed * Math.sin(angle) * (if targetUp then -1 else 1)
@@ -53,4 +53,4 @@ class Kona.EnemyWeapon extends Kona.Weapon
 
       proj   = new @projType { group: 'projectiles', x: startX, y: startY, dx: projDx, dy: projDy }
       Kona.Scenes.currentScene.addEntity(proj)
-      # Kona.Sounds.play(@projSound)
+      Kona.Sounds.play(@projSound) if @projSound != ''

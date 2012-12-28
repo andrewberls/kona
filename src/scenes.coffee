@@ -37,9 +37,9 @@ Kona.Scenes =
   # lvl<levelNum>:s<sceneNum>
   # Ex: Level 1, Scene 2 -> 'lvl1:s2'
   nextLevel: ->
-    # [levelId, sceneId] = @currentScene.name.split(':')
-    # levelNum = parseInt(levelId.replace('lvl', '')) + 1
-    # @setCurrent("lvl#{levelNum}:s1")
+    [levelId, sceneId] = @currentScene.name.split(':')
+    levelNum = parseInt(levelId.replace('lvl', '')) + 1
+    @setCurrent("lvl#{levelNum}:s1")
 
 
 
@@ -68,14 +68,14 @@ class Kona.Scene
   # An example building the first screen of the first level (assuming a scene object has
   # already been instantiated):
   #
-  #     level1_1.load [
+  #     level1_1.loadEntities [
   #       ['-','-','-','-','-',],
   #       ['r','b','-','-','-',],
   #       ['o','-','-','-','-',],
   #       ['r','-','c','-','-',],
   #       ['b','o','r','b','r',]
   #     ]
-  load: (grid) ->
+  loadEntities: (grid) ->
     Kona.Scenes.definitionMap? or fail("No definition map found")
     x = 0
     y = Kona.Canvas.height - (grid.length * Kona.Tile.tileSize)

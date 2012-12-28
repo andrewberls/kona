@@ -1,0 +1,53 @@
+<!DOCTYPE html>  <html> <head>   <title>animation.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="animation.html">                 animation.coffee               </a>                                           <a class="source" href="canvas.html">                 canvas.coffee               </a>                                           <a class="source" href="collectable.html">                 collectable.coffee               </a>                                           <a class="source" href="engine.html">                 engine.coffee               </a>                                           <a class="source" href="entity.html">                 entity.coffee               </a>                                           <a class="source" href="keys.html">                 keys.coffee               </a>                                           <a class="source" href="kona.html">                 kona.coffee               </a>                                           <a class="source" href="menu.html">                 menu.coffee               </a>                                           <a class="source" href="projectiles.html">                 projectiles.coffee               </a>                                           <a class="source" href="scenes.html">                 scenes.coffee               </a>                                           <a class="source" href="sound.html">                 sound.coffee               </a>                                           <a class="source" href="sprite.html">                 sprite.coffee               </a>                                           <a class="source" href="tiles.html">                 tiles.coffee               </a>                                           <a class="source" href="utils.html">                 utils.coffee               </a>                                           <a class="source" href="weapons.html">                 weapons.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               animation.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p>About the class here</p>
+
+<pre><code>class Player extends Kona.Entity
+  constructor: (opts={}) -&gt;
+    super(opts)
+    @animation = new Kona.Animation {}
+</code></pre>
+
+<p>Options:</p>
+
+<ul>
+<li><strong>name</strong> - (Type) Description here</li>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>TODO: AN ENTITY HAS MULTIPLE ANIMATIONS</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="k">class</span> <span class="nx">Kona</span><span class="p">.</span><span class="nx">Animation</span>
+  <span class="nv">constructor: </span><span class="nf">(opts={}) -&gt;</span>
+    <span class="vi">@entity    = </span><span class="nx">opts</span><span class="p">.</span><span class="nx">entity</span>
+    <span class="vi">@image     = </span><span class="k">new</span> <span class="nx">Image</span><span class="p">()</span>
+    <span class="vi">@image.src = </span><span class="nx">opts</span><span class="p">.</span><span class="nx">sheet</span>
+    <span class="vi">@position  = </span><span class="p">{</span> <span class="nv">x: </span><span class="mi">0</span><span class="p">,</span> <span class="nv">y: </span><span class="mi">0</span> <span class="p">}</span>
+
+    <span class="vi">@frames =</span>
+      <span class="nv">width: </span> <span class="nx">opts</span><span class="p">.</span><span class="nx">width</span>
+      <span class="nv">height: </span><span class="nx">opts</span><span class="p">.</span><span class="nx">height</span>
+
+    <span class="vi">@index = </span><span class="mi">0</span>
+
+
+  <span class="nv">draw: </span><span class="o">-&gt;</span>
+    <span class="nv">targetX      = </span><span class="nx">@entity</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">x</span>
+    <span class="nv">targetY      = </span><span class="nx">@entity</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">y</span>
+    <span class="nv">targetWidth  = </span><span class="nx">@entity</span><span class="p">.</span><span class="nx">box</span><span class="p">.</span><span class="nx">width</span>
+    <span class="nv">targetHeight = </span><span class="nx">@entity</span><span class="p">.</span><span class="nx">box</span><span class="p">.</span><span class="nx">height</span>
+
+    <span class="nx">Kona</span><span class="p">.</span><span class="nx">Canvas</span><span class="p">.</span><span class="nx">drawImage</span><span class="p">(</span>
+      <span class="nx">@image</span><span class="p">,</span>                                                  <span class="c1"># Image we are drawing</span>
+      <span class="nx">@position</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span> <span class="nx">@position</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span> <span class="nx">@frames</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span> <span class="nx">@frames</span><span class="p">.</span><span class="nx">height</span><span class="p">,</span> <span class="c1"># Rectangle to clip from source image</span>
+      <span class="nx">targetX</span><span class="p">,</span> <span class="nx">targetY</span><span class="p">,</span> <span class="nx">targetWidth</span><span class="p">,</span> <span class="nx">targetHeight</span>              <span class="c1"># Rectangle of target canvas we&#39;re drawing to</span>
+    <span class="p">)</span>
+
+    <span class="nx">@position</span><span class="p">.</span><span class="nx">x</span> <span class="o">+=</span> <span class="nx">@frames</span><span class="p">.</span><span class="nx">width</span>
+    <span class="nx">@index</span> <span class="o">+=</span> <span class="mi">1</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>if @index >= @numFrames
+  # If index higher than total frames, start over
+  @position.x = @position.y = 0
+  @index = 0
+else if @position.x + @frames.width > @image.width
+  # Move down one row of frames
+  @position.x = 0
+  @position.y += @frames.height</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">if</span> <span class="nx">@position</span><span class="p">.</span><span class="nx">x</span> <span class="o">+</span> <span class="nx">@frames</span><span class="p">.</span><span class="nx">width</span> <span class="o">&gt;</span> <span class="nx">@image</span><span class="p">.</span><span class="nx">width</span>
+      <span class="k">if</span> <span class="nx">@position</span><span class="p">.</span><span class="nx">y</span> <span class="o">+</span> <span class="nx">@frames</span><span class="p">.</span><span class="nx">height</span> <span class="o">&gt;</span> <span class="nx">@image</span><span class="p">.</span><span class="nx">height</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Last frame of last row - start over</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="vi">@position.x = @position.y = </span><span class="mi">0</span>
+        <span class="vi">@index = </span><span class="mi">0</span>
+      <span class="k">else</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Move down one row of frames</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="vi">@position.x = </span><span class="mi">0</span>
+        <span class="nx">@position</span><span class="p">.</span><span class="nx">y</span> <span class="o">+=</span> <span class="nx">@frames</span><span class="p">.</span><span class="nx">height</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

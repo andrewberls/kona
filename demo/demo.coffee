@@ -22,12 +22,27 @@ Kona.ready ->
     background: 'img/backgrounds/lvl2.jpg'
   }
 
-
-
+  pauseMenu = new Kona.Menu {
+    name: 'pauseMenu'
+    trigger: 'escape'
+    options: {
+      'Resume Game' : -> Kona.Scenes.setCurrent('lvl1:s1')
+      'Something One' : -> console.log "something one"
+      'Something Two' : -> console.log "something two"
+    }
+  }
 
   # ----------------------
   #   GAME ENTITIES
   # ----------------------
+
+  # TILES
+  # ----------------
+  class DirtTile extends Kona.Tile
+    constructor: (opts={}) ->
+      super(opts)
+      @sprite.src = 'img/tiles/dirt1.png'
+
 
   # PLAYER
   # ----------------
@@ -39,13 +54,15 @@ Kona.ready ->
       @isJumping  = false
       @facing     = 'right'
       @canFire    = false
-      @sprite     = new Kona.Sprite("img/entities/player_#{@facing}.png")
+      @sprite.src = "img/entities/player_#{@facing}.png"
       @currentWeapon = null
       @collects('coins', 'weapons')
 
+
+
     update: ->
       super
-      @sprite.setSrc("img/entities/player_#{@facing}.png")
+      @sprite.src = "img/entities/player_#{@facing}.png"
 
       if @isJumping
         @position.y -= @jumpHeight
@@ -56,10 +73,11 @@ Kona.ready ->
       @die() if @top() > Kona.Canvas.height
 
       # Transition to next screen
-      if @right() > Kona.Canvas.width - 20
-        Kona.Scenes.nextScene()
-        level1_2.addEntity(player)
-        player.setPosition(0, @top())
+      # TODO: DISABLED FOR ANIM DEMO
+      # if @right() > Kona.Canvas.width - 20
+      #   Kona.Scenes.nextScene()       # TODO - BETTER SCENE/LEVEL DIFFERENTIATION
+      #   level1_2.addEntity(player)    # TODO: PERSISTENT ENTITIES
+      #   player.setPosition(0, @top())
 
     jump: ->
       jumpDuration = 180
@@ -131,7 +149,6 @@ Kona.ready ->
       @recharge  = 150
       @projType  = PistolProj
       @projSound = 'fire'
-      @sprite    = new Kona.Sprite('img/weapons/pistol.png')
 
 
   # PISTOL PROJ
@@ -166,7 +183,7 @@ Kona.ready ->
       @target    = player
       @recharge  = 1000
       @projType  = EnemyProj
-      @projSound = 'fire'
+      # @projSound = 'fire'
       setInterval =>
         @fire()
       , @recharge
@@ -177,9 +194,17 @@ Kona.ready ->
         Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
   # Add the player manually so we can have a reference object to bind keys to
-  player = new Player { x: 200, y: 200, width: 40, height: 55, color: 'black', group: 'player' }
-  level1_1.addEntity(player)
+  # player = new Player { x: 200, y: 200, width: 40, height: 55, color: 'black', group: 'player' }
 
+
+  player = new Player { x: 100, y: 100, width: 200, height: 200, color: 'black', group: 'player' }
+  player.loadAnimations {
+    'idle' : { sheet: 'img/entities/robot_sheet.png' }
+  }
+  player.setAnimation('idle')
+
+
+  level1_1.addEntity(player)
 
 
 
@@ -207,26 +232,26 @@ Kona.ready ->
   # ----------------------
   Kona.Scenes.definitionMap = {
     '-': { group: 'tiles',    klass: Kona.BlankTile }
-    'r': { group: 'tiles',    klass: Kona.Tile, opts: { sprite: '' } }
-    'o': { group: 'tiles',    klass: Kona.Tile, opts: { sprite: '' } }
-    'b': { group: 'tiles',    klass: Kona.Tile, opts: { sprite: '' } }
-    'x': { group: 'enemies',  klass: Enemy,  opts: { width: 40, height: 60, offset: { x: 15 }, sprite: 'img/entities/ninja1.png' } }
-    'c': { group: 'coins',    klass: Coin,   opts: { width: 25, height: 25, offset: { x: 20, y: 20 }, sprite: 'img/powerups/coin.png' } }
-    'p': { group: 'weapons',  klass: Pistol, opts: { width: 50, height: 25, offset: { x: 15, y: 15 } } }
+    'r': { group: 'tiles',    klass: DirtTile, opts: { sprite: '' } }
+    'o': { group: 'tiles',    klass: DirtTile, opts: { sprite: '' } }
+    'b': { group: 'tiles',    klass: DirtTile, opts: { sprite: '' } }
+    'x': { group: 'enemies',  klass: Enemy,  opts: { width: 40, height: 60, offset: { x: 15 },        sprite: 'img/entities/ninja1.png' } }
+    'c': { group: 'coins',    klass: Coin,   opts: { width: 25, height: 25, offset: { x: 20, y: 20 }, sprite: 'img/powerups/coin.png'   } }
+    'p': { group: 'weapons',  klass: Pistol, opts: { width: 50, height: 25, offset: { x: 15, y: 15 }, sprite: 'img/weapons/pistol.png'  } }
   }
 
-  level1_1.load [
+  level1_1.loadEntities [
     ['-','-','-','-','-','-','-','-','-','-','-'],
     ['-','-','-','-','-','-','-','-','-','-','-'],
     ['-','-','-','-','-','-','-','-','-','-','-'],
     ['-','-','-','-','-','-','-','-','-','o','b'],
     ['r','b','-','-','-','-','-','-','r','-','-'],
-    ['o','-','-','-','-','-','x','-','-','-','-'],
+    ['o','-','-','-','-','-','-','-','-','-','-'],
     ['r','c','c','o','p','-','b','o','-','-','-'],
     ['b','o','r','b','r','-','-','r','o','-','r']
   ]
 
-  level1_2.load [
+  level1_2.loadEntities [
     ['-','-','-','-','-','-','-','-','-','-','-'],
     ['-','-','-','-','-','-','-','-','-','-','-'],
     ['-','-','-','-','-','-','-','-','-','-','-'],

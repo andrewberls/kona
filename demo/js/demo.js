@@ -3,7 +3,7 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Kona.ready(function() {
-  var Coin, Enemy, EnemyPistol, EnemyProj, Pistol, PistolProj, Player, level1_1, level1_2, player;
+  var Coin, DirtTile, Enemy, EnemyPistol, EnemyProj, Pistol, PistolProj, Player, level1_1, level1_2, pauseMenu, player;
   Kona.Canvas.init('canvas');
   Kona.Sounds.load({
     'fire': 'audio/enemy_fire.ogg'
@@ -17,6 +17,36 @@ Kona.ready(function() {
     name: 'lvl1:s2',
     background: 'img/backgrounds/lvl2.jpg'
   });
+  pauseMenu = new Kona.Menu({
+    name: 'pauseMenu',
+    trigger: 'escape',
+    options: {
+      'Resume Game': function() {
+        return Kona.Scenes.setCurrent('lvl1:s1');
+      },
+      'Something One': function() {
+        return console.log("something one");
+      },
+      'Something Two': function() {
+        return console.log("something two");
+      }
+    }
+  });
+  DirtTile = (function(_super) {
+
+    __extends(DirtTile, _super);
+
+    function DirtTile(opts) {
+      if (opts == null) {
+        opts = {};
+      }
+      DirtTile.__super__.constructor.call(this, opts);
+      this.sprite.src = 'img/tiles/dirt1.png';
+    }
+
+    return DirtTile;
+
+  })(Kona.Tile);
   Player = (function(_super) {
 
     __extends(Player, _super);
@@ -31,14 +61,14 @@ Kona.ready(function() {
       this.isJumping = false;
       this.facing = 'right';
       this.canFire = false;
-      this.sprite = new Kona.Sprite("img/entities/player_" + this.facing + ".png");
+      this.sprite.src = "img/entities/player_" + this.facing + ".png";
       this.currentWeapon = null;
       this.collects('coins', 'weapons');
     }
 
     Player.prototype.update = function() {
       Player.__super__.update.apply(this, arguments);
-      this.sprite.setSrc("img/entities/player_" + this.facing + ".png");
+      this.sprite.src = "img/entities/player_" + this.facing + ".png";
       if (this.isJumping) {
         this.position.y -= this.jumpHeight;
         this.correctTop();
@@ -46,12 +76,7 @@ Kona.ready(function() {
         this.addGravity();
       }
       if (this.top() > Kona.Canvas.height) {
-        this.die();
-      }
-      if (this.right() > Kona.Canvas.width - 20) {
-        Kona.Scenes.nextScene();
-        level1_2.addEntity(player);
-        return player.setPosition(0, this.top());
+        return this.die();
       }
     };
 
@@ -143,7 +168,6 @@ Kona.ready(function() {
       this.recharge = 150;
       this.projType = PistolProj;
       this.projSound = 'fire';
-      this.sprite = new Kona.Sprite('img/weapons/pistol.png');
     }
 
     return Pistol;
@@ -204,7 +228,6 @@ Kona.ready(function() {
       this.target = player;
       this.recharge = 1000;
       this.projType = EnemyProj;
-      this.projSound = 'fire';
       setInterval(function() {
         return _this.fire();
       }, this.recharge);
@@ -222,13 +245,21 @@ Kona.ready(function() {
 
   })(Kona.EnemyWeapon);
   player = new Player({
-    x: 200,
-    y: 200,
-    width: 40,
-    height: 55,
+    x: 100,
+    y: 100,
+    width: 200,
+    height: 200,
     color: 'black',
     group: 'player'
   });
+  player.loadAnimations({
+    'idle': {
+      sheet: 'img/entities/robot_sheet.png',
+      width: 200,
+      height: 200
+    }
+  });
+  player.setAnimation('idle');
   level1_1.addEntity(player);
   Kona.Keys.keydown = function(key) {
     switch (key) {
@@ -259,21 +290,21 @@ Kona.ready(function() {
     },
     'r': {
       group: 'tiles',
-      klass: Kona.Tile,
+      klass: DirtTile,
       opts: {
         sprite: ''
       }
     },
     'o': {
       group: 'tiles',
-      klass: Kona.Tile,
+      klass: DirtTile,
       opts: {
         sprite: ''
       }
     },
     'b': {
       group: 'tiles',
-      klass: Kona.Tile,
+      klass: DirtTile,
       opts: {
         sprite: ''
       }
@@ -312,11 +343,12 @@ Kona.ready(function() {
         offset: {
           x: 15,
           y: 15
-        }
+        },
+        sprite: 'img/weapons/pistol.png'
       }
     }
   };
-  level1_1.load([['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', 'o', 'b'], ['r', 'b', '-', '-', '-', '-', '-', '-', 'r', '-', '-'], ['o', '-', '-', '-', '-', '-', 'x', '-', '-', '-', '-'], ['r', 'c', 'c', 'o', 'p', '-', 'b', 'o', '-', '-', '-'], ['b', 'o', 'r', 'b', 'r', '-', '-', 'r', 'o', '-', 'r']]);
-  level1_2.load([['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['b', 'r', 'o', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', 'r', 'r', 'r', '-', '-', '-'], ['-', '-', '-', '-', 'r', 'r', '-', '-', '-', '-', '-'], ['-', '-', '-', 'r', 'r', 'c', '-', '-', '-', 'r', 'r'], ['o', 'b', '-', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r']]);
+  level1_1.loadEntities([['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', 'o', 'b'], ['r', 'b', '-', '-', '-', '-', '-', '-', 'r', '-', '-'], ['o', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['r', 'c', 'c', 'o', 'p', '-', 'b', 'o', '-', '-', '-'], ['b', 'o', 'r', 'b', 'r', '-', '-', 'r', 'o', '-', 'r']]);
+  level1_2.loadEntities([['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['b', 'r', 'o', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', 'r', 'r', 'r', '-', '-', '-'], ['-', '-', '-', '-', 'r', 'r', '-', '-', '-', '-', '-'], ['-', '-', '-', 'r', 'r', 'c', '-', '-', '-', 'r', 'r'], ['o', 'b', '-', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r']]);
   return Kona.Engine.start();
 });

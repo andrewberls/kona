@@ -24,12 +24,13 @@ SOURCE_FILES = [
   'canvas',
   'engine',
   'scenes',
-  'sprite',
   'entity',
+  'animation',
   'tiles',
   'collectable',
   'keys',
   'sound',
+  'menu',
   'weapons',
   'projectiles'
 ]

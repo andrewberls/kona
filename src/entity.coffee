@@ -45,7 +45,7 @@
   @grav = 8
 
   constructor: (opts={}) ->
-    @group   = opts.group or fail ("Error - entity must have a group")
+    @group   = opts.group or fail ("entity must have a group")
     @solid   = opts.solid   || true
     @gravity = opts.gravity || true
     @speed   = opts.speed   || 0
@@ -63,7 +63,10 @@
       width:  opts.width  || 0
       height: opts.height || 0
 
-    @sprite = new Kona.Sprite(opts.sprite)
+    @sprite     = new Image()
+    @sprite.src = opts.sprite || null
+    @animations       = []
+    @currentAnimation = null
 
 
   # Apply any directional changes each frame, and resolve any
@@ -92,8 +95,13 @@
     @correctLeft()
     @correctRight()
 
+
   draw: ->
-    @sprite.draw(@position.x, @position.y, @box.width, @box.height)
+    if @currentAnimation?
+      @currentAnimation.draw()
+    else
+      Kona.Canvas.ctx.drawImage(@sprite, @position.x, @position.y, @box.width, @box.height)
+
 
   # Destroy an instance by removing it from the current scene
   destroy: ->
@@ -305,5 +313,31 @@
       Kona.Collectors.add(name, @)
 
 
+
+
+  # TODO - DOC OR REFACTOR
   active: ->
     _.contains Kona.Scenes.currentScene.entities[@group], @
+
+
+
+
+  # ---------------------
+  # Animations
+  # ---------------------
+  # TODO: DOCS
+  #
+  # player.loadAnimations {
+  #   'run_left' : { sheet: 'img/player/run_left' }
+  #   'die'      : { sheet: 'img/player/die' }
+  # }
+  loadAnimations: (animations) ->
+    for name, opts of animations
+      animOpts = Kona.Utils.merge { entity: @, width: @box.width, height: @box.height  }, opts
+      @animations[name] = new Kona.Animation(animOpts)
+
+  setAnimation: (name) ->
+    @currentAnimation = @animations[name] || fail("Couldn't find animation with name #{name}")
+
+  clearAnimation: ->
+    @currentAnimation = null

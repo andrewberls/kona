@@ -17,9 +17,8 @@ Kona.Engine =
 
   # Repeatedly draw the current scene by requesting animation frames
   run: ->
+    requestAnimFrame(Kona.Engine.run, Kona.Canvas.elem)
     Kona.Scenes.drawCurrent()
-    requestAnimFrame(Kona.Engine.run)
-
 
 
 # [requestAnimationShim by Paul Irish](http://paulirish.com/2011/requestanimationframe-for-smart-animating/)
