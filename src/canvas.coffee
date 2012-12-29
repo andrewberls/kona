@@ -12,7 +12,7 @@ Kona.Canvas =
   # Ex:
   #   `Kona.Canvas.init('gameCanvas')`
   init: (id) ->
-    @elem    = document.getElementById(id) or throw new Error "can't find element with id: #{id}"
+    @elem    = document.getElementById(id) or fail("Can't find element with id: #{id}")
     @ctx     = @elem.getContext('2d')
     @width   = @elem.width  || @defaults.width
     @height  = @elem.height || @defaults.height

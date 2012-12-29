@@ -20,7 +20,7 @@ Kona.Scenes =
   # Ex: `Kona.Scenes.setCurrent('lvl1:s2')`
   setCurrent: (sceneName) ->
     @currentScene.active = false
-    newScene = Kona.Utils.find(@scenes, { name: sceneName }) or throw new Error("Couldn't find scene: #{sceneName}")
+    newScene = Kona.Utils.find(@scenes, { name: sceneName }) or fail("Couldn't find scene: #{sceneName}")
     @currentScene = newScene
     @currentScene.active = true
 
@@ -44,11 +44,11 @@ Kona.Scenes =
 
 
 class Kona.Scene
-  constructor: (options={}) ->
-    @active         = options.active || false
-    @name           = options.name   || throw new Error("Scene must have a name")
+  constructor: (opts={}) ->
+    @active         = opts.active || false
+    @name           = opts.name   || fail("Scene must have a name")
     @background     = new Image()
-    @background.src = options.background || ''
+    @background.src = opts.background || ''
     @entities       = {}
     Kona.Scenes.scenes.push(@)
 
@@ -83,13 +83,11 @@ class Kona.Scene
     for row in grid
       for def in row
         rule   = Kona.Scenes.definitionMap[def] or fail("No mapping found for rule: #{def}")
-
         offset = if rule.opts then rule.opts.offset else {}
         startX = if offset? then x + (offset.x || 0) else x
         startY = if offset? then y + (offset.y || 0) else y
-
-        opts  = Kona.Utils.merge { x: startX, y: startY, group: rule.group  }, rule.opts
-        obj   = new rule.klass(opts)
+        opts   = Kona.Utils.merge { x: startX, y: startY, group: rule.group  }, rule.opts
+        obj    = new rule.klass(opts)
         @addEntity(obj)
         x += Kona.Tile.tileSize
 

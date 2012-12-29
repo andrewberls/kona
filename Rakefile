@@ -10,10 +10,10 @@ require 'fileutils'
 # --------------------------
 # FILE CONFIGURATION
 # --------------------------
-VENDOR_PATH = 'vendor' # Path to vendor scripts (ex: Underscore)
-SRC_PATH    = 'src'    # Path to source files
-BUILD_PATH  = 'build'  # Directory for intermediate compiled source files
-DIST_PATH   = 'kona'   # Produces <name>.js and <name>.min.js at this path
+VENDOR_PATH = 'src/lib' # Path to vendor scripts (ex: Underscore)
+SRC_PATH    = 'src'     # Path to source files
+BUILD_PATH  = 'build'   # Directory for intermediate compiled source files
+DIST_PATH   = 'kona'    # Produces <name>.js and <name>.min.js at this path
 
 VENDOR_FILES = [
   'underscore.min'

@@ -74,27 +74,27 @@ class Kona.Sound
   #  - autoplay
   #  - preload
   #  - volume
-  constructor: (src, options={}) ->
+  constructor: (src, opts={}) ->
     @supported  = Kona.Sound.isSupported()
 
     if @supported && src?
       for key, value of Kona.Sound.defaults
-        options[key] = options[key] || value
+        opts[key] = opts[key] || value
 
     @el = document.createElement('audio')
 
     if _.isArray(src)
       @addSource(@el, s) for s in src
-    else if options.formats? && options.formats.length
-      for key, value in options.formats
+    else if opts.formats? && opts.formats.length
+      for key, value in opts.formats
         @addSource(@el, "#{src}.#{key}")
     else
       @addSource(@el, src)
 
-    # @loop() if options.loop
-    @el.autoplay = 'autoplay' if options.autoplay == true
-    @el.preload  = if options.preload == true then 'auto' else 'none'
-    @setVolume(options.volume)
+    # @loop() if opts.loop
+    @el.autoplay = 'autoplay' if opts.autoplay == true
+    @el.preload  = if opts.preload == true then 'auto' else 'none'
+    @setVolume(opts.volume)
 
     @el.addEventListener "loadedmetadata", => @duration = @el.duration
 
