@@ -7,6 +7,22 @@
 #   * __width__ - (Integer) The width of each animation frame, in pixels. Defaults to the box width of the associated entity
 #   * __height__ - (Integer) The height of each animation frame, in pixels. Defaults to the box height of the associated entity
 #
+
+
+
+
+
+
+
+# TODO: ANIMATION.NEXT
+
+
+
+
+
+
+
+
 class Kona.Animation
   constructor: (opts={}) ->
     @lastUpdateTime = 0

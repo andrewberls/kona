@@ -1,5 +1,5 @@
 {
   "src_path"   : "src",
   "build_path" : "build",
-  "build_file" : "demo"
+  "build_file" : "bounce"
 }
