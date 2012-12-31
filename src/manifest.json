@@ -1,0 +1,18 @@
+{
+  "files" : [
+    "kona",
+    "utils",
+    "canvas",
+    "engine",
+    "scenes",
+    "entity",
+    "animation",
+    "tiles",
+    "collectable",
+    "keys",
+    "sound",
+    "menu",
+    "weapons",
+    "projectiles"
+  ]
+}

@@ -296,8 +296,8 @@
   # Mark this entity as a collector for a group of collectables.
   # Intended for initialization in a constructor.
   #
-  # After calling, this entity will automatically collect ('activate')
-  # the specified collectables on contact.
+  # After calling, this entity will automatically activate
+  # collectables in the specified group on contact.
   #
   # See docs for Kona.Collectable.
   #
@@ -306,7 +306,7 @@
   #     class Player extends Kona.Entity
   #       constructor: (opts={}) ->
   #         super(opts)
-  #         @collects('coins')
+  #         @collects('coins', 'weapons')
   #
   collects: (names...) ->
     for name in names

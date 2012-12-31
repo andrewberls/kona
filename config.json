@@ -1,0 +1,5 @@
+{
+  "lib_path"   : "src/lib",
+  "src_path"   : "src",
+  "build_file" : "kona"
+}

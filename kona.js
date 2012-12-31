@@ -92,9 +92,7 @@ Kona.Canvas = {
     height: 480
   },
   init: function(id) {
-    this.elem = document.getElementById(id) || (function() {
-      throw new Error("can't find element with id: " + id);
-    })();
+    this.elem = document.getElementById(id) || fail("Can't find element with id: " + id);
     this.ctx = this.elem.getContext('2d');
     this.width = this.elem.width || this.defaults.width;
     return this.height = this.elem.height || this.defaults.height;
@@ -157,9 +155,7 @@ Kona.Scenes = {
     this.currentScene.active = false;
     newScene = Kona.Utils.find(this.scenes, {
       name: sceneName
-    }) || (function() {
-      throw new Error("Couldn't find scene: " + sceneName);
-    })();
+    }) || fail("Couldn't find scene: " + sceneName);
     this.currentScene = newScene;
     return this.currentScene.active = true;
   },
@@ -179,16 +175,14 @@ Kona.Scenes = {
 
 Kona.Scene = (function() {
 
-  function Scene(options) {
-    if (options == null) {
-      options = {};
+  function Scene(opts) {
+    if (opts == null) {
+      opts = {};
     }
-    this.active = options.active || false;
-    this.name = options.name || (function() {
-      throw new Error("Scene must have a name");
-    })();
+    this.active = opts.active || false;
+    this.name = opts.name || fail("Scene must have a name");
     this.background = new Image();
-    this.background.src = options.background || '';
+    this.background.src = opts.background || '';
     this.entities = {};
     Kona.Scenes.scenes.push(this);
   }
@@ -933,18 +927,18 @@ Kona.Sound = (function() {
     return Kona.debug("  AAC: " + (supported(this.isAACSupported())));
   };
 
-  function Sound(src, options) {
+  function Sound(src, opts) {
     var key, s, value, _i, _j, _len, _len1, _ref, _ref1,
       _this = this;
-    if (options == null) {
-      options = {};
+    if (opts == null) {
+      opts = {};
     }
     this.supported = Kona.Sound.isSupported();
     if (this.supported && (src != null)) {
       _ref = Kona.Sound.defaults;
       for (key in _ref) {
         value = _ref[key];
-        options[key] = options[key] || value;
+        opts[key] = opts[key] || value;
       }
     }
     this.el = document.createElement('audio');
@@ -953,8 +947,8 @@ Kona.Sound = (function() {
         s = src[_i];
         this.addSource(this.el, s);
       }
-    } else if ((options.formats != null) && options.formats.length) {
-      _ref1 = options.formats;
+    } else if ((opts.formats != null) && opts.formats.length) {
+      _ref1 = opts.formats;
       for (value = _j = 0, _len1 = _ref1.length; _j < _len1; value = ++_j) {
         key = _ref1[value];
         this.addSource(this.el, "" + src + "." + key);
@@ -962,11 +956,11 @@ Kona.Sound = (function() {
     } else {
       this.addSource(this.el, src);
     }
-    if (options.autoplay === true) {
+    if (opts.autoplay === true) {
       this.el.autoplay = 'autoplay';
     }
-    this.el.preload = options.preload === true ? 'auto' : 'none';
-    this.setVolume(options.volume);
+    this.el.preload = opts.preload === true ? 'auto' : 'none';
+    this.setVolume(opts.volume);
     this.el.addEventListener("loadedmetadata", function() {
       return _this.duration = _this.el.duration;
     });
@@ -1264,13 +1258,25 @@ Kona.EnemyWeapon = (function(_super) {
     return EnemyWeapon.__super__.constructor.apply(this, arguments);
   }
 
+  EnemyWeapon.prototype.randomTarget = function() {
+    var group, targetEnts, _i, _len, _ref;
+    targetEnts = [];
+    _ref = this.targets;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      group = _ref[_i];
+      targetEnts = targetEnts.concat(Kona.Scenes.currentScene.entities[group]);
+    }
+    return _.shuffle(targetEnts)[0];
+  };
+
   EnemyWeapon.prototype.fire = function() {
-    var angle, proj, projDx, projDy, speed, startX, startY, targetLeft, targetUp, x, y;
+    var angle, proj, projDx, projDy, speed, startX, startY, target, targetLeft, targetUp, x, y;
+    target = this.randomTarget();
     if (this.holder.active()) {
-      x = Math.abs(this.holder.midx() - this.target.midx());
-      y = Math.abs(this.holder.midy() - this.target.midy());
-      targetLeft = this.holder.position.x >= this.target.midx();
-      targetUp = this.holder.position.y >= this.target.midy();
+      x = Math.abs(this.holder.midx() - target.midx());
+      y = Math.abs(this.holder.midy() - target.midy());
+      targetLeft = this.holder.position.x >= target.midx();
+      targetUp = this.holder.position.y >= target.midy();
       angle = Math.atan2(y, x) + (targetUp ? 0.5 : 0);
       speed = 1;
       projDx = speed * Math.cos(angle) * (targetLeft ? -1 : 1);
