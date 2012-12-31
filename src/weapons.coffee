@@ -34,13 +34,24 @@ class Kona.Weapon extends Kona.Collectable
 
 
 class Kona.EnemyWeapon extends Kona.Weapon
-  fire: ->
-    if @holder.active()
-      x = Math.abs(@holder.midx() - @target.midx())  # x-distance between enemy & target
-      y = Math.abs(@holder.midy() - @target.midy())  # y-distance between enemy & target
+  # Return a random entity from the list of target groups
+  randomTarget: ->
+    targetEnts = []
+    for group in @targets
+      targetEnts = targetEnts.concat(Kona.Scenes.currentScene.entities[group])
+    return _.shuffle(targetEnts)[0]
 
-      targetLeft = @holder.position.x >= @target.midx()
-      targetUp   = @holder.position.y >= @target.midy()
+
+  # Fire at a random entity from all target groups
+  fire: ->
+    target = @randomTarget()
+
+    if @holder.active()
+      x = Math.abs(@holder.midx() - target.midx())  # x-distance between enemy & target
+      y = Math.abs(@holder.midy() - target.midy())  # y-distance between enemy & target
+
+      targetLeft = @holder.position.x >= target.midx()
+      targetUp   = @holder.position.y >= target.midy()
 
       angle = Math.atan2(y, x) + (if targetUp then 0.5 else 0) # Angle between enemy and target in radians
       speed = 1
