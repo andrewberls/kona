@@ -205,7 +205,7 @@ Kona.Scene = (function() {
       for (_j = 0, _len1 = row.length; _j < _len1; _j++) {
         def = row[_j];
         rule = Kona.Scenes.definitionMap[def] || fail("No mapping found for rule: " + def);
-        offset = rule.opts ? rule.opts.offset : {};
+        offset = rule.opts ? rule.opts.offset : null;
         startX = offset != null ? x + (offset.x || 0) : x;
         startY = offset != null ? y + (offset.y || 0) : y;
         opts = Kona.Utils.merge({
@@ -594,7 +594,7 @@ Kona.Animation = (function() {
     }
     this.lastUpdateTime = 0;
     this.elapsed = 0;
-    this.msPerFrame = 25;
+    this.msPerFrame = opts.msPerFrame || 25;
     this.entity = opts.entity;
     this.image = new Image();
     this.image.src = opts.sheet;
@@ -606,21 +606,29 @@ Kona.Animation = (function() {
       width: opts.width,
       height: opts.height
     };
+    this.repeat = opts.repeat != null ? opts.repeat : true;
+    this.next = opts.next || null;
+    this.played = false;
   }
 
-  Animation.prototype.draw = function() {
-    var delta, targetHeight, targetWidth, targetX, targetY;
-    targetX = this.entity.position.x;
-    targetY = this.entity.position.y;
-    targetWidth = this.entity.box.width;
-    targetHeight = this.entity.box.height;
-    Kona.Canvas.ctx.drawImage(this.image, this.position.x, this.position.y, this.frames.width, this.frames.height, targetX, targetY, targetWidth, targetHeight);
+  Animation.prototype.triggerNext = function() {
+    if (_.isString(this.next)) {
+      return this.entity.setAnimation(this.next);
+    } else if (_.isFunction(this.next)) {
+      return this.next();
+    }
+  };
+
+  Animation.prototype.update = function() {
+    var delta;
     delta = Date.now() - this.lastUpdateTime;
     if (this.elapsed > this.msPerFrame) {
       this.elapsed = 0;
       this.position.x += this.frames.width;
       if (this.position.x + this.frames.width > this.image.width) {
         if (this.position.y + this.frames.height >= this.image.height) {
+          this.played = true;
+          this.triggerNext();
           this.position.x = this.position.y = 0;
         } else {
           this.position.x = 0;
@@ -631,6 +639,18 @@ Kona.Animation = (function() {
       this.elapsed += delta;
     }
     return this.lastUpdateTime = Date.now();
+  };
+
+  Animation.prototype.draw = function() {
+    var targetHeight, targetWidth, targetX, targetY;
+    targetX = this.entity.position.x;
+    targetY = this.entity.position.y;
+    targetWidth = this.entity.box.width;
+    targetHeight = this.entity.box.height;
+    if (!(!this.repeat && this.played)) {
+      Kona.Canvas.ctx.drawImage(this.image, this.position.x, this.position.y, this.frames.width, this.frames.height, targetX, targetY, targetWidth, targetHeight);
+      return this.update();
+    }
   };
 
   return Animation;
@@ -1158,8 +1178,9 @@ Kona.Menu = (function(_super) {
       opts = {};
     }
     Menu.__super__.constructor.call(this, opts);
+    puts("constructing menu");
     this.fontSize = opts.fontSize || '30px';
-    this.font = opts.font || 'Times New Roman';
+    this.font = opts.font || 'Helvetica';
     this.textAlign = opts.textAlign || 'center';
     this.textColor = opts.textColor || 'white';
     this.selectedColor = opts.selectedColor || 'yellow';

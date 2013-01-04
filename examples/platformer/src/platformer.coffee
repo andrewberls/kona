@@ -22,15 +22,15 @@ Kona.ready ->
     background: 'img/backgrounds/lvl2.jpg'
   }
 
-  pauseMenu = new Kona.Menu {
-    name: 'pauseMenu'
-    trigger: 'escape'
-    options: {
-      'Resume Game'   : -> Kona.Scenes.setCurrent('lvl1:s1')
-      'Something One' : -> console.log "something one"
-      'Something Two' : -> console.log "something two"
-    }
-  }
+  # pauseMenu = new Kona.Menu {
+  #   name: 'pauseMenu'
+  #   trigger: 'escape'
+  #   options: {
+  #     'Resume Game'   : -> Kona.Scenes.setCurrent('lvl1:s1')
+  #     'Something One' : -> console.log "something one"
+  #     'Something Two' : -> console.log "something two"
+  #   }
+  # }
 
   # ----------------------
   #   GAME ENTITIES
@@ -38,6 +38,7 @@ Kona.ready ->
 
   # TILES
   # ----------------
+  # TODO: LEFT, RIGHT TILES
   class DirtTile extends Kona.Tile
 
 
@@ -50,13 +51,15 @@ Kona.ready ->
       @jumpHeight    = 12
       @jumpDuration  = 180
       @isJumping     = false
-      @facing        = 'right'
+      @facing        = ''
       @canFire       = false
       @currentWeapon = null
       @collects('coins', 'weapons')
 
     update: ->
-      super
+      super()
+
+      # if Kona.Keys.pressed('left') ...
 
       if @isJumping
         @position.y -= @jumpHeight
@@ -67,20 +70,22 @@ Kona.ready ->
       @die() if @top() > Kona.Canvas.height
 
       # Transition to next screen
-      # TODO: DISABLED FOR ANIM DEMO
-      # if @right() > Kona.Canvas.width - 20
-      #   Kona.Scenes.nextScene()       # TODO - BETTER SCENE/LEVEL DIFFERENTIATION
-      #   level1_2.addEntity(player)    # TODO: PERSISTENT ENTITIES
-      #   player.setPosition(0, @top())
+      if @right() > Kona.Canvas.width - 20
+        Kona.Scenes.nextScene()                       # TODO - BETTER SCENE/LEVEL DIFFERENTIATION
+        Kona.Scenes.currentScene.addEntity(player)    # TODO: PERSISTENT ENTITIES
+        @setPosition(0, @top())
 
-
-    setDir: (dir) ->
-      @direction.dx = if dir == 'left' then -1 else 1
-      @setAnimation("run_#{dir}")
 
     stop: (axis) ->
       @setAnimation('idle')
+      @facing = ''
       super(axis)
+
+
+    setDirection: (dir) ->
+      @setAnimation("run_#{dir}")
+      @direction.dx = if dir == 'left' then -1 else 1
+
 
     jump: ->
       # Can only jump from standing on a surface
@@ -89,6 +94,7 @@ Kona.ready ->
         @position.y -= 20 # Small boost at start
         setTimeout =>
           @isJumping = false
+          @setAnimation("run_#{@facing}") if @facing != '' # Fix anim glitch if still running after jump
         , @jumpDuration
 
 
@@ -101,7 +107,6 @@ Kona.ready ->
         @facing = 'right'
         @setPosition(195, 200)
       , 400
-
 
 
 
@@ -205,13 +210,15 @@ Kona.ready ->
   # player.setAnimation('idle')
 
 
-  player = new Player { x: 200, y: 200, width: 64, height: 64, color: 'black', group: 'player' }
+  player = new Player { x: 200, y: 200, width: 64, height: 64, color: 'black', group: 'player' } # y 200
   player.loadAnimations {
     'idle'      : { sheet: 'img/entities/monster_idle.png' }
     'run_left'  : { sheet: 'img/entities/monster_run_left.png' }
     'run_right' : { sheet: 'img/entities/monster_run_right.png' }
   }
   player.setAnimation('idle')
+
+
 
   level1_1.addEntity(player)
 
@@ -222,8 +229,8 @@ Kona.ready ->
   # ----------------------
   Kona.Keys.keydown = (key) ->
     switch key
-      when 'left'  then player.setDir('left')
-      when 'right' then player.setDir('right')
+      when 'left'  then player.setDirection('left')
+      when 'right' then player.setDirection('right')
       when 'up'    then player.jump()
       when 'space' then player.fire()
 

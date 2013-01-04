@@ -3,7 +3,7 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Kona.ready(function() {
-  var Coin, DirtTile, Enemy, EnemyPistol, EnemyProj, Pistol, PistolProj, Player, level1_1, level1_2, pauseMenu, player;
+  var Coin, DirtTile, Enemy, EnemyPistol, EnemyProj, Pistol, PistolProj, Player, level1_1, level1_2, player;
   Kona.Canvas.init('canvas');
   Kona.Sounds.load({
     'fire': 'audio/enemy_fire.ogg'
@@ -16,21 +16,6 @@ Kona.ready(function() {
   level1_2 = new Kona.Scene({
     name: 'lvl1:s2',
     background: 'img/backgrounds/lvl2.jpg'
-  });
-  pauseMenu = new Kona.Menu({
-    name: 'pauseMenu',
-    trigger: 'escape',
-    options: {
-      'Resume Game': function() {
-        return Kona.Scenes.setCurrent('lvl1:s1');
-      },
-      'Something One': function() {
-        return console.log("something one");
-      },
-      'Something Two': function() {
-        return console.log("something two");
-      }
-    }
   });
   DirtTile = (function(_super) {
 
@@ -56,14 +41,14 @@ Kona.ready(function() {
       this.jumpHeight = 12;
       this.jumpDuration = 180;
       this.isJumping = false;
-      this.facing = 'right';
+      this.facing = '';
       this.canFire = false;
       this.currentWeapon = null;
       this.collects('coins', 'weapons');
     }
 
     Player.prototype.update = function() {
-      Player.__super__.update.apply(this, arguments);
+      Player.__super__.update.call(this);
       if (this.isJumping) {
         this.position.y -= this.jumpHeight;
         this.correctTop();
@@ -71,18 +56,24 @@ Kona.ready(function() {
         this.addGravity();
       }
       if (this.top() > Kona.Canvas.height) {
-        return this.die();
+        this.die();
       }
-    };
-
-    Player.prototype.setDir = function(dir) {
-      this.direction.dx = dir === 'left' ? -1 : 1;
-      return this.setAnimation("run_" + dir);
+      if (this.right() > Kona.Canvas.width - 20) {
+        Kona.Scenes.nextScene();
+        Kona.Scenes.currentScene.addEntity(player);
+        return this.setPosition(0, this.top());
+      }
     };
 
     Player.prototype.stop = function(axis) {
       this.setAnimation('idle');
+      this.facing = '';
       return Player.__super__.stop.call(this, axis);
+    };
+
+    Player.prototype.setDirection = function(dir) {
+      this.setAnimation("run_" + dir);
+      return this.direction.dx = dir === 'left' ? -1 : 1;
     };
 
     Player.prototype.jump = function() {
@@ -91,7 +82,10 @@ Kona.ready(function() {
         this.isJumping = true;
         this.position.y -= 20;
         return setTimeout(function() {
-          return _this.isJumping = false;
+          _this.isJumping = false;
+          if (_this.facing !== '') {
+            return _this.setAnimation("run_" + _this.facing);
+          }
         }, this.jumpDuration);
       }
     };
@@ -269,9 +263,9 @@ Kona.ready(function() {
   Kona.Keys.keydown = function(key) {
     switch (key) {
       case 'left':
-        return player.setDir('left');
+        return player.setDirection('left');
       case 'right':
-        return player.setDir('right');
+        return player.setDirection('right');
       case 'up':
         return player.jump();
       case 'space':

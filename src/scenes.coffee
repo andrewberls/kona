@@ -83,7 +83,7 @@ class Kona.Scene
     for row in grid
       for def in row
         rule   = Kona.Scenes.definitionMap[def] or fail("No mapping found for rule: #{def}")
-        offset = if rule.opts then rule.opts.offset else {}
+        offset = if rule.opts then rule.opts.offset else null
         startX = if offset? then x + (offset.x || 0) else x
         startY = if offset? then y + (offset.y || 0) else y
         opts   = Kona.Utils.merge { x: startX, y: startY, group: rule.group  }, rule.opts
