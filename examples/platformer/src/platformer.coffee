@@ -78,7 +78,6 @@ Kona.ready ->
 
     stop: (axis) ->
       @setAnimation('idle')
-      @facing = ''
       super(axis)
 
 
@@ -94,7 +93,7 @@ Kona.ready ->
         @position.y -= 20 # Small boost at start
         setTimeout =>
           @isJumping = false
-          @setAnimation("run_#{@facing}") if @facing != '' # Fix anim glitch if still running after jump
+          @setAnimation("run_#{@facing}") if @facing != '' && @direction.dx != 0
         , @jumpDuration
 
 

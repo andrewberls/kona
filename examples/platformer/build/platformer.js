@@ -67,7 +67,6 @@ Kona.ready(function() {
 
     Player.prototype.stop = function(axis) {
       this.setAnimation('idle');
-      this.facing = '';
       return Player.__super__.stop.call(this, axis);
     };
 
@@ -83,7 +82,7 @@ Kona.ready(function() {
         this.position.y -= 20;
         return setTimeout(function() {
           _this.isJumping = false;
-          if (_this.facing !== '') {
+          if (_this.facing !== '' && _this.direction.dx !== 0) {
             return _this.setAnimation("run_" + _this.facing);
           }
         }, this.jumpDuration);
@@ -91,6 +90,7 @@ Kona.ready(function() {
     };
 
     Player.prototype.fire = function() {
+      puts(this.facing);
       if (this.currentWeapon != null) {
         return this.currentWeapon.fire();
       }
