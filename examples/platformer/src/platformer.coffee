@@ -59,8 +59,6 @@ Kona.ready ->
     update: ->
       super()
 
-      # if Kona.Keys.pressed('left') ...
-
       if @isJumping
         @position.y -= @jumpHeight
         @correctTop()
