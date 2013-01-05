@@ -110,9 +110,9 @@ class Kona.Scene
       y += Kona.Tile.tileSize
 
 
-  # Remove an entity from a named group. Prefer `entity.destroy()` instead of calling this directly.
-  removeEntity: (group, entity) ->
-    list = @entities[group]
+  # Remove an entity from its group. Prefer `entity.destroy()` instead of calling this directly.
+  removeEntity: (entity) ->
+    list = @entities[entity.group]
     for ent, idx in list
       list.splice(idx, 1) if entity == ent
 

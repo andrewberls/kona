@@ -105,7 +105,7 @@
 
   # Destroy an instance by removing it from the current scene
   destroy: ->
-    Kona.Scenes.currentScene.removeEntity(@group, @)
+    Kona.Scenes.currentScene.removeEntity(@)
 
 
 
@@ -197,6 +197,8 @@
     collision
 
 
+
+  # TODO: FIX NAMING
 
   # The following methods may cause some confusion.
   #
@@ -293,7 +295,7 @@
   # ---------------------
   # Collectables
   # ---------------------
-  # Mark this entity as a collector for a group of collectables.
+  # Mark this entity as a collector for a group of collectable entities.
   # Intended for initialization in a constructor.
   #
   # After calling, this entity will automatically activate
