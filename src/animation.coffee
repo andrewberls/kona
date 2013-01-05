@@ -7,9 +7,8 @@
 #   * __width__ - (Integer) The width of each animation frame, in pixels. Defaults to the box width of the associated entity
 #   * __height__ - (Integer) The height of each animation frame, in pixels. Defaults to the box height of the associated entity
 #   * __repeat__ - (Boolean) Whether or not the animation should loop after playing once
-#   * __next__ - (String | Function) Test
+#   * __next__ - (String | Function) If __string__, then the name of the animation to switch to after playing once. If __function__, then callback to invoke after playing.
 #
-
 class Kona.Animation
   constructor: (opts={}) ->
     @lastUpdateTime = 0

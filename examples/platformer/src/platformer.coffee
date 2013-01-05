@@ -11,26 +11,7 @@ Kona.ready ->
     'fire' : 'audio/enemy_fire.ogg'
   }
 
-  level1_1 = new Kona.Scene {
-    name: 'lvl1:s1'
-    background: 'img/backgrounds/lvl2.jpg'
-    active: true
-  }
 
-  level1_2 = new Kona.Scene {
-    name: 'lvl1:s2'
-    background: 'img/backgrounds/lvl2.jpg'
-  }
-
-  # pauseMenu = new Kona.Menu {
-  #   name: 'pauseMenu'
-  #   trigger: 'escape'
-  #   options: {
-  #     'Resume Game'   : -> Kona.Scenes.setCurrent('lvl1:s1')
-  #     'Something One' : -> console.log "something one"
-  #     'Something Two' : -> console.log "something two"
-  #   }
-  # }
 
   # ----------------------
   #   GAME ENTITIES
@@ -40,6 +21,7 @@ Kona.ready ->
   # ----------------
   # TODO: LEFT, RIGHT TILES
   class DirtTile extends Kona.Tile
+
 
 
   # PLAYER
@@ -69,7 +51,7 @@ Kona.ready ->
 
       # Transition to next screen
       if @right() > Kona.Canvas.width - 20
-        Kona.Scenes.nextScene()                       # TODO - BETTER SCENE/LEVEL DIFFERENTIATION
+        Kona.Scenes.nextScene()
         Kona.Scenes.currentScene.addEntity(player)    # TODO: PERSISTENT ENTITIES
         @setPosition(0, @top())
 
@@ -113,7 +95,7 @@ Kona.ready ->
     constructor: (opts={}) ->
       super(opts)
       @currentWeapon = new EnemyPistol { group: 'enemy_weapons', holder: @ }
-      level1_1.addEntity(@currentWeapon)
+      Kona.Scenes.currentScene.addEntity(@currentWeapon)
 
     update: ->
       super
@@ -122,7 +104,6 @@ Kona.ready ->
     destroy: ->
       @currentWeapon.destroy()
       super
-
 
 
 
@@ -135,7 +116,6 @@ Kona.ready ->
   class Coin extends Kona.Collectable
     activate: (collector) ->
       puts "Coin activated!"
-
 
 
 
@@ -196,28 +176,30 @@ Kona.ready ->
         Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
 
 
+
+  # ----------------------
+  #   PLAYER INIT
+  # ----------------------
   # Add the player manually so we can have a reference object to bind keys to
-  # player = new Player { x: 200, y: 200, width: 40, height: 55, color: 'black', group: 'player' }
 
-
+  # ROBOT
+  # ---------------------
   # player = new Player { x: 100, y: 100, width: 200, height: 200, color: 'black', group: 'player' }
   # player.loadAnimations {
-  #   'idle' : { sheet: 'img/entities/robot_sheet.png' }
+  #   'idle' : { sheet: 'img/entities/robot_sheet.png', active: true, next: -> puts @ }
   # }
-  # player.setAnimation('idle')
 
 
-  player = new Player { x: 200, y: 200, width: 64, height: 64, color: 'black', group: 'player' } # y 200
+  # MONSTER
+  # ---------------------
+  player = new Player { x: 200, y: 200, width: 64, height: 64, group: 'player' }
   player.loadAnimations {
-    'idle'      : { sheet: 'img/entities/monster_idle.png' }
+    'idle'      : { sheet: 'img/entities/monster_idle.png', active: true }
     'run_left'  : { sheet: 'img/entities/monster_run_left.png' }
     'run_right' : { sheet: 'img/entities/monster_run_right.png' }
   }
-  player.setAnimation('idle')
 
-
-
-  level1_1.addEntity(player)
+  Kona.Scenes.currentScene.addEntity(player)
 
 
 
@@ -238,57 +220,49 @@ Kona.ready ->
 
 
 
-
   #----------------------
   #   LAYOUT
   # ----------------------
   Kona.Scenes.definitionMap = {
-    '-': { group: 'tiles',    klass: Kona.BlankTile }
-    'r': { group: 'tiles',    klass: DirtTile, opts: { sprite: 'img/tiles/dirt1.png' } }
-    'o': { group: 'tiles',    klass: DirtTile, opts: { sprite: 'img/tiles/dirt1.png' } }
-    'b': { group: 'tiles',    klass: DirtTile, opts: { sprite: 'img/tiles/dirt1.png' } }
-    'x': { group: 'enemies',  klass: Enemy,  opts: { width: 40, height: 60, offset: { x: 15 },        sprite: 'img/entities/ninja1.png' } }
-    'c': { group: 'coins',    klass: Coin,   opts: { width: 25, height: 25, offset: { x: 20, y: 20 }, sprite: 'img/powerups/coin.png'   } }
-    'p': { group: 'weapons',  klass: Pistol, opts: { width: 50, height: 25, offset: { x: 15, y: 15 }, sprite: 'img/weapons/pistol.png'  } }
+    '-': { group: 'tiles',   entity: Kona.BlankTile }
+    'r': { group: 'tiles',   entity: DirtTile, opts: { sprite: 'img/tiles/dirt1.png' } }
+    'o': { group: 'tiles',   entity: DirtTile, opts: { sprite: 'img/tiles/dirt1.png' } }
+    'b': { group: 'tiles',   entity: DirtTile, opts: { sprite: 'img/tiles/dirt1.png' } }
+    'x': { group: 'enemies', entity: Enemy,  opts: { width: 40, height: 60, offset: { x: 15 },        sprite: 'img/entities/ninja1.png' } }
+    'c': { group: 'coins',   entity: Coin,   opts: { width: 25, height: 25, offset: { x: 20, y: 20 }, sprite: 'img/powerups/coin.png'   } }
+    'p': { group: 'weapons', entity: Pistol, opts: { width: 50, height: 25, offset: { x: 15, y: 15 }, sprite: 'img/weapons/pistol.png'  } }
   }
 
-  level1_1.loadEntities [
-    ['-','-','-','-','-','-','-','-','-','-','-'],
-    ['-','-','-','-','-','-','-','-','-','-','-'],
-    ['-','-','-','-','-','-','-','-','-','-','-'],
-    ['-','-','-','-','-','-','-','-','-','o','b'],
-    ['r','b','-','-','-','-','-','-','r','-','-'],
-    ['o','-','-','-','-','-','-','x','-','-','-'],
-    ['r','c','c','o','p','-','b','o','-','-','-'],
-    ['b','o','r','b','r','-','-','r','o','-','r']
+
+  Kona.Scenes.loadScenes [
+    {
+      background: 'img/backgrounds/lvl2.jpg',
+      entities: [
+        ['-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','o','b'],
+        ['r','b','-','-','-','-','-','-','r','-','-'],
+        ['o','-','-','-','-','-','-','x','-','-','-'],
+        ['r','c','c','o','p','-','b','o','-','-','-'],
+        ['b','o','r','b','r','-','-','r','o','-','r']
+      ]
+    },
+
+    {
+      background: 'img/backgrounds/lvl2.jpg'
+      entities: [
+        ['-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-'],
+        ['b','r','o','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','r','r','r','-','-','-'],
+        ['-','-','-','-','r','r','-','-','-','-','-'],
+        ['-','-','-','r','r','c','-','-','-','r','r'],
+        ['o','b','-','r','r','r','r','r','r','r','r']
+      ]
+    }
   ]
-
-
-
-  # level1_1.loadEntities [
-  #   ['-','-','-','-','-','-','-','-','-','-','-'],
-  #   ['-','-','-','-','-','-','-','-','-','-','-'],
-  #   ['-','-','-','-','-','-','-','-','-','-','-'],
-  #   ['-','-','-','-','-','-','-','-','-','-','-'],
-  #   ['-','-','-','-','-','-','-','-','-','-','-'],
-  #   ['-','-','-','-','-','-','-','-','-','-','r'],
-  #   ['-','-','-','-','-','-','-','-','-','r','r'],
-  #   ['b','o','r','b','r','r','r','r','o','r','r']
-  # ]
-
-
-
-  level1_2.loadEntities [
-    ['-','-','-','-','-','-','-','-','-','-','-'],
-    ['-','-','-','-','-','-','-','-','-','-','-'],
-    ['-','-','-','-','-','-','-','-','-','-','-'],
-    ['b','r','o','-','-','-','-','-','-','-','-'],
-    ['-','-','-','-','-','r','r','r','-','-','-'],
-    ['-','-','-','-','r','r','-','-','-','-','-'],
-    ['-','-','-','r','r','c','-','-','-','r','r'],
-    ['o','b','-','r','r','r','r','r','r','r','r']
-  ]
-
 
 
 

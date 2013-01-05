@@ -71,15 +71,6 @@ Kona.Utils = {
   }
 };
 
-window._k_once = 0;
-
-window.once = function(fxn) {
-  if (window._k_once === 0) {
-    fxn();
-  }
-  return window._k_once++;
-};
-
 window.fail = function(msg) {
   throw new Error(msg);
 };
@@ -124,9 +115,8 @@ Kona.Engine = {
       opts = {};
     }
     this.fps = opts.fps || this.defaults.fps;
-    Kona.Scenes.currentScene = Kona.Utils.find(Kona.Scenes.scenes, {
-      active: true
-    });
+    Kona.Scenes.currentScene = Kona.Scenes.scenes[0];
+    Kona.Scenes.loadQueue();
     return this.run();
   },
   run: function() {
@@ -145,8 +135,38 @@ window.requestAnimFrame = (function() {
 
 Kona.Scenes = {
   scenes: [],
-  currentScene: {},
   definitionMap: null,
+  _queue: [],
+  currentScene: {
+    addEntity: function(ent) {
+      return Kona.Scenes._queue.push(ent);
+    }
+  },
+  loadQueue: function() {
+    var ent, _i, _len, _ref, _results;
+    _ref = this._queue;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      ent = _ref[_i];
+      _results.push(this.currentScene.addEntity(ent));
+    }
+    return _results;
+  },
+  loadScenes: function(argList) {
+    var args, sceneNum, _i, _len;
+    if (argList == null) {
+      argList = [];
+    }
+    sceneNum = 1;
+    for (_i = 0, _len = argList.length; _i < _len; _i++) {
+      args = argList[_i];
+      this.scenes.push(new Kona.Scene(Kona.Utils.merge({
+        name: "s" + sceneNum
+      }, args)));
+      sceneNum++;
+    }
+    return this.currentScene = this.scenes[0];
+  },
   drawCurrent: function() {
     return this.currentScene.draw();
   },
@@ -160,16 +180,9 @@ Kona.Scenes = {
     return this.currentScene.active = true;
   },
   nextScene: function() {
-    var levelId, sceneId, sceneNum, _ref;
-    _ref = this.currentScene.name.split(':'), levelId = _ref[0], sceneId = _ref[1];
-    sceneNum = parseInt(sceneId.replace('s', '')) + 1;
-    return this.setCurrent("" + levelId + ":s" + sceneNum);
-  },
-  nextLevel: function() {
-    var levelId, levelNum, sceneId, _ref;
-    _ref = this.currentScene.name.split(':'), levelId = _ref[0], sceneId = _ref[1];
-    levelNum = parseInt(levelId.replace('lvl', '')) + 1;
-    return this.setCurrent("lvl" + levelNum + ":s1");
+    var sceneNum;
+    sceneNum = parseInt(this.currentScene.name.replace('s', ''));
+    return this.setCurrent("s" + (++sceneNum));
   }
 };
 
@@ -179,12 +192,12 @@ Kona.Scene = (function() {
     if (opts == null) {
       opts = {};
     }
-    this.active = opts.active || false;
+    this.active = opts.active != null ? opts.active : false;
     this.name = opts.name || fail("Scene must have a name");
     this.background = new Image();
     this.background.src = opts.background || '';
     this.entities = {};
-    Kona.Scenes.scenes.push(this);
+    this.loadEntities(opts.entities);
   }
 
   Scene.prototype.addEntity = function(entity) {
@@ -213,7 +226,7 @@ Kona.Scene = (function() {
           y: startY,
           group: rule.group
         }, rule.opts);
-        obj = new rule.klass(opts);
+        obj = new rule.entity(opts);
         this.addEntity(obj);
         x += Kona.Tile.tileSize;
       }
@@ -567,7 +580,12 @@ Kona.Entity = (function() {
         width: this.box.width,
         height: this.box.height
       }, opts);
-      _results.push(this.animations[name] = new Kona.Animation(animOpts));
+      this.animations[name] = new Kona.Animation(animOpts);
+      if (animOpts.active === true) {
+        _results.push(this.setAnimation(name));
+      } else {
+        _results.push(void 0);
+      }
     }
     return _results;
   };

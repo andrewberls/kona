@@ -8,9 +8,34 @@
 # transitions must be specified manually.
 
 Kona.Scenes =
+  # Internal list of scenes
   scenes: []
-  currentScene: {}
+
+  # Mapping of characters to entities, for level construction
   definitionMap: null
+
+  # Internal queue of entities to add once the engine starts
+  _queue: []
+
+  # The scene that is currently drawing to the canvas
+  currentScene: {
+    # If addEntity() is called before engine starts, push new entity onto queue
+    addEntity: (ent) -> Kona.Scenes._queue.push(ent)
+  }
+
+  # Called when engine starts - add all entities from queue to current scene
+  loadQueue: ->
+    @currentScene.addEntity(ent) for ent in @_queue
+
+  # Initialize scenes in order from a list of arguments
+  loadScenes: (argList=[]) ->
+    sceneNum = 1
+    for args in argList
+      @scenes.push new Kona.Scene(Kona.Utils.merge { name: "s#{sceneNum}" }, args)
+      sceneNum++
+
+    @currentScene = @scenes[0]
+
 
   drawCurrent: ->
     @currentScene.draw()
@@ -25,32 +50,23 @@ Kona.Scenes =
     @currentScene.active = true
 
 
-  # Advance to the next scene for a level, assuming the names conforms to the format
-  # lvl<levelNum>:s<sceneNum>
-  # Ex: Level 1, Scene 2 -> 'lvl1:s2'
-  nextScene: ->
-    [levelId, sceneId] = @currentScene.name.split(':')
-    sceneNum = parseInt(sceneId.replace('s', '')) + 1
-    @setCurrent("#{levelId}:s#{sceneNum}")
 
-  # Advance to the first scene of the next level, assuming the names conform to the format
-  # lvl<levelNum>:s<sceneNum>
-  # Ex: Level 1, Scene 2 -> 'lvl1:s2'
-  nextLevel: ->
-    [levelId, sceneId] = @currentScene.name.split(':')
-    levelNum = parseInt(levelId.replace('lvl', '')) + 1
-    @setCurrent("lvl#{levelNum}:s1")
+  # Advance to the next scene, in the order specified in the scene initialization
+  nextScene: ->
+    sceneNum = parseInt @currentScene.name.replace('s', '')
+    @setCurrent("s#{++sceneNum}")
+
 
 
 
 class Kona.Scene
   constructor: (opts={}) ->
-    @active         = opts.active || false
+    @active         = if opts.active? then opts.active else false
     @name           = opts.name   || fail("Scene must have a name")
     @background     = new Image()
     @background.src = opts.background || ''
     @entities       = {}
-    Kona.Scenes.scenes.push(@)
+    @loadEntities(opts.entities)
 
 
   # Add a single entity to a named group
@@ -64,11 +80,10 @@ class Kona.Scene
   #
   # * __grid__: (Array) - A two dimensional array ('grid') of values to load into the scene.
   #   All values must correspond to rules in the definition map, explained previously,
-
-  # An example building the first screen of the first level (assuming a scene object has
-  # already been instantiated):
   #
-  #     level1_1.loadEntities [
+  # An example might look like:
+  #
+  #     [
   #       ['-','-','-','-','-',],
   #       ['r','b','-','-','-',],
   #       ['o','-','-','-','-',],
@@ -87,7 +102,7 @@ class Kona.Scene
         startX = if offset? then x + (offset.x || 0) else x
         startY = if offset? then y + (offset.y || 0) else y
         opts   = Kona.Utils.merge { x: startX, y: startY, group: rule.group  }, rule.opts
-        obj    = new rule.klass(opts)
+        obj    = new rule.entity(opts)
         @addEntity(obj)
         x += Kona.Tile.tileSize
 

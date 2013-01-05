@@ -12,7 +12,8 @@ Kona.Engine =
   # Ex: `Kona.Engine.start()`
   start: (opts={}) ->
     @fps = opts.fps || @defaults.fps
-    Kona.Scenes.currentScene = Kona.Utils.find(Kona.Scenes.scenes, { active: true })
+    Kona.Scenes.currentScene = Kona.Scenes.scenes[0]
+    Kona.Scenes.loadQueue()
     @run()
 
   # Repeatedly draw the current scene by requesting animation frames

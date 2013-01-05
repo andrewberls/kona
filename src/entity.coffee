@@ -335,6 +335,7 @@
     for name, opts of animations
       animOpts = Kona.Utils.merge { entity: @, width: @box.width, height: @box.height  }, opts
       @animations[name] = new Kona.Animation(animOpts)
+      @setAnimation(name) if animOpts.active == true
 
   setAnimation: (name) ->
     @currentAnimation = @animations[name] || fail("Couldn't find animation with name #{name}")

@@ -32,20 +32,6 @@ Kona.Utils =
     obj1
 
 
-
-# Do something only once (useful for debugging within run loops).
-#
-# Ex:
-#
-#     while true
-#       once -> console.log "This will only be logged once"
-#
-window._k_once = 0
-window.once = (fxn) ->
-  fxn() if window._k_once == 0
-  window._k_once++
-
-
 # Throw an exception with a message
 #
 # Ex: `player.name? or fail("Name is required")`

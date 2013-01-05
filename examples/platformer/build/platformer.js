@@ -3,19 +3,10 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Kona.ready(function() {
-  var Coin, DirtTile, Enemy, EnemyPistol, EnemyProj, Pistol, PistolProj, Player, level1_1, level1_2, player;
+  var Coin, DirtTile, Enemy, EnemyPistol, EnemyProj, Pistol, PistolProj, Player, player;
   Kona.Canvas.init('canvas');
   Kona.Sounds.load({
     'fire': 'audio/enemy_fire.ogg'
-  });
-  level1_1 = new Kona.Scene({
-    name: 'lvl1:s1',
-    background: 'img/backgrounds/lvl2.jpg',
-    active: true
-  });
-  level1_2 = new Kona.Scene({
-    name: 'lvl1:s2',
-    background: 'img/backgrounds/lvl2.jpg'
   });
   DirtTile = (function(_super) {
 
@@ -90,7 +81,6 @@ Kona.ready(function() {
     };
 
     Player.prototype.fire = function() {
-      puts(this.facing);
       if (this.currentWeapon != null) {
         return this.currentWeapon.fire();
       }
@@ -120,7 +110,7 @@ Kona.ready(function() {
         group: 'enemy_weapons',
         holder: this
       });
-      level1_1.addEntity(this.currentWeapon);
+      Kona.Scenes.currentScene.addEntity(this.currentWeapon);
     }
 
     Enemy.prototype.update = function() {
@@ -244,12 +234,12 @@ Kona.ready(function() {
     y: 200,
     width: 64,
     height: 64,
-    color: 'black',
     group: 'player'
   });
   player.loadAnimations({
     'idle': {
-      sheet: 'img/entities/monster_idle.png'
+      sheet: 'img/entities/monster_idle.png',
+      active: true
     },
     'run_left': {
       sheet: 'img/entities/monster_run_left.png'
@@ -258,8 +248,7 @@ Kona.ready(function() {
       sheet: 'img/entities/monster_run_right.png'
     }
   });
-  player.setAnimation('idle');
-  level1_1.addEntity(player);
+  Kona.Scenes.currentScene.addEntity(player);
   Kona.Keys.keydown = function(key) {
     switch (key) {
       case 'left':
@@ -285,32 +274,32 @@ Kona.ready(function() {
   Kona.Scenes.definitionMap = {
     '-': {
       group: 'tiles',
-      klass: Kona.BlankTile
+      entity: Kona.BlankTile
     },
     'r': {
       group: 'tiles',
-      klass: DirtTile,
+      entity: DirtTile,
       opts: {
         sprite: 'img/tiles/dirt1.png'
       }
     },
     'o': {
       group: 'tiles',
-      klass: DirtTile,
+      entity: DirtTile,
       opts: {
         sprite: 'img/tiles/dirt1.png'
       }
     },
     'b': {
       group: 'tiles',
-      klass: DirtTile,
+      entity: DirtTile,
       opts: {
         sprite: 'img/tiles/dirt1.png'
       }
     },
     'x': {
       group: 'enemies',
-      klass: Enemy,
+      entity: Enemy,
       opts: {
         width: 40,
         height: 60,
@@ -322,7 +311,7 @@ Kona.ready(function() {
     },
     'c': {
       group: 'coins',
-      klass: Coin,
+      entity: Coin,
       opts: {
         width: 25,
         height: 25,
@@ -335,7 +324,7 @@ Kona.ready(function() {
     },
     'p': {
       group: 'weapons',
-      klass: Pistol,
+      entity: Pistol,
       opts: {
         width: 50,
         height: 25,
@@ -347,7 +336,14 @@ Kona.ready(function() {
       }
     }
   };
-  level1_1.loadEntities([['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', 'o', 'b'], ['r', 'b', '-', '-', '-', '-', '-', '-', 'r', '-', '-'], ['o', '-', '-', '-', '-', '-', '-', 'x', '-', '-', '-'], ['r', 'c', 'c', 'o', 'p', '-', 'b', 'o', '-', '-', '-'], ['b', 'o', 'r', 'b', 'r', '-', '-', 'r', 'o', '-', 'r']]);
-  level1_2.loadEntities([['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['b', 'r', 'o', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', 'r', 'r', 'r', '-', '-', '-'], ['-', '-', '-', '-', 'r', 'r', '-', '-', '-', '-', '-'], ['-', '-', '-', 'r', 'r', 'c', '-', '-', '-', 'r', 'r'], ['o', 'b', '-', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r']]);
+  Kona.Scenes.loadScenes([
+    {
+      background: 'img/backgrounds/lvl2.jpg',
+      entities: [['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', 'o', 'b'], ['r', 'b', '-', '-', '-', '-', '-', '-', 'r', '-', '-'], ['o', '-', '-', '-', '-', '-', '-', 'x', '-', '-', '-'], ['r', 'c', 'c', 'o', 'p', '-', 'b', 'o', '-', '-', '-'], ['b', 'o', 'r', 'b', 'r', '-', '-', 'r', 'o', '-', 'r']]
+    }, {
+      background: 'img/backgrounds/lvl2.jpg',
+      entities: [['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'], ['b', 'r', 'o', '-', '-', '-', '-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-', 'r', 'r', 'r', '-', '-', '-'], ['-', '-', '-', '-', 'r', 'r', '-', '-', '-', '-', '-'], ['-', '-', '-', 'r', 'r', 'c', '-', '-', '-', 'r', 'r'], ['o', 'b', '-', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r']]
+    }
+  ]);
   return Kona.Engine.start();
 });
