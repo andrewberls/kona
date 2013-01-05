@@ -10,7 +10,7 @@
 #
 #
 # Set the main object on the window
-Kona = window.Kona = {}
+window.Kona = {}
 
 # Set this to true to log info to the console
 # Make sure to disable for production dists
@@ -29,6 +29,7 @@ Kona.isReady = false
 #
 #     Kona.ready ->
 #       console.log "Ready to go!"
+#
 Kona.ready = (callback) ->
   if document.readyState == 'complete'
     Kona.isReady = true
