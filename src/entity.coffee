@@ -51,6 +51,9 @@
     @speed   = opts.speed   || 0
     @facing  = opts.facing  || ''
 
+    @sprite     = new Image()
+    @sprite.src = opts.sprite || null
+
     @position =
       x: opts.x || 0
       y: opts.y || 0
@@ -63,8 +66,11 @@
       width:  opts.width  || 0
       height: opts.height || 0
 
-    @sprite     = new Image()
-    @sprite.src = opts.sprite || null
+    parent = @
+    @sprite.onload = ->
+      parent.box.width  = @width  if parent.box.width  == 0
+      parent.box.height = @height if parent.box.height == 0
+
     @animations       = []
     @currentAnimation = null
 
