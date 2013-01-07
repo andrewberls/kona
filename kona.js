@@ -289,6 +289,7 @@ Kona.Entity = (function() {
   Entity.grav = 8;
 
   function Entity(opts) {
+    var parent;
     if (opts == null) {
       opts = {};
     }
@@ -301,6 +302,8 @@ Kona.Entity = (function() {
     this.gravity = opts.gravity || true;
     this.speed = opts.speed || 0;
     this.facing = opts.facing || '';
+    this.sprite = new Image();
+    this.sprite.src = opts.sprite || null;
     this.position = {
       x: opts.x || 0,
       y: opts.y || 0
@@ -313,8 +316,15 @@ Kona.Entity = (function() {
       width: opts.width || 0,
       height: opts.height || 0
     };
-    this.sprite = new Image();
-    this.sprite.src = opts.sprite || null;
+    parent = this;
+    this.sprite.onload = function() {
+      if (parent.box.width === 0) {
+        parent.box.width = this.width;
+      }
+      if (parent.box.height === 0) {
+        return parent.box.height = this.height;
+      }
+    };
     this.animations = [];
     this.currentAnimation = null;
   }
@@ -643,13 +653,10 @@ Kona.Animation = (function() {
       this.elapsed = 0;
       this.position.x += this.frames.width;
       if (this.position.x + this.frames.width > this.image.width) {
+        this.position.x = 0;
+        this.position.y += this.frames.height;
         if (this.position.y + this.frames.height >= this.image.height) {
-          this.played = true;
-          this.triggerNext();
-          this.position.x = this.position.y = 0;
-        } else {
-          this.position.x = 0;
-          this.position.y += this.frames.height;
+          this.reset();
         }
       }
     } else {
@@ -668,6 +675,12 @@ Kona.Animation = (function() {
       Kona.Canvas.ctx.drawImage(this.image, this.position.x, this.position.y, this.frames.width, this.frames.height, targetX, targetY, targetWidth, targetHeight);
       return this.update();
     }
+  };
+
+  Animation.prototype.reset = function() {
+    this.played = true;
+    this.triggerNext();
+    return this.position.x = this.position.y = 0;
   };
 
   return Animation;
@@ -1248,7 +1261,7 @@ Kona.Weapon = (function(_super) {
     }
     Weapon.__super__.constructor.call(this, opts);
     this.canFire = true;
-    this.recharge = opts.recharge || 150;
+    this.recharge = opts.recharge || 300;
     this.projType = opts.projType || null;
     this.projSound = opts.sound || '';
     this.holder = opts.holder || null;
@@ -1351,12 +1364,12 @@ Kona.Projectile = (function(_super) {
       opts = {};
     }
     Projectile.__super__.constructor.call(this, opts);
-    this.speed = 7;
+    this.speed = opts.speed || 10;
   }
 
   Projectile.prototype.update = function() {
     var ent, list, name, _i, _len, _ref;
-    Projectile.__super__.update.apply(this, arguments);
+    Projectile.__super__.update.call(this);
     this.position.x += this.speed * this.direction.dx;
     if (this.leftCollisions() || this.rightCollisions()) {
       _ref = this.neighborEntities();
@@ -1364,7 +1377,7 @@ Kona.Projectile = (function(_super) {
         list = _ref[name];
         for (_i = 0, _len = list.length; _i < _len; _i++) {
           ent = list[_i];
-          if (this.leftCollision(ent) || this.rightCollision(ent)) {
+          if ((this.leftCollision(ent) || this.rightCollision(ent)) && ent.solid) {
             if (_.contains(this.destructibles, name)) {
               ent.destroy();
             }

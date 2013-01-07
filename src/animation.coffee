@@ -44,17 +44,12 @@ class Kona.Animation
       # Move one frame right
       @position.x += @frames.width
 
-      # Past the edge - revert to the correct next frame
+      # Past the edge - move down or reset to start
       if @position.x + @frames.width > @image.width
-        if @position.y + @frames.height >= @image.height
-          # Last frame of last row - start over
-          @played = true
-          @triggerNext()
-          @position.x = @position.y = 0
-        else
-          # Move down one row of frames
-          @position.x = 0
-          @position.y += @frames.height
+        @position.x = 0
+        @position.y += @frames.height
+        @reset() if @position.y + @frames.height >= @image.height
+
     else
       @elapsed += delta
 
@@ -75,3 +70,9 @@ class Kona.Animation
       )
 
       @update()
+
+
+  reset: ->
+    @played = true
+    @triggerNext()
+    @position.x = @position.y = 0
