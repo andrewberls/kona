@@ -6,15 +6,15 @@
 class Kona.Projectile extends Kona.Entity
   constructor: (opts={}) ->
     super(opts)
-    @speed = 7
+    @speed = opts.speed || 10
 
   update: ->
-    super
+    super()
     @position.x += @speed * @direction.dx
     if @leftCollisions() || @rightCollisions()
       for name, list of @neighborEntities()
         for ent in list
-          if @leftCollision(ent) || @rightCollision(ent)
+          if (@leftCollision(ent) || @rightCollision(ent)) && ent.solid
             ent.destroy() if _.contains(@destructibles, name)
             @destroy()
 
