@@ -31,6 +31,17 @@ Kona.Utils =
     obj1[attr] = obj2[attr] for attr of obj2
     obj1
 
+# Run a function only once. Useful for debugging within loops.
+# Ex:
+#
+#     while true
+#       once =>
+#         console.log "This will only be logged once"
+#
+window.__k_once = 0
+window.once = (fn) ->
+  fn() if __k_once == 0
+  __k_once++
 
 # Throw an exception with a message
 #
