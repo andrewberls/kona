@@ -16,6 +16,7 @@ class Kona.Animation
     @msPerFrame     = opts.msPerFrame || 25
 
     @entity    = opts.entity
+    @name      = opts.name
     @image     = new Image()
     @image.src = opts.sheet
     @position  = { x: 0, y: 0 }
