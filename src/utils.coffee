@@ -27,7 +27,7 @@ Kona.Utils =
   #     Kona.Utils.merge(obj1, obj2)
   #       => { 'a' : 100, 'b' : 254, 'c' : 300 }
   #
-  merge: (obj1, obj2) ->
+  merge: (obj1, obj2={}) ->
     obj1[attr] = obj2[attr] for attr of obj2
     obj1
 
