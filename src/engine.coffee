@@ -7,6 +7,8 @@ Kona.Engine =
     width:  660
     height: 480
 
+  running: false
+
   # Internal queue of callbacks to invoke once the engine starts
   _queue: []
 
@@ -16,14 +18,15 @@ Kona.Engine =
   #     Kona.Engine.queue =>
   #       console.log "Engine is running now!"
   #
-  queue: (fn) -> @_queue.push(fn)
+  queue: (fn) -> if @running then fn() else @_queue.push(fn)
 
   # Set the initial scene (specified as active), and kick off
   # the animation loop. To be invoked after all other necessary game setup.
   # Ex: `Kona.Engine.start()`
   start: (opts={}) ->
-    @fps = opts.fps || @defaults.fps
+    @fps     = opts.fps || @defaults.fps
     Kona.Scenes.currentScene = Kona.Scenes.scenes[0]
+    @running = true
     fn() for fn in @_queue
     @run()
 
