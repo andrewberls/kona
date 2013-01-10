@@ -14,18 +14,12 @@ Kona.Scenes =
   # Mapping of characters to entities, for level construction
   definitionMap: null
 
-  # Internal queue of entities to add once the engine starts
-  _queue: []
-
   # The scene that is currently drawing to the canvas
   currentScene: {
     # If addEntity() is called before engine starts, push new entity onto queue
-    addEntity: (ent) -> Kona.Scenes._queue.push(ent)
+    addEntity: (ent) ->
+      Kona.Engine.queue -> Kona.Scenes.currentScene.addEntity(ent)
   }
-
-  # Called when engine starts - add all entities from queue to current scene
-  loadQueue: ->
-    @currentScene.addEntity(ent) for ent in @_queue
 
   # Initialize scenes in order from a list of arguments
   loadScenes: (argList=[]) ->
