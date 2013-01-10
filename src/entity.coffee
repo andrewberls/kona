@@ -46,8 +46,10 @@
 
   @loadAnimations = (group, animations) ->
     Kona.Engine.queue =>
-      for ent in Kona.Scenes.currentScene.entities[group]
-        ent.loadAnimations(animations)
+      list = Kona.Scenes.currentScene.entities[group]
+      if list?
+        for ent in list
+          ent.loadAnimations(animations)
 
 
   constructor: (opts={}) ->
