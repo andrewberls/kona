@@ -44,6 +44,12 @@
  class Kona.Entity
   @grav = 8
 
+  @loadAnimations = (group, animations) ->
+    Kona.Engine.queue =>
+      for ent in Kona.Scenes.currentScene.entities[group]
+        ent.loadAnimations(animations)
+
+
   constructor: (opts={}) ->
     @group   = opts.group or fail ("entity must have a group")
     @solid   = opts.solid   || true
@@ -95,7 +101,6 @@
       @facing = 'left'
 
     @position.x += @speed * @direction.dx
-
     @position.y += @speed * @direction.dy
 
     @correctLeft()
@@ -168,16 +173,18 @@
   # ---------------------
   # To collide with an entity from the left or right, you must be in its row
   inRowSpace: (e) ->
-    # TODO: INCORRECT IF TALLER THAN TARGET
+    # TODO: INCORRECT
     @bottom() > e.top() and @top() < e.bottom()
+
 
   # To collide with an entity from the top or bottom, you must be in its column
   inColumnSpace: (e) ->
+    # TODO: INCORRECT
     @left() < e.right() and @right() > e.left()
 
-  # All entities in a scene besides self
-  # TODO: be smarter about which entities to examine?
-  neighborEntities: ->
+
+  # ALl entities in a scene besides self
+  neighborEntities: (opts={}) ->
     neighbors = {}
     for name, list of Kona.Scenes.currentScene.entities
       for ent in list
@@ -185,14 +192,13 @@
         neighbors[name].push(ent) unless ent == @
     neighbors
 
-  # Loop over solid entities in the current scene, and invoke
-  # a function on them.
-  # TODO: Remove duplication between this and onSurface()
+
+
+  # Loop over solid entities in the current scene, and invoke a function on them.
   eachSolidEntity: (fxn) =>
     for name, list of @neighborEntities()
       for ent in list
         fxn(ent) if ent? && ent.solid
-
 
   # Loop over solid neighbor entities and determine whether or not a collision occurs
   # based on a condition function. Makes detection more generic.
@@ -204,22 +210,6 @@
 
 
 
-  # TODO: FIX NAMING
-
-  # The following methods may cause some confusion.
-  #
-  # For each edge (left, right, top, bottom), there are 2 methods for
-  # detecting collisions on that edge.
-
-  # __Plural methods__, ex `leftCollisions`, check for collisions with any other entities
-  # in the scene.
-
-  # __Singular__ methods, ex `leftCollision`, check for collisions with a specified
-  # entity passed as a parameter
-
-
-
-
   # __Left collision__: left edge hitting an entities right
   #
   # Collision with a specific entity
@@ -228,8 +218,8 @@
   leftCollision: (ent) ->
     @right() >= ent.right() and @left() <= ent.right() and @inRowSpace(ent)
 
-  # Collision with a nearby neighbor. Returns Boolean
-  leftCollisions: -> return @isCollision (ent) => @leftCollision(ent)
+  # Collision with any neighboring entity. Returns Boolean
+  hasLeftCollisions: -> return @isCollision (ent) => @leftCollision(ent)
 
 
 
@@ -239,8 +229,8 @@
   rightCollision: (ent) ->
     @left() <= ent.left() and @right() >= ent.left() and @inRowSpace(ent)
 
-  # Collision with a nearby neighbor. Returns Boolean
-  rightCollisions: -> return @isCollision (ent) => @rightCollision(ent)
+  # Collision with any neighboring entity. Returns Boolean
+  hasRightCollisions: -> return @isCollision (ent) => @rightCollision(ent)
 
 
 
@@ -251,8 +241,8 @@
   topCollision: (ent) ->
     @bottom() >= ent.bottom() and @top() <= ent.bottom() and @inColumnSpace(ent)
 
-  # Collision with a nearby neighbor. Returns Boolean
-  topCollisions: -> return @isCollision (ent) => @topCollision(ent)
+  # Collision with any neighboring entity. Returns Boolean
+  hasTopCollisions: -> return @isCollision (ent) => @topCollision(ent)
 
 
 
@@ -263,8 +253,8 @@
   bottomCollision: (ent) ->
     @top() <= ent.top() and @bottom() >= ent.top() and @inColumnSpace(ent)
 
-  # Collision with a nearby neighbor. Returns Boolean
-  bottomCollisions: -> return @isCollision (ent) => @bottomCollision(ent)
+  # Collision with any neighboring entity. Returns Boolean
+  hasBottomCollisions: -> return @isCollision (ent) => @bottomCollision(ent)
 
 
 
@@ -291,10 +281,10 @@
   #
   # For example, prevent a player from falling through the floor after applying
   # gravity.
-  correctLeft:   -> @position.x += 1 while @leftCollisions() || @left() < 0
-  correctRight:  -> @position.x -= 1 while @rightCollisions()
-  correctTop:    -> @position.y += 1 while @topCollisions()
-  correctBottom: -> @position.y -= 1 while @bottomCollisions()
+  correctLeft:   -> @position.x += 1 while @hasLeftCollisions() || @left() < 0
+  correctRight:  -> @position.x -= 1 while @hasRightCollisions()
+  correctTop:    -> @position.y += 1 while @hasTopCollisions()
+  correctBottom: -> @position.y -= 1 while @hasBottomCollisions()
 
 
 
@@ -341,12 +331,14 @@
   # }
   loadAnimations: (animations) ->
     for name, opts of animations
-      animOpts = Kona.Utils.merge { entity: @, width: @box.width, height: @box.height  }, opts
+      animOpts = Kona.Utils.merge { entity: @, name: name, width: @box.width, height: @box.height  }, opts
       @animations[name] = new Kona.Animation(animOpts)
       @setAnimation(name) if animOpts.active == true
 
+
   setAnimation: (name) ->
     @currentAnimation = @animations[name] || fail("Couldn't find animation with name #{name}")
+
 
   clearAnimation: ->
     @currentAnimation = null

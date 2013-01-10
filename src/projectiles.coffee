@@ -1,5 +1,5 @@
 # This module is not considered part of the 'core' Kona library.
-# Instead, it is an extension which provides boilerplate that may be of use.
+# Instead, consider it an extension providing boilerplate that may be of use.
 # You may choose to use some, all, or none of it in the interest of
 # implementing specific functionality yourself
 
@@ -11,7 +11,7 @@ class Kona.Projectile extends Kona.Entity
   update: ->
     super()
     @position.x += @speed * @direction.dx
-    if @leftCollisions() || @rightCollisions()
+    if @hasLeftCollisions() || @hasRightCollisions()
       for name, list of @neighborEntities()
         for ent in list
           if (@leftCollision(ent) || @rightCollision(ent)) && ent.solid
