@@ -15,7 +15,8 @@ class Kona.Projectile extends Kona.Entity
       for name, list of @neighborEntities()
         for ent in list
           if (@leftCollision(ent) || @rightCollision(ent)) && ent.solid
-            ent.destroy() if _.contains(@destructibles, name)
+            if _.contains(@destructibles, name)
+              if ent.hit? then ent.hit() else ent.destroy()
             @destroy()
 
     @destroy() if @position.x < 0 || @position.x > Kona.Canvas.width
