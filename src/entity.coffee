@@ -109,6 +109,8 @@
     @correctRight()
 
 
+  # Draw the current animation to the canvas if it exists,
+  # else draw the current sprite
   draw: ->
     if @currentAnimation?
       @currentAnimation.draw()
@@ -131,7 +133,7 @@
   left:   -> @position.x
   right:  -> @position.x + @box.width
 
-
+  # Return the coordinates of the x and y midpoints of this entity
   midx: -> @position.x + Math.ceil(@box.width  / 2)
   midy: -> @position.y + Math.ceil(@box.height / 2)
 
@@ -143,6 +145,7 @@
   movingLeft:  -> @direction.dx < 0
   movingRight: -> @direction.dx > 0
 
+
   # Add gravity to the entities position, and resolve any resulting collisions
   # ex, prevent falling through the floor.
   # Intended to be called in an `update()` function
@@ -150,6 +153,7 @@
     if @gravity
       @position.y += Kona.Entity.grav
       @correctBottom()
+
 
   # Move the entity to a specified pair of coordinates
   #
@@ -159,12 +163,13 @@
     @position.x = x
     @position.y = y
 
+
   # Stop all motion on an axis. Motion is stopped in all directions if one is not provided.
   #
-  # Ex: `player.stop('dx')`
-  stop: (axis) ->
+  # Ex: `player.stop('x')`
+  stop: (axis=null) ->
     if axis?
-      @direction[axis] = 0
+      @direction["d#{axis}"] = 0
     else
       @direction.dx = @direction.dy = 0
 
@@ -195,19 +200,19 @@
     neighbors
 
 
-
   # Loop over solid entities in the current scene, and invoke a function on them.
-  eachSolidEntity: (fxn) =>
+  eachSolidEntity: (fn) =>
     for name, list of @neighborEntities()
       for ent in list
-        fxn(ent) if ent? && ent.solid
+        fn(ent) if ent? && ent.solid
+
 
   # Loop over solid neighbor entities and determine whether or not a collision occurs
-  # based on a condition function. Makes detection more generic.
-  isCollision: (checkFxn) ->
+  # based on a check function. Makes detection more generic.
+  isCollision: (fn) ->
     collision = false
     @eachSolidEntity (ent) =>
-      collision = true if checkFxn(ent)
+      collision = true if fn(ent)
     collision
 
 
@@ -311,14 +316,6 @@
   collects: (names...) ->
     for name in names
       Kona.Collectors.add(name, @)
-
-
-
-
-  # TODO - DOC OR REFACTOR
-  active: ->
-    _.contains Kona.Scenes.currentScene.entities[@group], @
-
 
 
 
