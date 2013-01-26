@@ -1,5 +1,7 @@
 {
-  "src_path"   : "src",
-  "build_path" : "build",
-  "build_file" : "bounce"
+  "paths": [
+      "src/bounce.coffee"
+  ],
+  "out": "build/bounce.js",
+  "uglify": false
 }

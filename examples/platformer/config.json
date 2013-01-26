@@ -2,6 +2,6 @@
   "paths": [
       "src/platformer.coffee"
   ],
-  "out": "build/platformer.min.js",
-  "uglify": true
+  "out": "build/platformer.js",
+  "uglify": false
 }
