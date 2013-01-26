@@ -1,5 +1,7 @@
 {
-  "src_path"   : "src",
-  "build_path" : "build",
-  "build_file" : "platformer"
+  "paths": [
+      "src/platformer.coffee"
+  ],
+  "out": "build/platformer.min.js",
+  "uglify": true
 }

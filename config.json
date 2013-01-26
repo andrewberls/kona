@@ -1,5 +1,21 @@
 {
-  "src_path"   : "src",
-  "lib_path"   : "src/lib",
-  "build_file" : "kona"
+  "paths": [
+      "src/lib/underscore.min.js",
+      "src/kona.coffee",
+      "src/utils.coffee",
+      "src/canvas.coffee",
+      "src/engine.coffee",
+      "src/scenes.coffee",
+      "src/entity.coffee",
+      "src/animation.coffee",
+      "src/tiles.coffee",
+      "src/collectable.coffee",
+      "src/keys.coffee",
+      "src/sound.coffee",
+      "src/menu.coffee",
+      "src/weapons.coffee",
+      "src/projectiles.coffee"
+  ],
+  "out": "kona.min.js",
+  "uglify": true
 }
