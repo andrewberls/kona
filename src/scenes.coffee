@@ -25,7 +25,7 @@ Kona.Scenes =
   loadScenes: (argList=[]) ->
     sceneNum = 1
     for args in argList
-      @scenes.push new Kona.Scene(Kona.Utils.merge { name: "s#{sceneNum}" }, args)
+      scene = new Kona.Scene(Kona.Utils.merge { name: "s#{sceneNum}" }, args)
       sceneNum++
 
     @currentScene = @scenes[0]
@@ -60,7 +60,8 @@ class Kona.Scene
     @background     = new Image()
     @background.src = opts.background || ''
     @entities       = {}
-    @loadEntities(opts.entities)
+    @loadEntities(opts.entities) if opts.entities?
+    Kona.Scenes.scenes.push(@)
 
 
   # Add a single entity to a named group
