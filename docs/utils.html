@@ -23,18 +23,18 @@ Ex:</p>
 obj2 = { 'b' : 254, 'c' : 300 }
 Kona.Utils.merge(obj1, obj2)
   =&gt; { 'a' : 100, 'b' : 254, 'c' : 300 }
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">merge: </span><span class="nf">(obj1, obj2) -&gt;</span>
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">merge: </span><span class="nf">(obj1, obj2={}) -&gt;</span>
     <span class="nx">obj1</span><span class="p">[</span><span class="nx">attr</span><span class="p">]</span> <span class="o">=</span> <span class="nx">obj2</span><span class="p">[</span><span class="nx">attr</span><span class="p">]</span> <span class="k">for</span> <span class="nx">attr</span> <span class="k">of</span> <span class="nx">obj2</span>
-    <span class="nx">obj1</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Do something only once (useful for debugging within run loops).</p>
-
-<p>Ex:</p>
+    <span class="nx">obj1</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Run a function only once. Useful for debugging within loops.
+Ex:</p>
 
 <pre><code>while true
-  once -&gt; console.log "This will only be logged once"
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nv">_k_once = </span><span class="mi">0</span>
-<span class="nb">window</span><span class="p">.</span><span class="nv">once = </span><span class="nf">(fxn) -&gt;</span>
-  <span class="nx">fxn</span><span class="p">()</span> <span class="k">if</span> <span class="nb">window</span><span class="p">.</span><span class="nx">_k_once</span> <span class="o">==</span> <span class="mi">0</span>
-  <span class="nb">window</span><span class="p">.</span><span class="nx">_k_once</span><span class="o">++</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Throw an exception with a message</p>
+  once =&gt;
+    console.log "This will only be logged once"
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nv">__k_once = </span><span class="mi">0</span>
+<span class="nb">window</span><span class="p">.</span><span class="nv">once = </span><span class="nf">(fn) -&gt;</span>
+  <span class="nx">fn</span><span class="p">()</span> <span class="k">if</span> <span class="nx">__k_once</span> <span class="o">==</span> <span class="mi">0</span>
+  <span class="nx">__k_once</span><span class="o">++</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Throw an exception with a message</p>
 
 <p>Ex: <code>player.name? or fail("Name is required")</code></p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nv">fail = </span><span class="nf">(msg) -&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span>
 
