@@ -27,9 +27,9 @@ Kona.Canvas =
   #     Kona.Canvas.safe =>
   #       Kona.Canvas.ctx.fillStyle = 'red'
   #       Kona.Canvas.ctx.fillRect(100, 100, 50, 50)
-  safe: (fxn) ->
+  safe: (fn) ->
     @ctx.save()
-    fxn()
+    fn()
     @ctx.restore()
 
 
