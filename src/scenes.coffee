@@ -8,18 +8,26 @@
 # transitions must be specified manually.
 
 Kona.Scenes =
+  # Internal list of definition maps, keyed by title
+  maps: []
+
   # Internal list of scenes
   scenes: []
 
-  # Mapping of characters to entities, for level construction
-  definitionMap: null
-
   # The scene that is currently drawing to the canvas
+  # If addEntity() is called on a scene before the engine starts, push new entity onto the queue
   currentScene: {
-    # If addEntity() is called before engine starts, push new entity onto queue
     addEntity: (ent) ->
       Kona.Engine.queue -> Kona.Scenes.currentScene.addEntity(ent)
   }
+
+  # Parse and save a list of definition maps.
+  # Ex defns format: `[ { name1 : map1 }, { name2 : map2 } ]`
+  loadDefinitions: (defns) ->
+    for def in defns
+      for name, map of def
+        @maps.push { name: name, map: map }
+
 
   # Initialize scenes in order from a list of arguments
   loadScenes: (argList=[]) ->
@@ -55,8 +63,9 @@ Kona.Scenes =
 
 class Kona.Scene
   constructor: (opts={}) ->
-    @active         = if opts.active? then opts.active else false
+    @map            = opts.map    || fail("Scene must have a map")
     @name           = opts.name   || fail("Scene must have a name")
+    @active         = if opts.active? then opts.active else false
     @background     = new Image()
     @background.src = opts.background || ''
     @entities       = {}
@@ -86,13 +95,13 @@ class Kona.Scene
   #       ['b','o','r','b','r',]
   #     ]
   loadEntities: (grid) ->
-    Kona.Scenes.definitionMap? or fail("No definition map found")
-    x = 0
-    y = Kona.Canvas.height - (grid.length * Kona.Tile.tileSize)
+    x   = 0
+    y   = Kona.Canvas.height - (grid.length * Kona.Tile.tileSize)
+    map = Kona.Utils.find(Kona.Scenes.maps, { name: @map }).map
 
     for row in grid
       for def in row
-        rule   = Kona.Scenes.definitionMap[def] or fail("No mapping found for rule: #{def}")
+        rule   = map[def] or fail("No mapping found for rule: #{def}")
         offset = if rule.opts then rule.opts.offset else null
         startX = if offset? then x + (offset.x || 0) else x
         startY = if offset? then y + (offset.y || 0) else y
