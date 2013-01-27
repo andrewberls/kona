@@ -35,7 +35,8 @@ class Kona.Weapon extends Kona.Collectable
 
 class Kona.EnemyWeapon extends Kona.Weapon
   constructor: (opts={}) ->
-    @targets = opts.targets
+    @targets    = opts.targets
+    @projOffset = opts.offset || { x: 0, y: 0 }
     super(opts)
 
   # Return a random entity from the list of target groups
@@ -62,8 +63,8 @@ class Kona.EnemyWeapon extends Kona.Weapon
       projDx = speed * Math.cos(angle) * (if targetLeft then -1 else 1)
       projDy = speed * Math.sin(angle) * (if targetUp then -1 else 1)
 
-      startX = if targetLeft then @holder.left() - 20 else @holder.right() + 20 # TODO: REMOVE HARDCODING
-      startY = @holder.top() + 25
+      startX = if targetLeft then @holder.left()-@projOffset.x else @holder.right()+@projOffset.x # TODO: REMOVE HARDCODING
+      startY = @holder.top() + @projOffset.y
 
       proj   = new @projType { group: 'projectiles', x: startX, y: startY, dx: projDx, dy: projDy, target: target }
       Kona.Scenes.currentScene.addEntity(proj)
