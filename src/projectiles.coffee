@@ -6,7 +6,8 @@
 class Kona.Projectile extends Kona.Entity
   constructor: (opts={}) ->
     super(opts)
-    @speed = opts.speed || 10
+    @target = opts.target || null
+    @speed  = opts.speed  || 10
 
   update: ->
     super()
@@ -14,9 +15,10 @@ class Kona.Projectile extends Kona.Entity
     if @hasLeftCollisions() || @hasRightCollisions()
       for name, list of @neighborEntities()
         for ent in list
-          if (@leftCollision(ent) || @rightCollision(ent)) && ent.solid
-            if _.contains(@destructibles, name)
+          if ent.solid && (@leftCollision(ent) || @rightCollision(ent))
+            if @target == ent || _.contains(@destructibles, name)
               if ent.hit? then ent.hit() else ent.destroy()
+
             @destroy()
 
     @destroy() if @position.x < 0 || @position.x > Kona.Canvas.width
