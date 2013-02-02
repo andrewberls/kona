@@ -6,8 +6,9 @@
 class Kona.Projectile extends Kona.Entity
   constructor: (opts={}) ->
     super(opts)
-    @target = opts.target || null
-    @speed  = opts.speed  || 10
+    @target  = opts.target || null
+    @speed   = opts.speed  || 10
+    @gravity = false
 
   update: ->
     super()

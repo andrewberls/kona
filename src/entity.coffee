@@ -85,11 +85,8 @@
     @currentAnimation = null
 
 
-  # Apply any directional changes each frame, and resolve any
+  # Apply gravitational effects any directional changes each frame, and resolve any
   # resulting collisions (ex running into a wall)
-  # Note that only the x direction is handled automatically
-  # __Gravity or other vertical effects must be applied manually
-  # in a child function.__
   #
   # Ex:
   #
@@ -103,6 +100,8 @@
       @facing = 'right'
     else if @direction.dx < 0
       @facing = 'left'
+
+    @addGravity()
 
     @position.x += @speed * @direction.dx
     @position.y += @speed * @direction.dy
