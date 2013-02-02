@@ -49,7 +49,9 @@
       list = Kona.Scenes.currentScene.entities[group]
       if list?
         for ent in list
-          ent.loadAnimations(animations)
+          # We can multiple types of entity in the same group, e.g. 'enemies'
+          # Therefore take precaution to only load anims for the correct instances
+          ent.loadAnimations(animations) if ent instanceof @
 
 
   constructor: (opts={}) ->
@@ -209,7 +211,7 @@
 
   # Loop over solid neighbor entities and determine whether or not a collision occurs
   # based on a check function. Makes detection more generic.
-  isCollision: (fn) ->
+  anyCollisions: (fn) ->
     collision = false
     @eachSolidEntity (ent) =>
       collision = true if fn(ent)
@@ -219,39 +221,32 @@
 
   # __Left collision__: left edge hitting an entities right
   #
-  # Collision with a specific entity
-  #
-  # Returns Boolean
+  # Collision with a specific entity. Returns Boolean
   leftCollision: (ent) ->
-    @right() >= ent.right() and @left() <= ent.right() and @inRowSpace(ent)
+    @right() >= ent.right()+1 and @left() <= ent.right()+1 and @inRowSpace(ent)
 
   # Collision with any neighboring entity. Returns Boolean
-  hasLeftCollisions: -> return @isCollision (ent) => @leftCollision(ent)
-
+  hasLeftCollisions: -> return @anyCollisions (ent) => @leftCollision(ent)
 
 
   # __Right collision__: right edge hitting an entities left
   #
   # Collision with a specific entity. Returns Boolean
   rightCollision: (ent) ->
-    @left() <= ent.left() and @right() >= ent.left() and @inRowSpace(ent)
+    @left() <= ent.left()+1 and @right() >= ent.left()+1 and @inRowSpace(ent)
 
   # Collision with any neighboring entity. Returns Boolean
-  hasRightCollisions: -> return @isCollision (ent) => @rightCollision(ent)
-
-
+  hasRightCollisions: -> return @anyCollisions (ent) => @rightCollision(ent)
 
 
   # __Top collision__: top edge hitting an entities bottom
   #
   # Collision with a specific entity. Returns Boolean
   topCollision: (ent) ->
-    @bottom() >= ent.bottom() and @top() <= ent.bottom() and @inColumnSpace(ent)
+    @bottom() >= ent.bottom()+1 and @top() <= ent.bottom()+1 and @inColumnSpace(ent)
 
   # Collision with any neighboring entity. Returns Boolean
-  hasTopCollisions: -> return @isCollision (ent) => @topCollision(ent)
-
-
+  hasTopCollisions: -> return @anyCollisions (ent) => @topCollision(ent)
 
 
   # __Bottom collision__: bottom edge hitting an entities top
@@ -261,14 +256,13 @@
     @top() <= ent.top() and @bottom() >= ent.top() and @inColumnSpace(ent)
 
   # Collision with any neighboring entity. Returns Boolean
-  hasBottomCollisions: -> return @isCollision (ent) => @bottomCollision(ent)
-
+  hasBottomCollisions: -> return @anyCollisions (ent) => @bottomCollision(ent)
 
 
 
   # Collision from any side with another entity. Returns Boolean
   intersecting: (ent) ->
-    @leftCollision(ent) || @rightCollision(ent) ||@topCollision(ent) || @bottomCollision(ent)
+    @leftCollision(ent) || @rightCollision(ent) || @topCollision(ent) || @bottomCollision(ent)
 
 
   # Is this entity standing on a surface?
@@ -325,8 +319,8 @@
   # TODO: DOCS
   #
   # player.loadAnimations {
-  #   'run_left' : { sheet: 'img/player/run_left' }
-  #   'die'      : { sheet: 'img/player/die' }
+  #   'run_left' : { sheet: 'img/player/run_left.png' }
+  #   'die'      : { sheet: 'img/player/die.png' }
   # }
   loadAnimations: (animations) ->
     for name, opts of animations
@@ -341,3 +335,36 @@
 
   clearAnimation: ->
     @currentAnimation = null
+
+
+  # ---------------------
+  # Mixins
+  # ---------------------
+  # A thin wrapper for `Kona.Utils.merge`, enabling an approach of composable mixins
+  # Param: objs, a splat list of Objects
+  # e.g., `@include Killable` or `@include Killable, Resettable`
+  #
+  # Ex:
+  #
+  #     Killable = {
+  #       die: ->
+  #         @stop()
+  #         @isAlive = false
+  #         @setAnimation('die')
+  #     }
+  #
+  #     class Player extends Kona.Entity
+  #       constructor: (opts={}) ->
+  #         super(opts)
+  #         @include Killable, Resettable
+  #
+  #     class Enemy extends Kona.Entity
+  #       constructor: (opts={}) ->
+  #         super(opts)
+  #         @include Killable
+  #
+  # Now `die()` is available on both `player` and `enemy` instances
+  # Note that `this` will be scoped to the __including object__
+  # e.g., `this` in `player.die()` will be `player`
+  #
+  include: (objs...) -> Kona.Utils.merge(@, obj) for obj in objs
