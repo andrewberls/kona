@@ -352,6 +352,8 @@
   #         @setAnimation('die')
   #     }
   #
+  #     Resettable = { ... }
+  #
   #     class Player extends Kona.Entity
   #       constructor: (opts={}) ->
   #         super(opts)

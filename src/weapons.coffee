@@ -6,15 +6,17 @@
 class Kona.Weapon extends Kona.Collectable
   constructor: (opts={}) ->
     super(opts)
-    @canFire   = true
-    @recharge  = opts.recharge || 300
-    @projType  = opts.projType || null
-    @projSound = opts.sound    || ''
-    @holder    = opts.holder   || null
+    @canFire     = true
+    @recharge    = opts.recharge || 300
+    @projType    = opts.projType || null
+    @projSound   = opts.sound    || ''
+    @pickupSound = opts.pickup   || ''
+    @holder      = opts.holder   || null
 
   activate: (collector) ->
     @holder = collector
     collector.currentWeapon = @
+    Kona.Sounds.play(@pickupSound) if @pickupSound != '' # TODO: test this
 
   fire: ->
     if @canFire
