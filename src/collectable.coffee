@@ -11,7 +11,6 @@ class Kona.Collectable extends Kona.Entity
     @solid   = false
     @gravity = false
 
-  # TODO: bob up and down?
   update: ->
     collectors = Kona.Collectors.for(@group)
     if collectors?
