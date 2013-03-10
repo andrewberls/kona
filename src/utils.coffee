@@ -18,7 +18,7 @@ Kona.Utils =
   find: (list, props) ->
     _.where(list, props)[0]
 
-  # Modify obj1 to also contain the contains of obj2
+  # Modify obj1 to also contain the contents of obj2
   # The value for entries with duplciate keys will be that of obj2
   # Ex:
   #
