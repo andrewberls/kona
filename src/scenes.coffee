@@ -64,7 +64,7 @@ Kona.Scenes =
 class Kona.Scene
   constructor: (opts={}) ->
     @map            = opts.map
-    @name           = opts.name   || fail("Scene must have a name")
+    @name           = opts.name or fail("Scene must have a name")
     @active         = if opts.active? then opts.active else false
     @background     = new Image()
     @background.src = opts.background || ''

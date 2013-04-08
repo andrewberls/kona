@@ -329,7 +329,7 @@
 
 
   setAnimation: (name) ->
-    @currentAnimation = @animations[name] || fail("Couldn't find animation with name #{name}")
+    @currentAnimation = @animations[name] or fail("Couldn't find animation with name #{name}")
 
 
   clearAnimation: ->
