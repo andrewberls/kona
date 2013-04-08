@@ -1,9 +1,12 @@
+# TODO: issues with sounds attempting to be played before they're loaded
+#
+# TODO: docs
+
 # Ex:
 #   Kona.Sounds.load {
 #     'fire' : 'enemy_fire.ogg'
 #   }
 #   Kona.Sounds.play('fire')
-
 Kona.Sounds =
   sounds: {}
 
@@ -27,7 +30,7 @@ class Kona.Sound
   # --------------------
   @defaults:
     autoplay: false
-    duration: 5000
+    duration: -1
     formats: []
     loop: false
     placeholder: '--'
@@ -69,11 +72,13 @@ class Kona.Sound
   # Instance methods
   # --------------------
   # Options:
-  #  - formats
-  #  - (x) loop
-  #  - autoplay
-  #  - preload
-  #  - volume
+  #
+  #   * __formats__ - (Array[String]) TODO
+  #   * __loop__ - (Boolean) Whether or not to continuously play the sound in a loop
+  #   * __autoplay__ - (Boolean) Whether or not to play the sound as soon as its loaded
+  #   * __preload__ - (Boolean) TODO
+  #   * __volume__ - (Integer) A number from 1-100 indicating the volume to play the sound at (default 100)
+  #
   constructor: (src, opts={}) ->
     @supported  = Kona.Sound.isSupported()
 
@@ -91,7 +96,7 @@ class Kona.Sound
     else
       @addSource(@el, src)
 
-    # @loop() if opts.loop
+    @loop() if opts.loop == true
     @el.autoplay = 'autoplay' if opts.autoplay == true
     @el.preload  = if opts.preload == true then 'auto' else 'none'
     @setVolume(opts.volume)
@@ -188,6 +193,8 @@ class Kona.Sound
   #   r = Math.pow(10, decimal || 0)
   #   return Math.round(((total / 100) * percent) * r) / r
 
-  # loop: ->
+  loop: ->
+    @el.loop = 'loop'
 
-  # unloop: ->
+  unloop: ->
+    @el.loop = null
