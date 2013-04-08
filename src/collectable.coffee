@@ -10,6 +10,7 @@ class Kona.Collectable extends Kona.Entity
     super(opts)
     @solid   = false
     @gravity = false
+    @pickupSound = ''
 
   update: ->
     collectors = Kona.Collectors.for(@group)
@@ -20,8 +21,14 @@ class Kona.Collectable extends Kona.Entity
           @destroy()
 
   # Callback invoked when picked up by the player
-  activate: -> fail("Implement activate() in a derived Collectable class")
-
+  activate: ->
+    if _.isString(@pickupSound)
+      # If sound is a string, play normally
+      Kona.Sounds.play(@pickupSound) if @pickupSound != ''
+    else if _.isArray(@pickupSound)
+      # If we have multiple sounds, choose one at random
+      sound = Kona.Utils.sample(@pickupSound)
+      Kona.Sounds.play(sound)
 
 # Internal tracking of who can collect a given collectable.
 # For example, a player could pick up entities the `coins` group,

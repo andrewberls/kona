@@ -15,7 +15,7 @@ Kona.Utils =
   #     Kona.Utils.find(cars, { 'color': 'red' })
   #       => { color: 'red', owner: 'Jon' }
   #
-  find: (list, props) ->
+  find: (list, props={}) ->
     _.where(list, props)[0]
 
   # Modify obj1 to also contain the contents of obj2
@@ -31,6 +31,19 @@ Kona.Utils =
     obj1[attr] = obj2[attr] for attr of obj2
     obj1
 
+  # Return a random item from a list
+  #
+  # * __list__: (Array) A list of values
+  #
+  # Ex:
+  #
+  #     Kona.Utils.sample([1,2,3,4])
+  #       => 2
+  sample: (items) ->
+    items[Math.floor(Math.random() * items.length)]
+
+
+
 # Run a function only once. Useful for debugging within loops.
 # Ex:
 #
@@ -43,7 +56,9 @@ window.once = (fn) ->
   fn() if __k_once == 0
   __k_once++
 
+
 # Throw an exception with a message
 #
 # Ex: `player.name? or fail("Name is required")`
+#
 window.fail = (msg) -> throw new Error(msg)

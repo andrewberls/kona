@@ -14,9 +14,9 @@ class Kona.Weapon extends Kona.Collectable
     @holder      = opts.holder   || null
 
   activate: (collector) ->
+    super
     @holder = collector
     collector.currentWeapon = @
-    Kona.Sounds.play(@pickupSound) if @pickupSound != '' # TODO: test this
 
   fire: ->
     if @canFire
