@@ -56,8 +56,8 @@
 
   constructor: (opts={}) ->
     @group   = opts.group or fail ("entity must have a group")
-    @solid   = opts.solid   || true
-    @gravity = opts.gravity || true
+    @solid   = if opts.solid?   then opts.solid   else true
+    @gravity = if opts.gravity? then opts.gravity else true
     @speed   = opts.speed   || 0
     @facing  = opts.facing  || ''
 
