@@ -16,9 +16,17 @@ class Kona.Projectile extends Kona.Entity
     if @hasLeftCollisions() || @hasRightCollisions()
       for name, list of @neighborEntities()
         for ent in list
-          if ent.solid && (@leftCollision(ent) || @rightCollision(ent))
+          leftHit  = @leftCollision(ent)
+          rightHit = @rightCollision(ent)
+          if ent.solid && (leftHit || rightHit)
             if @target == ent || _.contains(@destructibles, name)
-              if ent.hit? then ent.hit() else ent.destroy()
+              # If .hit() available, figure out the direction the collision is from
+              # and call it, else revert to .destroy()
+              if ent.hit?
+                dir = if leftHit then 'right' else 'left' # Perspective of projectile
+                ent.hit(dir)
+              else
+                ent.destroy()
 
             @destroy()
 
