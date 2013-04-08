@@ -1,8 +1,3 @@
-# This module is not considered part of the 'core' Kona library.
-# Instead, consider it an extension providing boilerplate that may be of use.
-# You may choose to use some, all, or none of it in the interest of
-# implementing specific functionality yourself
-
 class Kona.Weapon extends Kona.Collectable
   constructor: (opts={}) ->
     super(opts)

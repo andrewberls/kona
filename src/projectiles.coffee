@@ -1,8 +1,3 @@
-# This module is not considered part of the 'core' Kona library.
-# Instead, consider it an extension providing boilerplate that may be of use.
-# You may choose to use some, all, or none of it in the interest of
-# implementing specific functionality yourself
-
 class Kona.Projectile extends Kona.Entity
   constructor: (opts={}) ->
     super(opts)
@@ -20,8 +15,8 @@ class Kona.Projectile extends Kona.Entity
           rightHit = @rightCollision(ent)
           if ent.solid && (leftHit || rightHit)
             if @target == ent || _.contains(@destructibles, name)
-              # If .hit() available, figure out the direction the collision is from
-              # and call it, else revert to .destroy()
+              # Call .hit() if available, passing in the direction the collision is from,
+              # else revert to .destroy()
               if ent.hit?
                 dir = if leftHit then 'right' else 'left' # Perspective of projectile
                 ent.hit(dir)
