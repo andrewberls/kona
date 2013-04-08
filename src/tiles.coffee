@@ -2,6 +2,7 @@ class Kona.Tile extends Kona.Entity
   @tileSize = 60
 
   constructor: (opts={}) ->
+    opts.group ||= 'tiles'
     super(opts)
     @size = Kona.Tile.tileSize
     @box =
