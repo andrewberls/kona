@@ -7,16 +7,19 @@ Kona.Canvas =
 
   # Construct our canvas object.
   #
-  # * __id__ (String) - the id of the HTML element
+  # * __id__ (String) - the id of the HTML element (without leading '#')
   #
   # Ex:
   #
   #   `Kona.Canvas.init('gameCanvas')`
+  #
   init: (id) ->
-    @elem    = document.getElementById(id) or fail("Can't find element with id: #{id}")
-    @ctx     = @elem.getContext('2d')
-    @width   = @elem.width  || @defaults.width
-    @height  = @elem.height || @defaults.height
+    @elem = document.getElementById(id) or fail("Can't find element with id: #{id}")
+    @ctx  = @elem.getContext('2d')
+    @elem.width  = @defaults.width  unless @elem.getAttribute('width')?
+    @elem.height = @defaults.height unless @elem.getAttribute('height')?
+    @width       = @elem.width
+    @height      = @elem.height
 
 
   # Safely perform a draw that may change the ctx fillStyle or other properties
@@ -27,6 +30,7 @@ Kona.Canvas =
   #     Kona.Canvas.safe =>
   #       Kona.Canvas.ctx.fillStyle = 'red'
   #       Kona.Canvas.ctx.fillRect(100, 100, 50, 50)
+  #
   safe: (fn) ->
     @ctx.save()
     fn()
