@@ -12,36 +12,39 @@
 #       constructor: (opts={}) ->
 #         super(opts)
 #         # custom code here ...
+#
 
 
-  # A superconstructor initializing some basic fields.
-  # Game object constructors should call this. For example:
-  #
-  #     class Enemy extends Kona.Entity
-  #       constructor: (opts={}) ->
-  #         super(opts)
-  #         @isEvil = true
-  #
-  # Options:
-  #
-  #   * __group__ - (String) The group this entity belongs to, ex: `'enemies'`
-  #   * __solid__ - (Boolean) Whether or not this entity is solid, e.g., can this collide with other entities. Default: true.
-  #   * __gravity__ - (Boolean) Whether or not this entity is subject to gravity. Default: true
-  #   * __speed__ - (Integer) The speed of this entity when moving.
-  #   * __facing__ - (String) The direction this entity is facing. Possible values: `'left'` or `'right'`
-  #   * __position__ - (Object)
-  #     * x: integer x-coordinate on the canvas
-  #     * y: integer y-coordinate on the canvas
-  #   * __direction__ - (Object) Values representing the current direction of the entity.
-  #     * dx: `-1 = left, 1 = right, 0 = stationary`
-  #     * dy: `-1 = up, 1 = down, 0 = stationary`
-  #   * __box__ - (Object) Values representing the dimensions of the entity. Collisions
-  #     are resolved in terms of a rectangular box model.
-  #     * width: An integer width, in pixels
-  #     * height: An integer height, in pixels
-  #   * __sprite__ - (Type)
-  #
- class Kona.Entity
+# A superconstructor initializing some basic fields.
+# Game object constructors should call this. For example:
+#
+#     class Enemy extends Kona.Entity
+#       constructor: (opts={}) ->
+#         super(opts)
+#         @isEvil = true
+#
+# Options:
+#
+#   * __group__ - (String) The group this entity belongs to, ex: `'enemies'`
+#   * __solid__ - (Boolean) Whether or not this entity is solid, e.g., can this collide with other entities. Default: true.
+#   * __gravity__ - (Boolean) Whether or not this entity is subject to gravity. Default: true
+#   * __speed__ - (Integer) The speed of this entity when moving.
+#   * __facing__ - (String) The direction this entity is facing. Possible values: `'left'` or `'right'`
+#   * __position__ - (Object)
+#     * x: integer x-coordinate on the canvas
+#     * y: integer y-coordinate on the canvas
+#   * __direction__ - (Object) Values representing the current direction of the entity.
+#     * dx: `-1 = left, 1 = right, 0 = stationary`
+#     * dy: `-1 = up, 1 = down, 0 = stationary`
+#   * __box__ - (Object) Values representing the dimensions of the entity. Collisions
+#     are resolved in terms of a rectangular box model.
+#     * width: An integer width, in pixels
+#     * height: An integer height, in pixels
+#   * __sprite__ - (Type)
+#
+class Kona.Entity
+
+  # Class methods
   @grav = 8
 
   @loadAnimations = (group, animations) ->
@@ -54,6 +57,7 @@
           ent.loadAnimations(animations) if ent instanceof @
 
 
+  # Instance methods
   constructor: (opts={}) ->
     @group   = opts.group or fail ("entity must have a group")
     @solid   = if opts.solid?   then opts.solid   else true
