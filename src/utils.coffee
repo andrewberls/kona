@@ -20,6 +20,7 @@ Kona.Utils =
 
   # Modify obj1 to also contain the contents of obj2
   # The value for entries with duplciate keys will be that of obj2
+  # unless overwrite is explicitly set to false
   # Ex:
   #
   #     obj1 = { 'a' : 100, 'b' : 200 }
@@ -27,8 +28,15 @@ Kona.Utils =
   #     Kona.Utils.merge(obj1, obj2)
   #       => { 'a' : 100, 'b' : 254, 'c' : 300 }
   #
-  merge: (obj1, obj2={}) ->
-    obj1[attr] = obj2[attr] for attr of obj2
+  #
+  #     obj1 = { 'a' : 100, 'b' : 200 }
+  #     obj2 = { 'b' : 254, 'c' : 300 }
+  #     Kona.Utils.merge(obj1, obj2, false)
+  #       => { 'a' : 100, 'b' : 200, 'c' : 300 }
+  #
+  merge: (obj1, obj2={}, overwrite=true) ->
+    for key, value of obj2
+      obj1[key] = value if !obj1[key]? || overwrite
     obj1
 
   # Return a random item from a list
