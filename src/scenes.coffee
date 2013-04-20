@@ -94,6 +94,7 @@ class Kona.Scene
   #       ['r','-','c','-','-',],
   #       ['b','o','r','b','r',]
   #     ]
+  #
   loadEntities: (grid) ->
     x   = 0
     y   = Kona.Canvas.height - (grid.length * Kona.Tile.tileSize)

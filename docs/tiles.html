@@ -2,6 +2,7 @@
   <span class="vi">@tileSize = </span><span class="mi">60</span>
 
   <span class="nv">constructor: </span><span class="nf">(opts={}) -&gt;</span>
+    <span class="nx">opts</span><span class="p">.</span><span class="nx">group</span> <span class="o">||=</span> <span class="s">&#39;tiles&#39;</span>
     <span class="k">super</span><span class="p">(</span><span class="nx">opts</span><span class="p">)</span>
     <span class="vi">@size = </span><span class="nx">Kona</span><span class="p">.</span><span class="nx">Tile</span><span class="p">.</span><span class="nx">tileSize</span>
     <span class="vi">@box =</span>

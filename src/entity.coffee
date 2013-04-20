@@ -117,6 +117,10 @@ class Kona.Entity
   # Draw the current animation to the canvas if it exists,
   # else draw the current sprite
   draw: ->
+
+    # TODO: show collision rectangles
+    Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
+
     if @currentAnimation?
       @currentAnimation.draw()
     else
@@ -164,6 +168,7 @@ class Kona.Entity
   #
   #   * x: An integer x-coordinate in pixels
   #   * y: An integer y-coordinate in pixels
+  #
   setPosition: (x, y) ->
     @position.x = x
     @position.y = y
@@ -172,6 +177,7 @@ class Kona.Entity
   # Stop all motion on an axis. Motion is stopped in all directions if one is not provided.
   #
   # Ex: `player.stop('x')`
+  #
   stop: (axis=null) ->
     if axis?
       @direction["d#{axis}"] = 0
@@ -325,6 +331,7 @@ class Kona.Entity
   #   'run_left' : { sheet: 'img/player/run_left.png' }
   #   'die'      : { sheet: 'img/player/die.png' }
   # }
+  #
   loadAnimations: (animations) ->
     for name, opts of animations
       animOpts = Kona.Utils.merge { entity: @, name: name, width: @box.width, height: @box.height  }, opts

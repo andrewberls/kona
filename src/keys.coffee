@@ -96,6 +96,7 @@ Kona.Keys =
   # * __key__ - (String) The key to bind the function to, ex: `'b'`
   #
   # Strips whitespace from key selector and converts to an internal keycode
+  #
   bind: (key, handler) ->
     key     = key.replace(/\s/g, '')
     keycode = @_keycodes[key] || key.toUpperCase().charCodeAt(0)

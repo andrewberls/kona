@@ -5,7 +5,7 @@ Kona.Canvas =
     width:  660
     height: 480
 
-  # Construct our canvas object.
+  # Construct the main canvas object.
   #
   # * __id__ (String) - the id of the HTML element (without leading '#')
   #
@@ -57,7 +57,11 @@ Kona.Canvas =
       @ctx.fillRect(position.x, position.y, box.width, box.height)
 
 
-  # Wrapper for the fillRect method
+  # Wrapper for the fillRect method.
+  #
+  #   * __direction__ - (Object) Object representing the coordinates of an entity (can pass in an entities' `position` attribute)
+  #     * x: The x-coordinate of the entity
+  #     * y: The y-coordinate of the entity
   #
   # Ex:
   #
