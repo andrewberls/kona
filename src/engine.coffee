@@ -1,6 +1,7 @@
 # The engine is responsible for starting and running the main game loop.
 
 Kona.Engine =
+
   # FPS default only used for requestAnimFrame fallback
   defaults:
     fps:    24
@@ -12,17 +13,22 @@ Kona.Engine =
   # Internal queue of callbacks to invoke once the engine starts
   _queue: []
 
-  # Add a function to the queue.
+  # Add a function to the startup queue
+  #
   # Ex:
   #
   #     Kona.Engine.queue =>
   #       console.log "Engine is running now!"
   #
-  queue: (fn) -> if @running then fn() else @_queue.push(fn)
+  queue: (fn) ->
+    if @running then fn() else @_queue.push(fn)
+
 
   # Set the initial scene (specified as active), and kick off
   # the animation loop. To be invoked after all other necessary game setup.
+  #
   # Ex: `Kona.Engine.start()`
+  #
   start: (opts={}) ->
     @fps     = opts.fps || @defaults.fps
     Kona.Scenes.currentScene = Kona.Scenes.scenes[0]

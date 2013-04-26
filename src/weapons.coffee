@@ -1,3 +1,15 @@
+# An generic entity class representing a collectable weapon,
+# intended to be subclassed to add additional configuration.
+# Built to be used with the `Kona.Projectile` interface
+#
+# Constructor options (in addition to `Collectable` options)
+#
+#   * __recharge__ - (Integer) Firing rate, in milliseconds
+#   * __projType__ - (Object) The `Kona.Projectile` class that this weapon uses. Ex: `PistolProj`
+#   * __sound__ - (String) The name of the firing sound
+#   * __pickup__ - (String) The name of the sound played on pickup
+#   * __holder__ - (Object) The `Kona.Entity` instance holding this weapon
+#
 class Kona.Weapon extends Kona.Collectable
   constructor: (opts={}) ->
     super(opts)
@@ -8,10 +20,12 @@ class Kona.Weapon extends Kona.Collectable
     @pickupSound = opts.pickup   || ''
     @holder      = opts.holder   || null
 
+
   activate: (collector) ->
     super
     @holder = collector
     collector.currentWeapon = @
+
 
   fire: ->
     if @canFire
@@ -29,12 +43,22 @@ class Kona.Weapon extends Kona.Collectable
 
 
 
-
+# A weapon class intended to be held by an enemy, which automaticallyfires at a set of targets
+#
+# Constructor options (in addition to `Weapon` options)
+#
+#   * __recharge__ - (Integer) Array of entiity groups to target. Will automatically select a random instance to fire at
+#     Ex: 'player'
+#   * __offset__ - (Object) Offset for where projectile spawns from, relative to self
+#     * x: integer x-offset
+#     * y: integer y-offset
+#
 class Kona.EnemyWeapon extends Kona.Weapon
   constructor: (opts={}) ->
     @targets    = opts.targets
     @projOffset = opts.offset || { x: 0, y: 0 }
     super(opts)
+
 
   # Return a random entity from the list of target groups
   randomTarget: ->
@@ -42,6 +66,7 @@ class Kona.EnemyWeapon extends Kona.Weapon
     for group in @targets
       targetEnts = targetEnts.concat(Kona.Scenes.currentScene.entities[group])
     return _.shuffle(targetEnts)[0]
+
 
   # Fire at a random entity from all target groups
   fire: ->

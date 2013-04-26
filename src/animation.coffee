@@ -1,7 +1,6 @@
 # An interface for defining time-based animations using sprite sheets.
-# TODO: DOCS
 #
-# Options:
+# Constructor options:
 #
 #   * __sheet__ - (String) The path to the sprite sheet for the animation. Ex: `'img/entities/player_run.png'`
 #   * __width__ - (Integer) The width of each animation frame, in pixels. Defaults to the box width of the associated entity
@@ -29,7 +28,7 @@ class Kona.Animation
     @next   = opts.next || null
     @played = false
 
-
+  # Switch to the next animation specified, else invoke a given callback
   triggerNext: ->
     if _.isString(@next)
       @entity.setAnimation(@next)
@@ -37,6 +36,7 @@ class Kona.Animation
       @next()
 
 
+  # Move to the next frame
   update: ->
     delta = Date.now() - @lastUpdateTime
     if @elapsed > @msPerFrame
@@ -73,6 +73,7 @@ class Kona.Animation
       @update()
 
 
+  # Trigger next action and reset to frame 0
   reset: ->
     @played = true
     @triggerNext()

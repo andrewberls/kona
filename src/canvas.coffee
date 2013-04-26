@@ -1,6 +1,8 @@
-# Provides a thin wrapper around the main canvas element used for rendering.
+# Provides a wrapper witb utilities around the canvas DOM element used for rendering
 
 Kona.Canvas =
+
+  # Default dimensions if none specified
   defaults:
     width:  660
     height: 480
@@ -39,17 +41,33 @@ Kona.Canvas =
 
   # Wipe the canvas clean.
   # Used internally between frames to prevent blurring on redraw
+  #
+  # Ex: `Kona.Canvas.clear()`
+  #
   clear: ->
     @safe =>
       @ctx.fillStyle = 'white'
       @ctx.fillRect(0, 0, @width, @height)
 
 
-  # Draw a basic rectangle
+  # Draw a basic rectangle to the canvas
+  #
+  # Parameters:
+  #
+  #   * __position__ - (Object) Object representing the coordinates of an entity
+  #     * x: The x-coordinate of the entity
+  #     * y: The y-coordinate of the entity
+  #
+  #   * __box__ - (Object) Object representing the dimensions of an entity
+  #     * width  - (Integer): Width in pixels
+  #     * height - (Integer): Height in pixels
+  #
+  #   * __opts__ - (Object) Additional method options
+  #     * color: A color to pass to `ctx.fillStyle`. Ex: 'red'
   #
   # Ex:
   #
-  #   `Kona.Canvas.drawRect(@position, @box, { color: 'red' })`
+  #   `Kona.Canvas.drawRect(entity.position, entity.box, { color: 'red' })`
   #
   drawRect: (position, box, opts={}) ->
     @safe =>
@@ -57,15 +75,17 @@ Kona.Canvas =
       @ctx.fillRect(position.x, position.y, box.width, box.height)
 
 
-  # Wrapper for the fillRect method.
+  # Draw a basic circle to the canvas
   #
-  #   * __direction__ - (Object) Object representing the coordinates of an entity (can pass in an entities' `position` attribute)
+  # Parameters:
+  #
+  #   * __position__ - (Object) Object representing the coordinates of an entity
   #     * x: The x-coordinate of the entity
   #     * y: The y-coordinate of the entity
   #
   # Ex:
   #
-  #   `Kona.Canvas.drawCircle(@position, { radius: 20, color: 'blue' })`
+  #   `Kona.Canvas.drawCircle(entity.position, { radius: 20, color: 'blue' })`
   #
   drawCircle: (position, opts={}) ->
     radius = opts.radius or fail("Must specify a radius")

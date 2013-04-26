@@ -1,3 +1,5 @@
+# TODO
+
 class Kona.Menu extends Kona.Scene
   constructor: (opts={}) ->
     super(opts)

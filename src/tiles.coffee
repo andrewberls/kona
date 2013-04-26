@@ -1,3 +1,4 @@
+# A generic entity class representing a solid tile with a background image
 class Kona.Tile extends Kona.Entity
   @tileSize = 60
 
@@ -12,7 +13,7 @@ class Kona.Tile extends Kona.Entity
   update: -> # Tiles are static
 
 
-
+# A generic entity representing an `air` tile with no background
 class Kona.BlankTile extends Kona.Tile
   constructor: (opts) ->
     super(opts)

@@ -80,13 +80,15 @@ Example structure:</p>
     <span class="mi">88</span><span class="o">:</span> <span class="s">&#39;x&#39;</span><span class="p">,</span>
     <span class="mi">89</span><span class="o">:</span> <span class="s">&#39;y&#39;</span><span class="p">,</span>
     <span class="mi">90</span><span class="o">:</span> <span class="s">&#39;z&#39;</span>
-  <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Parse and save key binding/handler function pair</p>
+  <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Parse and save key binding/handler function pair
+Strips whitespace from key selector and converts to an internal keycode</p>
+
+<p>Options:</p>
 
 <ul>
-<li><strong>key</strong> - (String) The key to bind the function to, ex: <code>'b'</code></li>
-</ul>
-
-<p>Strips whitespace from key selector and converts to an internal keycode</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">bind: </span><span class="nf">(key, handler) -&gt;</span>
+<li><strong>key</strong> - (String) The key to bind to, ex: <code>'b'</code></li>
+<li><strong>handler</strong> - (Function) The handler function to invoke when key is pressed</li>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">bind: </span><span class="nf">(key, handler) -&gt;</span>
     <span class="nv">key     = </span><span class="nx">key</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\s/g</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
     <span class="nv">keycode = </span><span class="nx">@_keycodes</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">||</span> <span class="nx">key</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">().</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     <span class="nx">@_handlers</span><span class="p">[</span><span class="nx">keycode</span><span class="p">]</span> <span class="o">||=</span> <span class="p">[]</span>

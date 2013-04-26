@@ -2,32 +2,42 @@
 #
 # TODO: docs
 
-# Ex:
-#   Kona.Sounds.load {
-#     'fire' : 'enemy_fire.ogg'
-#   }
-#   Kona.Sounds.play('fire')
+
+
 Kona.Sounds =
+
+  # Internal map of names to sound instances
   sounds: {}
 
+
+  # Load a group of sound names
+  #
+  # Ex:
+  #
+  #     Kona.Sounds.load {
+  #       'fire' : 'enemy_fire.ogg'
+  #     }
+  #
   load: (sounds={}) ->
     for name, src of sounds
       @sounds[name] = new Kona.Sound(src)
 
+
+  # Play a sound by name
+  #
+  # Ex:
+  #
+  #     Kona.Sounds.play('fire')
+  #
   play: (name) ->
     @sounds[name].play()
 
 
 
 
-# Ex:
-#   fire = new Kona.Sound('enemy_fire.ogg')
-#   fire.play()
-
 class Kona.Sound
-  # --------------------
+
   # Class methods
-  # --------------------
   @defaults:
     autoplay: false
     duration: -1
@@ -54,11 +64,13 @@ class Kona.Sound
 
   # Run tests for supported audio formats
   # Ex for Chrome 23.0.1271.64:
-  # Kona.Sound.supportedFormats()
-  #   OGG: yes
-  #   WAV: yes
-  #   MP3: yes
-  #   AAC: maybe
+  #
+  #     Kona.Sound.supportedFormats()
+  #       OGG: yes
+  #       WAV: yes
+  #       MP3: yes
+  #       AAC: maybe
+  #
   @supportedFormats: ->
     supported = (check) -> if check == '' then 'yes' else check
     Kona.debug "Audio format compatability:"
@@ -68,16 +80,23 @@ class Kona.Sound
     Kona.debug "  AAC: #{ supported(@isAACSupported()) }"
 
 
-  # --------------------
   # Instance methods
-  # --------------------
-  # Options:
+  #
+  # Constructor for a single sound instance
+  # Prefer `Kona.Sounds.load()` instead of calling this directly
+  #
+  # Constructor options:
   #
   #   * __formats__ - (Array[String]) TODO
   #   * __loop__ - (Boolean) Whether or not to continuously play the sound in a loop
   #   * __autoplay__ - (Boolean) Whether or not to play the sound as soon as its loaded
   #   * __preload__ - (Boolean) TODO
   #   * __volume__ - (Integer) A number from 1-100 indicating the volume to play the sound at (default 100)
+  #
+  # Ex:
+  #
+  #     fire = new Kona.Sound('enemy_fire.ogg')
+  #     fire.play()
   #
   constructor: (src, opts={}) ->
     @supported  = Kona.Sound.isSupported()
@@ -105,6 +124,7 @@ class Kona.Sound
 
 
   getExt: (filename) -> filename.split('.').pop()
+
 
   addSource: (el, src) ->
     source     = document.createElement('source')

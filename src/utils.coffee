@@ -70,3 +70,7 @@ window.once = (fn) ->
 # Ex: `player.name? or fail("Name is required")`
 #
 window.fail = (msg) -> throw new Error(msg)
+
+
+# Shorthand for console.log, used for debugging
+window.puts = (obj) -> console.log obj

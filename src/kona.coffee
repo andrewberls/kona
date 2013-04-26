@@ -12,13 +12,6 @@
 # Set the main object on the window
 window.Kona = {}
 
-# Set this to true to log info to the console
-# Make sure to disable for production dists
-Kona.debugMode = true
-Kona.debug  = (obj) -> console.log(obj) if Kona.debugMode
-window.puts = (obj) -> Kona.debug obj
-
-
 Kona.readyCallbacks = []
 Kona.isReady = false
 

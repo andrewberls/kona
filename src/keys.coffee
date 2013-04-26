@@ -23,6 +23,7 @@
 
 
 Kona.Keys =
+
   # Contains info on keys and their associated handler(s)
   # Example structure:
   #
@@ -92,10 +93,12 @@ Kona.Keys =
 
 
   # Parse and save key binding/handler function pair
-  #
-  # * __key__ - (String) The key to bind the function to, ex: `'b'`
-  #
   # Strips whitespace from key selector and converts to an internal keycode
+  #
+  # Options:
+  #
+  #   * __key__ - (String) The key to bind to, ex: `'b'`
+  #   * __handler__ - (Function) The handler function to invoke when key is pressed
   #
   bind: (key, handler) ->
     key     = key.replace(/\s/g, '')
@@ -130,6 +133,7 @@ Kona.Keys =
 
 
 Kona.ready ->
+
   # Wire up keydown and keyup events to associated handlers if they exist
   document.body.onkeydown = (e) ->
     name = Kona.Keys.keycodeName(e)

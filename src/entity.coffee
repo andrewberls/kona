@@ -23,7 +23,7 @@
 #         super(opts)
 #         @isEvil = true
 #
-# Options:
+# Constructor options:
 #
 #   * __group__ - (String) The group this entity belongs to, ex: `'enemies'`
 #   * __solid__ - (Boolean) Whether or not this entity is solid, e.g., can this collide with other entities. Default: true.

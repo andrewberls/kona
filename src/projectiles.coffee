@@ -1,3 +1,20 @@
+# An generic entity class representing a weapon projectile,
+# intended to be subclassed to add additional configuration.
+# Built to be used with the `Kona.Weapon` interface
+#
+# When a projectile collides with one of its target entities,
+# it will trigger their `.hit()` method if it is available,
+# passing in the direction of the collision,
+# else the target entity will be destroyed
+#
+# Ex:
+#     class PistolProj extends Kona.Projectile
+#       constructor: (opts={}) ->
+#         super(opts)
+#         @sprite.src = 'bullet.png'
+#         @box = { width: 20, height: 7 }
+#         @destructibles = ['enemies']
+#
 class Kona.Projectile extends Kona.Entity
   constructor: (opts={}) ->
     super(opts)
@@ -5,6 +22,10 @@ class Kona.Projectile extends Kona.Entity
     @speed   = opts.speed  || 10
     @gravity = false
 
+
+  # Check if colliding with a target entity
+  # If so, call entity.hit() if available, passing in the direction the collision is from,
+  # else revert to .destroy()
   update: ->
     super()
     @position.x += @speed * @direction.dx

@@ -22,20 +22,32 @@ Ex defns format: <code>[ { name1 : map1 }, { name2 : map2 } ]</code></p>        
     <span class="vi">@currentScene = </span><span class="nx">@scenes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
 
-  <span class="nv">drawCurrent: </span><span class="o">-&gt;</span>
-    <span class="nx">@currentScene</span><span class="p">.</span><span class="nx">draw</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Find the new scene by name and set it to active to start rendering
+  <span class="nv">drawCurrent: </span><span class="o">-&gt;</span> <span class="nx">@currentScene</span><span class="p">.</span><span class="nx">draw</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Find the new scene by name and set it to active to start rendering
 Ex: <code>Kona.Scenes.setCurrent('lvl1:s2')</code></p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">setCurrent: </span><span class="nf">(sceneName) -&gt;</span>
     <span class="vi">@currentScene.active = </span><span class="kc">false</span>
     <span class="nv">newScene = </span><span class="nx">Kona</span><span class="p">.</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">@scenes</span><span class="p">,</span> <span class="p">{</span> <span class="nv">name: </span><span class="nx">sceneName</span> <span class="p">})</span> <span class="o">or</span> <span class="nx">fail</span><span class="p">(</span><span class="s">&quot;Couldn&#39;t find scene: </span><span class="si">#{</span><span class="nx">sceneName</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>
     <span class="vi">@currentScene = </span><span class="nx">newScene</span>
     <span class="vi">@currentScene.active = </span><span class="kc">true</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Advance to the next scene, in the order specified in the scene initialization</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">nextScene: </span><span class="o">-&gt;</span>
     <span class="nv">sceneNum = </span><span class="nb">parseInt</span> <span class="nx">@currentScene</span><span class="p">.</span><span class="nx">name</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s">&#39;s&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
-    <span class="nx">@setCurrent</span><span class="p">(</span><span class="s">&quot;s</span><span class="si">#{</span><span class="o">++</span><span class="nx">sceneNum</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="nx">@setCurrent</span><span class="p">(</span><span class="s">&quot;s</span><span class="si">#{</span><span class="o">++</span><span class="nx">sceneNum</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>Construct a single scene instance
+Prefer <code>Kona.Scenes.loadScenes()</code> instead of calling this directly</p>
 
+<pre><code>class Enemy extends Kona.Entity
+  constructor: (opts={}) -&gt;
+    super(opts)
+    @isEvil = true
+</code></pre>
 
+<p>Constructor options:</p>
 
-
-<span class="k">class</span> <span class="nx">Kona</span><span class="p">.</span><span class="nx">Scene</span>
+<ul>
+<li><strong>map</strong> - (String) The name of the corresponding definition map. Ex: <code>level-1</code></li>
+<li><strong>name (Required)</strong> - (String) The name of the scene. Ex: <code>lvl1:s2</code></li>
+<li><strong>active</strong> - (Boolean) Whether or not this scene is actively being drawn to the screen</li>
+<li><strong>background</strong> - (String) The path to a background image. Ex: <code>img/jungle.png</code></li>
+<li><strong>entities</strong> - (Array) A 2D grid specifying the scene's entity layout, using
+ defintions from a map (specified in <code>map</code>)</li>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre><span class="k">class</span> <span class="nx">Kona</span><span class="p">.</span><span class="nx">Scene</span>
   <span class="nv">constructor: </span><span class="nf">(opts={}) -&gt;</span>
     <span class="vi">@map            = </span><span class="nx">opts</span><span class="p">.</span><span class="nx">map</span>
     <span class="vi">@name           = </span><span class="nx">opts</span><span class="p">.</span><span class="nx">name</span> <span class="o">or</span> <span class="nx">fail</span><span class="p">(</span><span class="s">&quot;Scene must have a name&quot;</span><span class="p">)</span>
@@ -44,10 +56,12 @@ Ex: <code>Kona.Scenes.setCurrent('lvl1:s2')</code></p>             </td>        
     <span class="vi">@background.src = </span><span class="nx">opts</span><span class="p">.</span><span class="nx">background</span> <span class="o">||</span> <span class="s">&#39;&#39;</span>
     <span class="vi">@entities       = </span><span class="p">{}</span>
     <span class="nx">@loadEntities</span><span class="p">(</span><span class="nx">opts</span><span class="p">.</span><span class="nx">entities</span><span class="p">)</span> <span class="k">if</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">entities</span><span class="o">?</span>
-    <span class="nx">Kona</span><span class="p">.</span><span class="nx">Scenes</span><span class="p">.</span><span class="nx">scenes</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">@</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>Add a single entity to a named group</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">addEntity: </span><span class="nf">(entity) -&gt;</span>
+    <span class="nx">Kona</span><span class="p">.</span><span class="nx">Scenes</span><span class="p">.</span><span class="nx">scenes</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">@</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>Add a single entity to a named group</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">addEntity: </span><span class="nf">(entity) -&gt;</span>
     <span class="nv">group = </span><span class="nx">entity</span><span class="p">.</span><span class="nx">group</span>
     <span class="nx">@entities</span><span class="p">[</span><span class="nx">group</span><span class="p">]</span> <span class="o">||=</span> <span class="p">[]</span>
-    <span class="nx">@entities</span><span class="p">[</span><span class="nx">group</span><span class="p">].</span><span class="nx">push</span><span class="p">(</span><span class="nx">entity</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>Initialize and construct the associated entities for a scene</p>
+    <span class="nx">@entities</span><span class="p">[</span><span class="nx">group</span><span class="p">].</span><span class="nx">push</span><span class="p">(</span><span class="nx">entity</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>Initialize and construct the associated entities for a scene</p>
+
+<p>Parameters:</p>
 
 <ul>
 <li><strong>grid</strong>: (Array) - A two dimensional array ('grid') of values to load into the scene.
@@ -80,12 +94,11 @@ All values must correspond to rules in the definition map, explained previously,
         <span class="nx">x</span> <span class="o">+=</span> <span class="nx">Kona</span><span class="p">.</span><span class="nx">Tile</span><span class="p">.</span><span class="nx">tileSize</span>
 
       <span class="nv">x = </span><span class="mi">0</span>
-      <span class="nx">y</span> <span class="o">+=</span> <span class="nx">Kona</span><span class="p">.</span><span class="nx">Tile</span><span class="p">.</span><span class="nx">tileSize</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>Remove an entity from its group. Prefer <code>entity.destroy()</code> instead of calling this directly.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">removeEntity: </span><span class="nf">(entity) -&gt;</span>
+      <span class="nx">y</span> <span class="o">+=</span> <span class="nx">Kona</span><span class="p">.</span><span class="nx">Tile</span><span class="p">.</span><span class="nx">tileSize</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>Remove an entity from its group. Prefer <code>entity.destroy()</code> instead of calling this directly.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">removeEntity: </span><span class="nf">(entity) -&gt;</span>
     <span class="nv">list = </span><span class="nx">@entities</span><span class="p">[</span><span class="nx">entity</span><span class="p">.</span><span class="nx">group</span><span class="p">]</span>
     <span class="k">for</span> <span class="nx">ent</span><span class="p">,</span> <span class="nx">idx</span> <span class="k">in</span> <span class="nx">list</span>
-      <span class="nx">list</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="nx">entity</span> <span class="o">==</span> <span class="nx">ent</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>Render a scene and all of its entities onto the main canvas</p>
-
-<p>The drawing of a scene is split into two parts - updating and rendering.</p>
+      <span class="nx">list</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="nx">entity</span> <span class="o">==</span> <span class="nx">ent</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>Render a scene and all of its entities onto the main canvas
+The drawing of a scene is split into two parts - updating and rendering.</p>
 
 <p><code>update()</code> sets up the visual state of the entity before it is rendered to the screen -
 this is where an entities position, direction, state etc should be assigned or modified.</p>
