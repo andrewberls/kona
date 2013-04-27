@@ -16,7 +16,7 @@ Kona.Utils =
   #       => { color: 'red', owner: 'Jon' }
   #
   find: (list, props={}) ->
-    _.where(list, props)[0]
+    _.where(list, props)[0] || null
 
   # Modify obj1 to also contain the contents of obj2
   # The value for entries with duplciate keys will be that of obj2
