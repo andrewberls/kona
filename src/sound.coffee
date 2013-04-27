@@ -23,14 +23,21 @@ Kona.Sounds =
       @sounds[name] = new Kona.Sound(src)
 
 
-  # Play a sound by name
+  # Play a sound by name if it exists,
+  # else play a sound from its path directly as a shortcut
+  # for instantiating a `Kona.Sound` object
   #
   # Ex:
   #
   #     Kona.Sounds.play('fire')
   #
-  play: (name) ->
-    @sounds[name].play()
+  #     Kona.Sounds.play('theme.mp3', { autoplay: true, loop: true })
+  #
+  play: (name, opts={}) ->
+    if @sounds[name]?
+      @sounds[name].play()
+    else
+      new Kona.Sound(name, opts).play()
 
 
 
