@@ -14,50 +14,70 @@
 #         # custom code here ...
 #
 
-
-# A superconstructor initializing some basic fields.
-# Game object constructors should call this. For example:
-#
-#     class Enemy extends Kona.Entity
-#       constructor: (opts={}) ->
-#         super(opts)
-#         @isEvil = true
-#
-# Constructor options:
-#
-#   * __group__ - (String) The group this entity belongs to, ex: `'enemies'`
-#   * __solid__ - (Boolean) Whether or not this entity is solid, e.g., can this collide with other entities. Default: true.
-#   * __gravity__ - (Boolean) Whether or not this entity is subject to gravity. Default: true
-#   * __speed__ - (Integer) The speed of this entity when moving.
-#   * __facing__ - (String) The direction this entity is facing. Possible values: `'left'` or `'right'`
-#   * __position__ - (Object)
-#     * x: integer x-coordinate on the canvas
-#     * y: integer y-coordinate on the canvas
-#   * __direction__ - (Object) Values representing the current direction of the entity.
-#     * dx: `-1 = left, 1 = right, 0 = stationary`
-#     * dy: `-1 = up, 1 = down, 0 = stationary`
-#   * __box__ - (Object) Values representing the dimensions of the entity. Collisions
-#     are resolved in terms of a rectangular box model.
-#     * width: An integer width, in pixels
-#     * height: An integer height, in pixels
-#   * __sprite__ - (Type)
-#
 class Kona.Entity
 
   # Class methods
-  @grav = 8
 
+  # Strength of gravity (downward pull applied each tick)
+  @grav = 9
+
+  # Load animations on a group of entities.
+  # This simply passed the given configuration to each entity instance in a group
+  #
+  # Parameters:
+  #
+  #   * __group__ - (String) The group the entity belongs to, ex: `'enemies'`
+  #   * __animations__ - (Object) Animation configuration passed into ent.loadAnimations()
+  #      (See entity#loadAnimations)
+  #
+  # Ex:
+  #
+  #     EvilNinja.loadAnimations 'enemies', {
+  #       'run_right' : { width:50,height:55, sheet: 'img/enemies/turtle/run_right.png', active: true }
+  #       'run_left'  : { width:50,height:55, sheet: 'img/enemies/turtle/run_left.png' }
+  #       'die'       : { width:50,height:55, sheet: 'img/enemies/turtle/die.png', next: -> @entity.destroy() }
+  #     }
+  #
   @loadAnimations = (group, animations) ->
     Kona.Engine.queue =>
       list = Kona.Scenes.currentScene.entities[group]
       if list?
         for ent in list
-          # We can multiple types of entity in the same group, e.g. 'enemies'
+          # We can have multiple types of entity in the same group, e.g. 'enemies'
           # Therefore take precaution to only load anims for the correct instances
           ent.loadAnimations(animations) if ent instanceof @
 
 
   # Instance methods
+
+  # A superconstructor initializing some basic fields.
+  # All game object constructors should call this. For example:
+  #
+  #     class Enemy extends Kona.Entity
+  #       constructor: (opts={}) ->
+  #         super(opts)
+  #         @isEvil = true
+  #         # etc...
+  #
+  # Constructor options:
+  #
+  #   * __group__ - (String) The group this entity belongs to, ex: `'enemies'`
+  #   * __solid__ - (Boolean) Whether or not this entity is solid, e.g., can this collide with other entities. Default: true.
+  #   * __gravity__ - (Boolean) Whether or not this entity is subject to gravity. Default: true
+  #   * __speed__ - (Integer) The speed of this entity when moving.
+  #   * __facing__ - (String) The direction this entity is facing. Possible values: `'left'` or `'right'`
+  #   * __position__ - (Object)
+  #     * x: integer x-coordinate on the canvas
+  #     * y: integer y-coordinate on the canvas
+  #   * __direction__ - (Object) Values representing the current direction of the entity.
+  #     * dx: `-1 = left, 1 = right, 0 = stationary`
+  #     * dy: `-1 = up, 1 = down, 0 = stationary`
+  #   * __box__ - (Object) Values representing the dimensions of the entity. Collisions
+  #     are resolved in terms of a rectangular box model.
+  #     * width: An integer width, in pixels
+  #     * height: An integer height, in pixels
+  #   * __sprite__ - (Type)
+  #
   constructor: (opts={}) ->
     @group   = opts.group or fail ("entity must have a group")
     @solid   = if opts.solid?   then opts.solid   else true
