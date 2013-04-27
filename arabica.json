@@ -9,6 +9,7 @@
       "src/entity.coffee",
       "src/animation.coffee",
       "src/tiles.coffee",
+      "src/trigger.coffee",
       "src/collectable.coffee",
       "src/keys.coffee",
       "src/sound.coffee",
