@@ -1,7 +1,0 @@
-{
-  "paths": [
-      "src/platformer.coffee"
-  ],
-  "out": "build/platformer.js",
-  "uglify": false
-}
