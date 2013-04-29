@@ -24,13 +24,6 @@
 
 Kona.Keys =
 
-  # Contains info on keys and their associated handler(s)
-  # Example structure:
-  #
-  #       65: [ <function>, <function> ]
-  #       17: [ <function> ]
-  _handlers: {}
-
   # Mapping of special names --> keycode
   _keycodes: {
     'enter': 13, 'return': 13,
@@ -100,22 +93,18 @@ Kona.Keys =
   #   * __key__ - (String) The key to bind to, ex: `'b'`
   #   * __handler__ - (Function) The handler function to invoke when key is pressed
   #
-  bind: (key, handler) ->
+  bind: (key, fn) ->
     key     = key.replace(/\s/g, '')
     keycode = @_keycodes[key] || key.toUpperCase().charCodeAt(0)
-    @_handlers[keycode] ||= []
-    @_handlers[keycode].push(handler)
+    Kona.Events.bind("key_#{keycode}", fn)
 
 
   # Internally invoke the associated handler function when a bound key is pressed,
   # and stops further event propagation
   dispatch: (event) ->
     keycode = @eventKeyCode(event)
-    return if @reject(event) || !@_handlers[keycode]?
-
-    for handler in @_handlers[keycode]
-      handler.call(event)
-      false
+    return if @reject(event)
+    Kona.Events.trigger("key_#{keycode}")
 
 
   # Ignore keypresses from elements that take keyboard data input,
@@ -130,6 +119,7 @@ Kona.Keys =
 
   # Get the keycode for a DOM keyboard event. Returns Integer
   eventKeyCode: (event) -> event.which || event.keyCode
+
 
 
 Kona.ready ->
