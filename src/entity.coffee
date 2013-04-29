@@ -336,8 +336,12 @@ class Kona.Entity
   #         @collects('coins', 'weapons')
   #
   collects: (names...) ->
-    for name in names
-      Kona.Collectors.add(name, @)
+    Kona.Collectors.add(name, @) for name in names
+
+  # Alias `collects()` as `triggers()`
+  triggers: (names...) ->
+    @collects(name) for name in names
+
 
 
 
