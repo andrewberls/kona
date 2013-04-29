@@ -40,7 +40,13 @@ Kona.Scenes =
     @currentScene = @scenes[0]
 
 
+  # Draw the current scene and its entities to the canvas
   drawCurrent: -> @currentScene.draw()
+
+
+  # Get all entities from a group in the current scene
+  # Ex: `Kona.Scenes.getCurrentEntities('enemies')`
+  getCurrentEntities: (group) -> @currentScene.getEntities(group)
 
 
   # Find the new scene by name and set it to active to start rendering
@@ -56,6 +62,12 @@ Kona.Scenes =
   nextScene: ->
     sceneNum = parseInt @currentScene.name.replace('s', '')
     @setCurrent("s#{++sceneNum}")
+
+
+  # Find a scene by its name
+  # Ex: `Kona.Scenes.find("s2")`
+  find: (sceneName) ->
+    Kona.Utils.find(@scenes, { name: sceneName })
 
 
 
@@ -130,6 +142,10 @@ class Kona.Scene
 
       x = 0
       y += Kona.Tile.tileSize
+
+
+  # Get all entities in a specific group for this scene
+  getEntities: (group) -> @entities[group] || []
 
 
   # Remove an entity from its group. Prefer `entity.destroy()` instead of calling this directly.

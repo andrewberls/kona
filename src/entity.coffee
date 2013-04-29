@@ -40,9 +40,8 @@ class Kona.Entity
   #
   @loadAnimations = (group, animations) ->
     Kona.Engine.queue =>
-      list = Kona.Scenes.currentScene.entities[group]
-      if list?
-        for ent in list
+      for scene in Kona.Scenes.scenes
+        for ent in scene.getEntities(group)
           # We can have multiple types of entity in the same group, e.g. 'enemies'
           # Therefore take precaution to only load anims for the correct instances
           ent.loadAnimations(animations) if ent instanceof @
