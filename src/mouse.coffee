@@ -9,13 +9,12 @@ Kona.Mouse =
   onMouseMove: (e) ->
     e ?= window.event # TODO: test this
     canvas = Kona.Canvas.elem
-    @x = ev.clientX - canvas.offsetLeft
-    @y = ev.clientY - canvas.offsetTop
+    @x = e.clientX - canvas.offsetLeft
+    @y = e.clientY - canvas.offsetTop
 
 
   onMouseDown: (e) ->
     @isDown = true
-    puts "click at x: #{@x}, y: #{@y}"
 
 
   onMouseUp: (e) -> @isDown = false
