@@ -13,6 +13,7 @@ Kona.Engine =
   # Internal queue of callbacks to invoke once the engine starts
   _queue: []
 
+
   # Add a function to the startup queue
   #
   # Ex:
@@ -32,14 +33,17 @@ Kona.Engine =
   start: (opts={}) ->
     @fps     = opts.fps || @defaults.fps
     Kona.Scenes.currentScene = Kona.Scenes.scenes[0]
+    Kona.Scenes.currentScene? or fail("Engine#start", "No scenes found")
     @running = true
     fn() for fn in @_queue
     @run()
+
 
   # Repeatedly draw the current scene by requesting animation frames
   run: ->
     requestAnimFrame(Kona.Engine.run, Kona.Canvas.elem)
     Kona.Scenes.drawCurrent()
+
 
 
 # [requestAnimationShim by Paul Irish](http://paulirish.com/2011/requestanimationframe-for-smart-animating/)

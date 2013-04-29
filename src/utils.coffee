@@ -18,6 +18,7 @@ Kona.Utils =
   find: (list, props={}) ->
     _.where(list, props)[0] || null
 
+
   # Modify obj1 to also contain the contents of obj2
   # The value for entries with duplciate keys will be that of obj2
   # unless overwrite is explicitly set to false
@@ -38,6 +39,7 @@ Kona.Utils =
     for key, value of obj2
       obj1[key] = value if !obj1[key]? || overwrite
     obj1
+
 
   # Return a random item from a list
   #
@@ -66,10 +68,20 @@ window.once = (fn) ->
 
 
 # Throw an exception with a message
+# Accepts one or two string arguments
 #
-# Ex: `player.name? or fail("Name is required")`
+# Ex:
+#     `fail("Greeter#sayMessage", "Message is required")`
+#      => "Error: In Greeter#sayMessage: Message is required"
 #
-window.fail = (msg) -> throw new Error(msg)
+# Ex:
+#     `fail("Couldn't find result")`
+#      => "Error: Couldn't find result"
+#
+window.fail = (args...) ->
+  msg = if args.length == 2 then "In #{args[0]}: #{args[1]}" else args.toString()
+  throw new Error(msg)
+
 
 
 # Shorthand for console.log, used for debugging

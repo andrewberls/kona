@@ -53,7 +53,8 @@ Kona.Scenes =
   # Ex: `Kona.Scenes.setCurrent('lvl1:s2')`
   setCurrent: (sceneName) ->
     @currentScene.active = false
-    newScene = Kona.Utils.find(@scenes, { name: sceneName }) or fail("Couldn't find scene: #{sceneName}")
+    # newScene = Kona.Utils.find(@scenes, { name: sceneName }) or fail("Couldn't find scene: #{sceneName}")
+    newScene = @find(sceneName) or fail("Scenes.setCurrent", "Couldn't find scene: #{sceneName}")
     @currentScene = newScene
     @currentScene.active = true
 
@@ -91,7 +92,7 @@ Kona.Scenes =
 class Kona.Scene
   constructor: (opts={}) ->
     @map            = opts.map
-    @name           = opts.name or fail("Scene must have a name")
+    @name           = opts.name or fail("Scene#new", "Scene must have a name")
     @active         = if opts.active? then opts.active else false
     @background     = new Image()
     @background.src = opts.background || ''
@@ -131,7 +132,7 @@ class Kona.Scene
 
     for row in grid
       for def in row
-        rule   = map[def] or fail("No mapping found for rule: #{def}")
+        rule   = map[def] or fail("Scene#loadEntities", "No mapping found for rule: #{def}")
         offset = if rule.opts then rule.opts.offset else null
         startX = if offset? then x + (offset.x || 0) else x
         startY = if offset? then y + (offset.y || 0) else y
