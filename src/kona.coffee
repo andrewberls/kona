@@ -12,8 +12,29 @@
 # Set the main object on the window
 window.Kona = {}
 
-Kona.readyCallbacks = []
-Kona.isReady = false
+Kona.readyQueue = []
+Kona.isReady    = false
+
+# Pause logic
+# If gamePaused is set to true, the current scene will draw but not update
+# freezing things until gameplay resumes
+Kona.gamePaused = false
+
+Kona.togglePause = ->
+  # TODO: where to dismiss sign backgrounds?
+  # Can't put it here - signs are not core
+  # for ent in Kona.Scenes.currentScene.getEntities('sign_backgrounds')
+  #   ent.destroy()
+  @gamePaused = !@gamePaused
+  if @gamePaused
+    Kona.Events.trigger('onPause')
+  else
+    Kona.Events.trigger('onResume')
+
+
+Kona.onPause  = (fn) -> Kona.Events.bind('onPause', fn)
+Kona.onResume = (fn) -> Kona.Events.bind('onResume', fn)
+
 
 # Invoke a callback function when the document has fully loaded. Can be invoked
 # multiple times - callbacks will be pushed onto a list
@@ -30,16 +51,18 @@ Kona.ready = (callback) ->
   # If the DOM is already ready, just invoke the callback.
   if Kona.isReady
     callback.call()
-
-  Kona.readyCallbacks.push(callback)
+  else
+    Kona.readyQueue.push(callback)
 
 
 # Internal function hooked to the DOM's ready event. Do nothing if already ready
 Kona.DOMContentLoaded = ->
   return if Kona.isReady
   Kona.isReady = true
-  for callback in Kona.readyCallbacks
+  for callback in Kona.readyQueue
     callback.call()
+
+
 
 # Hook the various DOM loaded events. Borrowed from jQuery's implementation.
 if document.readyState != 'complete'

@@ -5,6 +5,7 @@
       "src/utils.coffee",
       "src/canvas.coffee",
       "src/engine.coffee",
+      "src/events.coffee",
       "src/scenes.coffee",
       "src/entity.coffee",
       "src/animation.coffee",

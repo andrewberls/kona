@@ -151,9 +151,15 @@ class Kona.Scene
   #
   draw: ->
     Kona.Canvas.clear()
-    Kona.Canvas.ctx.drawImage(@background, 0, 0) # Background
+    Kona.Canvas.ctx.drawImage(@background, 0, 0)
     for name, list of @entities
       for entity in list
         if entity?
-          entity.update()
+          entity.update() unless Kona.gamePaused
           entity.draw()
+
+    # Gray overlay if game is paused
+    if Kona.gamePaused
+      Kona.Canvas.safe =>
+        Kona.Canvas.ctx.fillStyle = "rgba(34, 34, 34, 0.6)"
+        Kona.Canvas.ctx.fillRect(0, 0, Kona.Canvas.width, Kona.Canvas.height)
