@@ -12,6 +12,7 @@
       "src/trigger.coffee",
       "src/collectable.coffee",
       "src/keys.coffee",
+      "src/mouse.coffee",
       "src/sound.coffee",
       "src/menu.coffee",
       "src/weapons.coffee",
