@@ -12,28 +12,36 @@
 # Set the main object on the window
 window.Kona = {}
 
+# Internals for `Kona.ready()`
 Kona.readyQueue = []
 Kona.isReady    = false
 
+
 # Pause logic
+
 # If gamePaused is set to true, the current scene will draw but not update
 # freezing things until gameplay resumes
 Kona.gamePaused = false
 
+
+# Toggle the pause state, e.g., unpaused -> paused or vice versa
+# Triggers a corresponding event, either onPause or onResume
+# This can be bound directly or using `Kona.onPause` and `Kona.onResume`
 Kona.togglePause = ->
-  # TODO: where to dismiss sign backgrounds?
-  # Can't put it here - signs are not core
-  # for ent in Kona.Scenes.currentScene.getEntities('sign_backgrounds')
-  #   ent.destroy()
   @gamePaused = !@gamePaused
-  if @gamePaused
-    Kona.Events.trigger('onPause')
-  else
-    Kona.Events.trigger('onResume')
+  event = if @gamePaused then 'Pause' else 'Resume'
+  Kona.Events.trigger("on#{event}")
 
 
+# Bind a function to the game pause event
+# Ex: `Kona.onPause -> console.log("Game was paused!")`
 Kona.onPause  = (fn) -> Kona.Events.bind('onPause', fn)
+
+
+# Bind a function to the game resume (unpause) event
+# Ex: `Kona.onPause -> console.log("Game was resumed!")`
 Kona.onResume = (fn) -> Kona.Events.bind('onResume', fn)
+
 
 
 # Invoke a callback function when the document has fully loaded. Can be invoked
