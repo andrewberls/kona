@@ -106,7 +106,9 @@ class Kona.Entity
   #   * __sprite__ - (Type)
   #
   constructor: (opts={}) ->
-    @group   = opts.group or fail ("entity must have a group")
+    # TODO: this error message sucks. How to get better introspection on error location?
+    @group   = opts.group or fail("Entity#new", "entity must have a group")
+    @scene   = opts.scene
     @solid   = if opts.solid?   then opts.solid   else true
     @gravity = if opts.gravity? then opts.gravity else true
     @speed   = opts.speed   || 0
@@ -177,6 +179,10 @@ class Kona.Entity
   # Destroy an instance by removing it from the current scene
   destroy: ->
     Kona.Scenes.currentScene.removeEntity(@)
+
+
+  # Is this entities scene active?
+  isActive: -> @scene == Kona.Scenes.currentScene
 
 
 

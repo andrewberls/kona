@@ -104,6 +104,7 @@ class Kona.Scene
   # Add a single entity to a named group
   addEntity: (entity) ->
     group = entity.group
+    entity.scene = @
     @entities[group] ||= []
     @entities[group].push(entity)
 
@@ -136,9 +137,9 @@ class Kona.Scene
         offset = if rule.opts then rule.opts.offset else null
         startX = if offset? then x + (offset.x || 0) else x
         startY = if offset? then y + (offset.y || 0) else y
-        opts   = Kona.Utils.merge { x: startX, y: startY, group: rule.group  }, rule.opts
-        obj    = new rule.entity(opts)
-        @addEntity(obj)
+        opts   = Kona.Utils.merge { x: startX, y: startY, group: rule.group, scene: @ }, rule.opts
+        ent    = new rule.entity(opts)
+        @addEntity(ent)
         x += Kona.Tile.tileSize
 
       x = 0
