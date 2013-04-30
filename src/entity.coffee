@@ -397,7 +397,7 @@ class Kona.Entity
 
 
   setAnimation: (name) ->
-    @currentAnimation = @animations[name] or fail("Couldn't find animation with name #{name}")
+    @currentAnimation = @animations[name] or fail("Entity#setAnimation", "Couldn't find animation with name #{name}")
 
 
   clearAnimation: ->
