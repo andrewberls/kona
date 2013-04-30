@@ -21,6 +21,7 @@ class Kona.Entity
   # Strength of gravity (downward pull applied each tick)
   @grav = 9
 
+
   # Load animations on a group of entities.
   # This simply passed the given configuration to each entity instance in a group
   #
@@ -38,13 +39,40 @@ class Kona.Entity
   #       'die'       : { width:50,height:55, sheet: 'img/enemies/turtle/die.png', next: -> @entity.destroy() }
   #     }
   #
-  @loadAnimations = (group, animations) ->
+  #
+  #
+  # You can also omit the group name if it is defined on the class itself
+  #
+  # Ex:
+  #
+  #     class EvilNinja extends Kona.Entity
+  #       @group: 'enemies'
+  #
+  #       constructor: (opts={}) ->
+  #         opts.group ||= EvilNinja.group
+  #         super(opts)
+  #
+  #
+  #     EvilNinja.loadAnimations {
+  #       'run_right' : { width:50,height:55, sheet: 'img/enemies/turtle/run_right.png', active: true }
+  #       'run_left'  : { width:50,height:55, sheet: 'img/enemies/turtle/run_left.png' }
+  #       'die'       : { width:50,height:55, sheet: 'img/enemies/turtle/die.png', next: -> @entity.destroy() }
+  #     }
+  #
+  @loadAnimations = (group_or_animations, animations={}) ->
     Kona.Engine.queue =>
       for scene in Kona.Scenes.scenes
+        if _.isString(group_or_animations)
+          group = group_or_animations
+        else
+          group = @group
+          animations = group_or_animations
+
+        # We can have multiple types of entity in the same group, e.g. 'enemies'
+        # Therefore take precaution to only load anims for the correct instances
         for ent in scene.getEntities(group)
-          # We can have multiple types of entity in the same group, e.g. 'enemies'
-          # Therefore take precaution to only load anims for the correct instances
           ent.loadAnimations(animations) if ent instanceof @
+
 
 
   # Instance methods
