@@ -16,6 +16,7 @@ class Kona.Menu extends Kona.Scene
         Kona.Canvas.clear() # TODO: PROBABLY WONT NEED THIS WITH A BG IMAGE
         Kona.Scenes.setCurrent(@name)
 
+
   draw: ->
     Kona.Canvas.safe =>
       Kona.Canvas.ctx.font      = "#{@fontSize} #{@font}"
