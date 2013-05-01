@@ -25,6 +25,13 @@ Kona.Engine =
     if @running then fn() else @_queue.push(fn)
 
 
+  # Call and remove every function from the queue
+  # Invoked on engine start
+  # Ex: `Kona.Engine.flushQueue()`
+  flushQueue: ->
+    fn() while fn = @_queue.shift()
+
+
   # Set the initial scene (specified as active), and kick off
   # the animation loop. To be invoked after all other necessary game setup.
   #
@@ -32,10 +39,9 @@ Kona.Engine =
   #
   start: (opts={}) ->
     @fps     = opts.fps || @defaults.fps
-    Kona.Scenes.currentScene = Kona.Scenes.scenes[0]
-    Kona.Scenes.currentScene? or fail("Engine#start", "No scenes found")
+    Kona.Scenes.currentScene = Kona.Scenes.scenes[0] or fail("Engine#start", "No scenes found")
     @running = true
-    fn() for fn in @_queue
+    @flushQueue()
     @run()
 
 
