@@ -145,8 +145,8 @@ class Kona.Entity
   #
   #     class Enemy extends Kona.Entity
   #       update: ->
-  #         super
-  #         @addGravity()
+  #         super()
+  #         @die() if @top() > Kona.Canvas.height
   #
   update: ->
     if @direction.dx > 0
