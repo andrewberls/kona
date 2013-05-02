@@ -20,7 +20,7 @@ class Kona.Trigger extends Kona.Entity
   # TODO: trigger dir sensitivities (e.g., only top and left)
   #
   update: ->
-    for entity in @getCollectors()
+    for entity in Kona.Collectors.for(@group)
       if @intersecting(entity)
         @activate(entity)
 
@@ -36,24 +36,9 @@ class Kona.Trigger extends Kona.Entity
       Kona.Sounds.play(sound)
 
 
-  # A list of collector entities that are able to trigger this node
-  getCollectors: -> Kona.Collectors.for(@group) || []
-
-
 
 # Internal tracking of who can collect a given collectable.
 # For example, a player could pick up entities the `coins` group,
 # and both players and enemies could pick up entities in the `food` group.
 #
-Kona.Collectors =
-
-  store: {}
-
-  # Use `entity.collects()` to set collectors instead of calling this directly.
-  add: (group, entity) ->
-    @store[group] ||= []
-    @store[group].push(entity)
-
-
-  # Get the collectors for a certain group
-  for: (group) -> @store[group]
+Kona.Collectors = new Kona.Store

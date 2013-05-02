@@ -12,25 +12,18 @@
 
 Kona.Events =
 
-  handlers: []
+  store: new Kona.Store
 
   # Save an event binding
-  bind: (name, handler) ->
-    @handlers[name] ||= []
-    @handlers[name].push(handler)
+  bind: (name, handler) -> store.add(name, handler)
 
 
   # Invoke a handler function
   # Do nothing if no event associated with name
-  trigger: (name) ->
-    handler.call() for handler in (@handlers[name] || [])
+  trigger: (name) -> handler.call() for handler in store.get(name)
 
 
 
 # Alias `bind()` as `on()`
-#
-# Ex:
-#
-#     Kona.Events.on "s2_activate", -> console.log "Scene 2 activated!"
-#
+# Ex: `Kona.Events.on "s2_activate", -> console.log "Scene 2 activated!"`
 Kona.Events.on = Kona.Events.bind

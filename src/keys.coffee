@@ -21,7 +21,6 @@
 #       Kona.Keys.bind 'a', ->
 #         console.log "You pressed a!"
 
-
 Kona.Keys =
 
   # Mapping of special names --> keycode
@@ -116,6 +115,7 @@ Kona.Keys =
   # Get the name of a key from a DOM event. Returns String
   keycodeName: (event) ->
     @_names[ @eventKeyCode(event) ]
+
 
   # Get the keycode for a DOM keyboard event. Returns Integer
   eventKeyCode: (event) -> event.which || event.keyCode
