@@ -53,10 +53,9 @@ Kona.Scenes =
   # Ex: `Kona.Scenes.setCurrent('lvl1:s2')`
   setCurrent: (sceneName) ->
     @currentScene.active = false
-    # newScene = Kona.Utils.find(@scenes, { name: sceneName }) or fail("Couldn't find scene: #{sceneName}")
-    newScene = @find(sceneName) or fail("Scenes.setCurrent", "Couldn't find scene: #{sceneName}")
-    @currentScene = newScene
+    @currentScene = @find(sceneName) or fail("Scenes.setCurrent", "Couldn't find scene: #{sceneName}")
     @currentScene.active = true
+    @currentScene.triggerActivation()
 
 
   # Advance to the next scene, in the order specified in the scene initialization
@@ -181,3 +180,8 @@ class Kona.Scene
       Kona.Canvas.safe =>
         Kona.Canvas.ctx.fillStyle = "rgba(34, 34, 34, 0.6)"
         Kona.Canvas.ctx.fillRect(0, 0, Kona.Canvas.width, Kona.Canvas.height)
+
+
+  # Trigger the activation event (ex: "s2_activate") for this scene
+  # Called automatically when this scene becomes active
+  triggerActivation: -> Kona.Events.trigger("#{@name}_activate")
