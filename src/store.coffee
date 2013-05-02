@@ -38,6 +38,11 @@ class Kona.Store
   get: (key) -> @_store[key] || []
 
 
+  # Return all key/value pairs in the store
+  # Used internally for rendering and collisions
+  all: -> @_store
+
+
   # Alias `set()` as `add()`
   # Ex: `store.add("myKey", "myData")
   @::add = @::set

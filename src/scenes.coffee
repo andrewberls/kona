@@ -15,12 +15,14 @@ Kona.Scenes =
   # Internal list of scenes
   scenes: []
 
+
   # The scene that is currently drawing to the canvas
   # If addEntity() is called on a scene before the engine starts, push new entity onto the queue
   currentScene: {
     addEntity: (ent) ->
       Kona.Engine.queue -> Kona.Scenes.currentScene.addEntity(ent)
   }
+
 
   # Parse and save a list of definition maps.
   # Ex defns format: `[ { name1 : map1 }, { name2 : map2 } ]`
@@ -46,7 +48,7 @@ Kona.Scenes =
 
   # Get all entities from a group in the current scene
   # Ex: `Kona.Scenes.getCurrentEntities('enemies')`
-  getCurrentEntities: (group) -> @currentScene.getEntities(group)
+  getCurrentEntities: (group) -> @currentScene.entities.get(group)
 
 
   # Find the new scene by name and set it to active to start rendering
@@ -95,17 +97,15 @@ class Kona.Scene
     @active         = if opts.active? then opts.active else false
     @background     = new Image()
     @background.src = opts.background || ''
-    @entities       = {}
+    @entities       = new Kona.Store
     @loadEntities(opts.entities) if opts.entities?
     Kona.Scenes.scenes.push(@)
 
 
   # Add a single entity to a named group
   addEntity: (entity) ->
-    group = entity.group
     entity.scene = @
-    @entities[group] ||= []
-    @entities[group].push(entity)
+    @entities.add(entity.group, entity)
 
 
   # Initialize and construct the associated entities for a scene
@@ -145,13 +145,9 @@ class Kona.Scene
       y += Kona.Tile.tileSize
 
 
-  # Get all entities in a specific group for this scene
-  getEntities: (group) -> @entities[group] || []
-
-
   # Remove an entity from its group. Prefer `entity.destroy()` instead of calling this directly.
   removeEntity: (entity) ->
-    list = @entities[entity.group]
+    list = @entities.for(entity.group)
     for ent, idx in list
       list.splice(idx, 1) if entity == ent
 
@@ -169,7 +165,7 @@ class Kona.Scene
   draw: ->
     Kona.Canvas.clear()
     Kona.Canvas.ctx.drawImage(@background, 0, 0)
-    for name, list of @entities
+    for name, list of @entities.all()
       for entity in list
         if entity?
           entity.update() unless Kona.gamePaused

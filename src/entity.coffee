@@ -70,7 +70,10 @@ class Kona.Entity
 
         # We can have multiple types of entity in the same group, e.g. 'enemies'
         # Therefore take precaution to only load anims for the correct instances
-        for ent in scene.getEntities(group)
+        #
+        # TODO: IMPORTANT: animations are not loaded for dynamically created entities
+        #
+        for ent in scene.entities.get(group)
           ent.loadAnimations(animations) if ent instanceof @
 
 
@@ -257,7 +260,7 @@ class Kona.Entity
   # ALl entities in a scene besides self
   neighborEntities: (opts={}) ->
     neighbors = {}
-    for name, list of Kona.Scenes.currentScene.entities
+    for name, list of Kona.Scenes.currentScene.entities.all()
       for ent in list
         neighbors[name] ||= []
         neighbors[name].push(ent) unless ent == @
