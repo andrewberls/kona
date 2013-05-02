@@ -372,9 +372,9 @@ class Kona.Entity
   collects: (names...) ->
     Kona.Collectors.add(name, @) for name in names
 
+
   # Alias `collects()` as `triggers()`
-  triggers: (names...) ->
-    @collects(name) for name in names
+  @::triggers = @::collects
 
 
 
