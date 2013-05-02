@@ -1,3 +1,6 @@
+# Various utility methods for ease of development
+# Note that these are in addition to the included [Underscore.js](http://underscorejs.org/) library
+
 Kona.Utils =
 
   # A thin wrapper for _.where(). Returns the first value containing
