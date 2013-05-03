@@ -101,7 +101,7 @@ class Kona.Entity
   #
   constructor: (opts={}) ->
     group    = opts.group || @constructor.group
-    @group   = group or fail("#{@constructor.name}#new", "entity must have a group")
+    @group   = group or fail("#{@class()}#new", "entity must have a group")
     @scene   = opts.scene
     @solid   = if opts.solid?   then opts.solid   else true
     @gravity = if opts.gravity? then opts.gravity else true
@@ -130,6 +130,11 @@ class Kona.Entity
 
     @animations       = []
     @currentAnimation = null
+
+
+  # Return the name of this instance's entity class as a string
+  # ex: `(new EvilNinja).class() => 'EvilNinja'`
+  class: -> @constructor.name
 
 
   # Apply gravitational effects any directional changes each frame, and resolve any
@@ -379,7 +384,7 @@ class Kona.Entity
   # TODO: DOCS
   #
   loadAnimations: ->
-    animations = Kona.Animations["#{@group}:#{@constructor.name}"]
+    animations = Kona.Animations["#{@group}:#{@class()}"]
     return unless animations?
 
     for name, opts of animations
@@ -389,7 +394,7 @@ class Kona.Entity
 
 
   setAnimation: (name) ->
-    @currentAnimation = @animations[name] or fail("#{@constructor.name}#setAnimation", "Couldn't find animation with name #{name}")
+    @currentAnimation = @animations[name] or fail("#{@class()}#setAnimation", "Couldn't find animation with name #{name}")
 
 
   clearAnimation: ->
