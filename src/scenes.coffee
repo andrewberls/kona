@@ -73,6 +73,7 @@ Kona.Scenes =
 
 
 
+
 # Construct a single scene instance
 # Prefer `Kona.Scenes.loadScenes()` instead of calling this directly
 #
@@ -105,6 +106,7 @@ class Kona.Scene
   # Add a single entity to a named group
   addEntity: (entity) ->
     entity.scene = @
+    entity.loadAnimations()
     @entities.add(entity.group, entity)
 
 

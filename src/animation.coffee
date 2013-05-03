@@ -1,3 +1,13 @@
+# Internal store for animations for a class
+# Keys are of the form "group:className", and the value is
+# a set of opts used to construct on a per-entity basis
+#
+# TODO: store constructed Kona.Animation objects here, and then assign to each
+# entity with modifications as necessary?
+Kona.Animations = {}
+
+
+
 # An interface for defining time-based animations using sprite sheets.
 #
 # Constructor options:
@@ -27,6 +37,7 @@ class Kona.Animation
     @repeat = if opts.repeat? then opts.repeat else true
     @next   = opts.next || null
     @played = false
+
 
   # Switch to the next animation specified, else invoke a given callback
   triggerNext: ->

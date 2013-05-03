@@ -60,22 +60,13 @@ class Kona.Entity
   #     }
   #
   @loadAnimations = (group_or_animations, animations={}) ->
-    Kona.Engine.queue =>
-      for scene in Kona.Scenes.scenes
-        if _.isString(group_or_animations)
-          group = group_or_animations
-        else
-          group = @group
-          animations = group_or_animations
+    if _.isString(group_or_animations)
+      group = group_or_animations
+    else
+      group = @group
+      animations = group_or_animations
 
-        # We can have multiple types of entity in the same group, e.g. 'enemies'
-        # Therefore take precaution to only load anims for the correct instances
-        #
-        # TODO: IMPORTANT: animations are not loaded for dynamically created entities
-        #
-        for ent in scene.entities.get(group)
-          ent.loadAnimations(animations) if ent instanceof @
-
+    Kona.Animations["#{group}:#{@name}"] = animations
 
 
   # Instance methods
@@ -109,8 +100,8 @@ class Kona.Entity
   #   * __sprite__ - (Type)
   #
   constructor: (opts={}) ->
-    # TODO: this error message sucks. How to get better introspection on error location?
-    @group   = opts.group or fail("Entity#new", "entity must have a group")
+    group    = opts.group || @constructor.group
+    @group   = group or fail("#{@constructor.name}#new", "entity must have a group")
     @scene   = opts.scene
     @solid   = if opts.solid?   then opts.solid   else true
     @gravity = if opts.gravity? then opts.gravity else true
@@ -387,12 +378,10 @@ class Kona.Entity
   # ---------------------
   # TODO: DOCS
   #
-  # player.loadAnimations {
-  #   'run_left' : { sheet: 'img/player/run_left.png' }
-  #   'die'      : { sheet: 'img/player/die.png' }
-  # }
-  #
-  loadAnimations: (animations) ->
+  loadAnimations: ->
+    animations = Kona.Animations["#{@group}:#{@constructor.name}"]
+    return unless animations?
+
     for name, opts of animations
       animOpts = Kona.Utils.merge { entity: @, name: name, width: @box.width, height: @box.height  }, opts
       @animations[name] = new Kona.Animation(animOpts)
@@ -400,7 +389,7 @@ class Kona.Entity
 
 
   setAnimation: (name) ->
-    @currentAnimation = @animations[name] or fail("Entity#setAnimation", "Couldn't find animation with name #{name}")
+    @currentAnimation = @animations[name] or fail("#{@constructor.name}#setAnimation", "Couldn't find animation with name #{name}")
 
 
   clearAnimation: ->
