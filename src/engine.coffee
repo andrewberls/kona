@@ -39,7 +39,6 @@ Kona.Engine =
   #
   start: (opts={}) ->
     @fps     = opts.fps || @defaults.fps
-    Kona.Scenes.currentScene = Kona.Scenes.scenes[0] or fail("Engine#start", "No scenes found")
     @running = true
     @flushQueue()
     Kona.Scenes.currentScene.triggerActivation()

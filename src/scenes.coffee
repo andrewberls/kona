@@ -39,7 +39,7 @@ Kona.Scenes =
       scene = new Kona.Scene(Kona.Utils.merge { name: "s#{sceneNum}" }, args)
       sceneNum++
 
-    @currentScene = @scenes[0]
+    @currentScene = @scenes[0] or fail("Scenes.loadScenes", "No scenes found")
 
 
   # Draw the current scene and its entities to the canvas
