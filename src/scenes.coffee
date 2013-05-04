@@ -39,8 +39,6 @@ Kona.Scenes =
       scene = new Kona.Scene(Kona.Utils.merge { name: "s#{sceneNum}" }, args)
       sceneNum++
 
-    @currentScene = @scenes[0] or fail("Scenes.loadScenes", "No scenes found")
-
 
   # Draw the current scene and its entities to the canvas
   drawCurrent: -> @currentScene.draw()
@@ -60,10 +58,15 @@ Kona.Scenes =
     @currentScene.triggerActivation()
 
 
-  # Advance to the next scene, in the order specified in the scene initialization
+  # Advance to the next scene
+  # This can either be specified in order in Kona.Scenes.loadScenes,
+  # or manually by setting scene.next to the name of the following scene
   nextScene: ->
-    sceneNum = parseInt @currentScene.name.replace('s', '')
-    @setCurrent("s#{++sceneNum}")
+    if @currentScene.next?
+      @setCurrent(@currentScene.next)
+    else
+      sceneNum = parseInt @currentScene.name.replace('s', '')
+      @setCurrent("s#{++sceneNum}")
 
 
   # Find a scene by its name
@@ -89,6 +92,7 @@ Kona.Scenes =
 #   * __active__ - (Boolean) Whether or not this scene is actively being drawn to the screen
 #   * __background__ - (String) The path to a background image. Ex: `img/jungle.png`
 #   * __entities__ - (Array) A 2D grid specifying the scene's entity layout, using
+#   * __next__ - (String) The name of the following scene. Ex: 'level-2'
 #      defintions from a map (specified in `map`)
 #
 class Kona.Scene
@@ -99,6 +103,8 @@ class Kona.Scene
     @background     = new Image()
     @background.src = opts.background || ''
     @entities       = new Kona.Store
+    @next           = opts.next || null
+
     @loadEntities(opts.entities) if opts.entities?
     Kona.Scenes.scenes.push(@)
 
