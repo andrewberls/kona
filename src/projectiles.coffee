@@ -44,6 +44,7 @@ class Kona.Projectile extends Kona.Entity
               else
                 ent.destroy()
 
-            @destroy()
+            return @destroy()
+
 
     @destroy() if @position.x < 0 || @position.x > Kona.Canvas.width
