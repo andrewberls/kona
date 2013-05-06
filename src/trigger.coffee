@@ -11,7 +11,12 @@ class Kona.Trigger extends Kona.Entity
     super(opts)
     @solid   = false
     @gravity = false
-    @pickupSound = ''
+    @pickupSound   = ''
+
+
+  # Boolean function to check if an entity is within a given activation tolerance range
+  # True by default - override in derived classes for specific behavior
+  withinTolerance: (ent) -> true
 
 
   # Test if a collector is intersecting
@@ -21,7 +26,7 @@ class Kona.Trigger extends Kona.Entity
   #
   update: ->
     for entity in Kona.Collectors.for(@group)
-      if @intersecting(entity)
+      if @intersecting(entity) && @withinTolerance(entity)
         @activate(entity)
 
 
