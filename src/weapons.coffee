@@ -69,8 +69,8 @@ class Kona.EnemyWeapon extends Kona.Weapon
 
 
   # Fire at a random entity from all target groups
-  fire: ->
-    target = @randomTarget()
+  fire: (target=null) ->
+    target ?= @randomTarget()
 
     if @isActive() && target.isAlive
       x = Math.abs(@holder.midx() - target.midx())  # x-distance between enemy & target
