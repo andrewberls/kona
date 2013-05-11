@@ -199,6 +199,7 @@ class Kona.Entity
   midy: -> @position.y + Math.ceil(@box.height / 2)
 
 
+
   # ---------------------
   # Motion
   # ---------------------
@@ -236,6 +237,36 @@ class Kona.Entity
     else
       @direction.dx = @direction.dy = 0
 
+
+  # ---------------------
+  # Neighboring tiles
+  # ---------------------
+  leftCol:   -> Math.floor(@left() / Kona.Tile.tileSize)
+  rightCol:  -> Math.floor(@right() / Kona.Tile.tileSize)
+  bottomCol: -> Math.floor(@bottom() / Kona.Tile.tileSize) + 1
+  topCol:    -> Math.floor(@top() / Kona.Tile.tileSize) + 1
+
+  bottomLeftNeighbor: ->
+    size  = Kona.Tile.tileSize
+    midX       = (@leftCol()*size)+(size/2)  # The halfway point of the tile our left side is in
+    neighborX  = (@leftCol()*size)           # Right of the midpoint - use the tile below us
+    neighborX -= size if @left() < midX      # Left of the midpoint - use the tile one over to the left
+    neighborY  = (@bottomCol()*size)
+    return Kona.Scenes.currentScene.findTile(x: neighborX, y: neighborY)
+
+
+  bottomRightNeighbor: ->
+    size  = Kona.Tile.tileSize
+    midX       = (@rightCol()*size)+(size/2)  # The halfway point of the tile our left side is in
+    neighborX  = (@rightCol()*size)           # Left of the midpoint - use the tile below us
+    neighborX -= size if @right > midX        # Right of the midpoint - use the tile one over to the right
+    neighborY  = (@bottomCol()*size)
+    return Kona.Scenes.currentScene.findTile(x: neighborX, y: neighborY)
+
+
+  # TODO
+  # topLeftNeighbor: ->
+  # topRightNeighbor: ->
 
 
   # ---------------------
@@ -343,6 +374,7 @@ class Kona.Entity
   #
   # For example, prevent a player from falling through the floor after applying
   # gravity.
+  #
   correctLeft:   -> @position.x += 1 while @hasLeftCollisions() || @left() < 0
   correctRight:  -> @position.x -= 1 while @hasRightCollisions()
   correctTop:    -> @position.y += 1 while @hasTopCollisions()

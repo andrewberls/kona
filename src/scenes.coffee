@@ -189,3 +189,16 @@ class Kona.Scene
   # Trigger the activation event (ex: "s2_activate") for this scene
   # Called automatically when this scene becomes active
   triggerActivation: -> Kona.Events.trigger("#{@name}_activate")
+
+
+  # All tile entities in this scene
+  tiles: ->
+    @entities.get(Kona.Tile.group).concat(@entities.get(Kona.BlankTile.group))
+
+
+  # TODO: this sucks and probably doesn't belong here
+  findTile: (opts={}) ->
+    for tile in Kona.Scenes.currentScene.tiles()
+      return tile if tile.position.x == opts.x && tile.position.y == opts.y
+
+    return null # No match
