@@ -49,7 +49,6 @@ class Kona.Entity
   #       @group: 'enemies'
   #
   #       constructor: (opts={}) ->
-  #         opts.group ||= EvilNinja.group
   #         super(opts)
   #
   #
@@ -238,6 +237,7 @@ class Kona.Entity
       @direction.dx = @direction.dy = 0
 
 
+
   # ---------------------
   # Neighboring tiles
   # ---------------------
@@ -267,6 +267,13 @@ class Kona.Entity
   # TODO
   # topLeftNeighbor: ->
   # topRightNeighbor: ->
+
+
+  isFacing: (entity) ->
+    if @facing == 'left'
+      entity.right() <= @left()
+    else
+      entity.left() >= @right()
 
 
   # ---------------------
@@ -409,7 +416,6 @@ class Kona.Entity
 
 
 
-
   # ---------------------
   # Animations
   # ---------------------
@@ -431,6 +437,7 @@ class Kona.Entity
 
   clearAnimation: ->
     @currentAnimation = null
+
 
 
   # ---------------------
