@@ -52,6 +52,7 @@ Kona.Utils =
   #
   #     Kona.Utils.sample([1,2,3,4])
   #       => 2
+  #
   sample: (items) ->
     items[Math.floor(Math.random() * items.length)]
 
