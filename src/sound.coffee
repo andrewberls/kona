@@ -15,12 +15,30 @@ Kona.Sounds =
   # Ex:
   #
   #     Kona.Sounds.load {
+  #       'fire' : 'audio/enemy_fire.ogg'
+  #     }
+  #
+  # You can also specify a folder where sounds are located.
+  #
+  # Ex:
+  #
+  #     Kona.Sounds.load 'audio/', {
   #       'fire' : 'enemy_fire.ogg'
   #     }
   #
-  load: (sounds={}) ->
-    for name, src of sounds
-      @sounds[name] = new Kona.Sound(src)
+  load: (dir_or_sounds, sounds={}) ->
+    if _.isString(dir_or_sounds)
+      # Directory and sounds provided
+      dir = dir_or_sounds
+      for name, src of sounds
+        sep  = if dir.slice(-1) == '/' then '' else '/'
+        path = "#{dir}#{sep}#{src}"
+        @sounds[name] = new Kona.Sound(path)
+    else
+      # Only sounds provided
+      sounds = dir_or_sounds
+      for name, src of sounds
+        @sounds[name] = new Kona.Sound(src)
 
 
   # Play a sound by name if it exists,
