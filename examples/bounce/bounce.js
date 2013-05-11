@@ -13,11 +13,12 @@
 
       __extends(Shape, _super);
 
+      Shape.group = 'shapes';
+
       function Shape(opts) {
         if (opts == null) {
           opts = {};
         }
-        opts.group || (opts.group = 'shapes');
         Shape.__super__.constructor.call(this, opts);
         this.gravity = false;
       }

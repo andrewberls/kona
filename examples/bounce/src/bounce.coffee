@@ -19,8 +19,9 @@ Kona.ready ->
     # Entity constructor, but we explicitly turn off gravity for this object
     # Setting the group here prevents us from having to specify it when we construct
     # instances of this class
+    @group = 'shapes'
+
     constructor: (opts={}) ->
-      opts.group ||= 'shapes'
       super(opts)
       @gravity = false
 
