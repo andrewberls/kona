@@ -364,7 +364,8 @@ class Kona.Entity
 
   # Collision from any side with another entity. Returns Boolean
   intersecting: (ent) ->
-    @leftCollision(ent) || @rightCollision(ent) || @topCollision(ent) || @bottomCollision(ent)
+    @bottomCollision(ent) || @leftCollision(ent) || @rightCollision(ent) || @topCollision(ent)
+
 
 
   # Is this entity standing on a surface?
@@ -438,8 +439,7 @@ class Kona.Entity
     @currentAnimation = @animations[name] or fail("#{@class()}#setAnimation", "Couldn't find animation with name #{name}")
 
 
-  clearAnimation: ->
-    @currentAnimation = null
+  clearAnimation: -> @currentAnimation = null
 
 
 
