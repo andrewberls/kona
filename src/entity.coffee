@@ -136,6 +136,9 @@ class Kona.Entity
   class: -> @constructor.name
 
 
+  toString: -> "<#{@class()} position={ x: #{@position.x}, y: #{@position.y}}>"
+
+
   # Apply gravitational effects any directional changes each frame, and resolve any
   # resulting collisions (ex running into a wall)
   #
