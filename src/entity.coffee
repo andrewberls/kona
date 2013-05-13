@@ -295,13 +295,13 @@ class Kona.Entity
 
 
   # ALl entities in a scene besides self
+  # TODO: Oh my god. Cache this or something
   neighborEntities: (opts={}) ->
-    neighbors = {}
+    neighbors = new Kona.Store
     for name, list of Kona.Scenes.currentScene.entities.all()
       for ent in list
-        neighbors[name] ||= []
-        neighbors[name].push(ent) unless ent == @
-    neighbors
+        neighbors.add(name, ent) unless ent == @
+    neighbors.all()
 
 
   # Loop over solid entities in the current scene, and invoke a function on them.
