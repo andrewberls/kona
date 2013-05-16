@@ -15,12 +15,12 @@ Kona.Events =
   store: new Kona.Store
 
   # Save an event binding
-  bind: (name, handler) -> store.add(name, handler)
+  bind: (name, handler) -> @store.add(name, handler)
 
 
   # Invoke a handler function
   # Do nothing if no event associated with name
-  trigger: (name) -> handler.call() for handler in store.get(name)
+  trigger: (name) -> handler.call() for handler in @store.get(name)
 
 
 

@@ -51,8 +51,3 @@ class Kona.Store
   # Alias `get()` as `for()`
   # Ex: `Kona.Collectors.for('coins') => [Player]
   @::for = @::get
-
-
-
-
-window.store = new Kona.Store
