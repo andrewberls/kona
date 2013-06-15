@@ -2,10 +2,26 @@
 (function() {
 
   Kona.ready(function() {
-    return describe("Kona.TEST", function() {
-      return describe("::classMethod", function() {
-        return it("test", function() {
-          return expect(true).toBe(true);
+    var collectableScene;
+    Kona.Canvas.init('canvas');
+    collectableScene = new Kona.Scene({
+      name: 'collectableScene',
+      active: true
+    });
+    Kona.Engine.start();
+    return describe("Kona.Collectable", function() {
+      return describe("#activate", function() {
+        return it("destroys on activation", function() {
+          var item;
+          item = new Kona.Collectable({
+            group: 'items',
+            x: 0,
+            y: 0
+          });
+          collectableScene.addEntity(item);
+          expect(collectableScene.entities.get('items')).toContain(item);
+          item.activate();
+          return expect(collectableScene.entities.get('items')).toNotContain(item);
         });
       });
     });

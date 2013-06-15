@@ -5,12 +5,6 @@ Kona.ready ->
 
 
   describe "Kona.Canvas", ->
-    # init
-    # safe
-    # clear
-    # drawRect
-    # drawCircle
-
     describe "::init", ->
       it "throws an exception if DOM element not found", ->
         expect(->
