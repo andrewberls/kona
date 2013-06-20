@@ -192,13 +192,13 @@ class Kona.Entity
   # Returns nothing
   draw: ->
 
-    # TODO: show collision rectangles
-    Kona.Canvas.ctx.fillRect(@position.x, @position.y, @box.width, @box.height)
+    # DEBUG: show collision rectangles
+    # Kona.Canvas.drawRect(@position, @box)
 
     if @currentAnimation?
       @currentAnimation.draw()
     else
-      Kona.Canvas.ctx.drawImage(@sprite, @position.x, @position.y, @box.width, @box.height)
+      Kona.Canvas.ctx.drawImage(@sprite, @position.x, @position.y, @box.width, @box.height) if @sprite.src != '' # TODO
 
 
   # Public: Destroy an instance by removing it from the current scene
@@ -263,8 +263,10 @@ class Kona.Entity
   # axis: String axis name ('x' or 'y')
   #
   # Ex: `player.stop('x')`
+  # Ex: `player.stop()`
   #
   # Returns nothing
+  #
   stop: (axis=null) ->
     if axis?
       @direction["d#{axis}"] = 0
@@ -343,6 +345,9 @@ class Kona.Entity
   # Returns Object { 'groupName1': Array[Entity], 'groupName2': ... }
   # TODO: Oh my god. Cache this or something
   neighborEntities: (opts={}) ->
+    # TODO
+    # Kona.Scenes.currentScene.tree.retrieve(@position)
+
     neighbors = new Kona.Store
     for name, list of Kona.Scenes.currentScene.entities.all()
       for ent in list

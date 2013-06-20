@@ -131,6 +131,13 @@ class Kona.Scene
     @entities       = new Kona.Store
     @next           = opts.next || null
 
+    @tree = new QuadTree {
+      x: 0,
+      y: 0,
+      width:  Kona.Canvas.width,
+      height: Kona.Canvas.height
+    }
+
     @loadEntities(opts.entities) if opts.entities?
     Kona.Scenes.scenes.push(@)
 
@@ -140,6 +147,7 @@ class Kona.Scene
     entity.scene = @
     entity.loadAnimations()
     @entities.add(entity.group, entity)
+    @tree.insert(entity) # TODO
 
 
   # Internal: Initialize and construct the associated entities for a scene
@@ -191,28 +199,52 @@ class Kona.Scene
       list.splice(idx, 1) if entity == ent
 
 
+
+
+  # DEBUG: draw quadtree node boundaries
+  drawTree: (node) ->
+    bounds = node.bounds
+    Kona.Canvas.ctx.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height)
+
+    for child in node.getChildren()
+      Kona.Canvas.ctx.strokeRect(child.x, child.y, child.width, child.height)
+
+    @drawTree(n) for n in node.nodes
+
+
+
+
+
   # Internal: Render a scene and all of its entities onto the main canvas
   # The drawing of a scene is split into two parts - updating and rendering.
   #
   # `update()` sets up the visual state of the entity before it is rendered to the screen -
-  # this is where an entities position, direction, state etc should be assigned or modified.
+  #   this is where an entities position, direction, state etc should be assigned or modified.
   #
   # `draw()`  will then render the entities's visual state to the screen.
   #
   # See Kona.Entity
   #
   # Returns nothing
+  # TODO: rebuild tree before or after update?
   #
   draw: ->
     Kona.Canvas.clear()
-    Kona.Canvas.ctx.drawImage(@background, 0, 0)
+    # Kona.Canvas.ctx.drawImage(@background, 0, 0)
+    # treelist = []
     for name, list of @entities.all()
       for entity in list
         if entity?
           entity.update() unless Kona.gamePaused
           entity.draw()
+          # treelist.push(entity) #
+
+    # @tree.clear()
+    # @tree.insert(treelist)
+    @drawTree(@tree.root)
 
     # Gray overlay if game is paused
+    # TODO: issues with z-indexing here. We want sign backgrounds to take precedence over the pause box.
     if Kona.gamePaused
       Kona.Canvas.safe =>
         Kona.Canvas.ctx.fillStyle = "rgba(34, 34, 34, 0.6)"
