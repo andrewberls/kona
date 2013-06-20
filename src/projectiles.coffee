@@ -39,21 +39,20 @@ class Kona.Projectile extends Kona.Entity
     super()
     @position.x += @speed * @direction.dx
     if @hasLeftCollisions() || @hasRightCollisions()
-      for name, list of @neighborEntities()
-        for ent in list
-          leftHit  = @leftCollision(ent)
-          rightHit = @rightCollision(ent)
-          if ent.solid && (leftHit || rightHit)
-            if @target == ent || _.contains(@destructibles, name)
-              # Call .hit() if available, passing in the direction the collision is from,
-              # else revert to .destroy()
-              if ent.hit?
-                dir = if leftHit then 'right' else 'left' # Perspective of projectile
-                ent.hit(dir)
-              else
-                ent.destroy()
+      for ent in @neighborEntities()
+        leftHit  = @leftCollision(ent)
+        rightHit = @rightCollision(ent)
+        if ent.solid && (leftHit || rightHit)
+          if @target == ent || _.contains(@destructibles, group)
+            # Call .hit() if available, passing in the direction the collision is from,
+            # else revert to .destroy()
+            if ent.hit?
+              dir = if leftHit then 'right' else 'left' # Perspective of projectile
+              ent.hit(dir)
+            else
+              ent.destroy()
 
-            return @destroy()
+          return @destroy()
 
 
     @destroy() if @position.x < 0 || @position.x > Kona.Canvas.width

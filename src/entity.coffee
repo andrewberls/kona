@@ -342,25 +342,20 @@ class Kona.Entity
 
 
   # ALl entities in a scene besides self
-  # Returns Object { 'groupName1': Array[Entity], 'groupName2': ... }
+  # Returns Array[Entity]
   # TODO: Oh my god. Cache this or something
   neighborEntities: (opts={}) ->
     # TODO
     # Kona.Scenes.currentScene.tree.retrieve(@position)
-
-    neighbors = new Kona.Store
-    for name, list of Kona.Scenes.currentScene.entities.all()
-      for ent in list
-        neighbors.add(name, ent) unless ent == @
-    neighbors.all()
+    _.select Kona.Scenes.currentScene.entities.concat(), (e) => e != @
 
 
   # Internal: Loop over solid entities in the current scene, and invoke a function on them.
   # Returns nothing
   eachSolidEntity: (fn) =>
-    for name, list of @neighborEntities()
-      for ent in list
-        fn(ent) if ent? && ent.solid
+    # TODO: _.where or similar?
+    for ent in @neighborEntities()
+      fn(ent) if ent? && ent.solid
 
 
   # Internal: Loop over solid neighbor entities and determine whether or not a collision occurs
@@ -447,11 +442,8 @@ class Kona.Entity
   # Public: Determine if this entity is standing on a solid surface
   # Returns Boolean
   onSurface: =>
-    for name, list of @neighborEntities()
-      for ent in list
-        return true if ent.solid && ent.position.y == @bottom() + 1
+    _.any @neighborEntities(), (ent) => ent.solid && ent.position.y == @bottom() + 1
 
-    return false
 
 
 
