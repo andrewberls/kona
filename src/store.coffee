@@ -1,14 +1,16 @@
 # An generic interface for a 'bucket store' of arbitrary keys and values,
 # where values with the same key are kept in an array.
-#
+
 
 class Kona.Store
   constructor: ->
     @_store = {}
 
 
-  # Store a key and a value
-  # Returns the list of values stored at "myKey"
+  # Public: Store a key and a value
+  #
+  # key - String key to index into values
+  # val - Arbitrary value to store at key
   #
   # Ex:
   #
@@ -18,28 +20,36 @@ class Kona.Store
   #     store.set("myKey", "two")
   #       => ["one", "two"]
   #
+  # Returns Array of values stored at key
+  #
   set: (key, val) ->
     @_store[key] ||= []
     @_store[key].push(val)
     @_store[key]
 
 
-  # Get the array of values stored at a certain key
-  # Returns empty array if key not found
+  # Public: Get the array of values stored at a certain key
+  #
+  # key - String key to index into values
   #
   # Ex:
   #
   #     store.get("myKey")
-  #       => ["myData"]
+  #     #  => ["myData"]
   #
   #     store.get("fakeKey")
-  #       => []
+  #     #  => []
+  #
+  # Returns Array of values stored at key or [] if key not found
   #
   get: (key) -> @_store[key] || []
 
 
-  # Return all key/value pairs in the store
+  # Internal: Return all key/value pairs in the store
   # Used internally for rendering and collisions
+  #
+  # Returns Hash of keys -> [values]
+  #
   all: -> @_store
 
 

@@ -1,5 +1,6 @@
 # The engine is responsible for starting and running the main game loop.
 
+
 Kona.Engine =
 
   # FPS default only used for requestAnimFrame fallback
@@ -10,32 +11,44 @@ Kona.Engine =
 
   running: false
 
-  # Internal queue of callbacks to invoke once the engine starts
+  # Internal: Queue of callbacks to invoke once the engine starts
   _queue: []
 
 
-  # Add a function to the startup queue
+  # Public: Add a function to the startup queue
+  #
+  # fn - Function to be executed on ready
+  #      Called immediately if already running, else called when engine is started
   #
   # Ex:
   #
   #     Kona.Engine.queue =>
   #       console.log "Engine is running now!"
   #
+  # Returns nothing
+  #
   queue: (fn) ->
     if @running then fn() else @_queue.push(fn)
 
 
-  # Call and remove every function from the queue
+  # Internal: Call and remove every function from the queue
   # Invoked on engine start
-  # Ex: `Kona.Engine.flushQueue()`
+  #
+  # Returns nothing
+  #
   flushQueue: ->
     fn() while fn = @_queue.shift()
 
 
-  # Set the initial scene (specified as active), and kick off
+  # Public: Set the initial scene (specified as active), and kick off
   # the animation loop. To be invoked after all other necessary game setup.
   #
+  # opts  -  Hash of Engine options
+  #   fps -  Integer number of frames per second (Default: 24)
+  #
   # Ex: `Kona.Engine.start()`
+  #
+  # Returns nothing
   #
   start: (opts={}) ->
     @fps     = opts.fps || @defaults.fps
@@ -47,14 +60,15 @@ Kona.Engine =
     @run()
 
 
-  # Repeatedly draw the current scene by requesting animation frames
+  # Internal: Repeatedly draw the current scene by requesting animation frames
   run: ->
     requestAnimFrame(Kona.Engine.run, Kona.Canvas.elem)
     Kona.Scenes.drawCurrent()
 
 
 
-# [requestAnimationShim by Paul Irish](http://paulirish.com/2011/requestanimationframe-for-smart-animating/)
+# requestAnimationShim by Paul Irish
+# http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 window.requestAnimFrame = do ->
   return  window.requestAnimationFrame       ||
           window.webkitRequestAnimationFrame ||

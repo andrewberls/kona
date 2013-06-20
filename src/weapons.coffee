@@ -3,12 +3,16 @@
 # Built to be used with the `Kona.Projectile` interface
 #
 # Constructor options (in addition to `Collectable` options)
+# Public: Weapon constructor
 #
-#   * __recharge__ - (Integer) Firing rate, in milliseconds
-#   * __projType__ - (Object) The `Kona.Projectile` class that this weapon uses. Ex: `PistolProj`
-#   * __sound__ - (String) The name of the firing sound
-#   * __pickup__ - (String) The name of the sound played on pickup
-#   * __holder__ - (Object) The `Kona.Entity` instance holding this weapon
+# opts - Hash of attributes (Default: {})
+#        Note: all options will be passed to Kona.Collectable superconstructor
+#
+#   recharge - Integer firing rate, in milliseconds
+#   projType - Kona.Projectile class that this weapon uses. Ex: `PistolProj`
+#   sound    - String name of the sound played on fire. Ex: 'playerFire'
+#   pickup   - String name of the sound played on pickup. Ex: 'pistolPickup'
+#   holder   - The `Kona.Entity` instance holding this weapon
 #
 class Kona.Weapon extends Kona.Collectable
   constructor: (opts={}) ->
@@ -21,12 +25,14 @@ class Kona.Weapon extends Kona.Collectable
     @holder      = opts.holder   || null
 
 
+  # Internal: Add functionality to Kona.Collectable#activate
   activate: (collector) ->
     super
     @holder = collector
     collector.currentWeapon = @
 
 
+  # Internal: create/add a new projectile instance, play a sound, and set the recharge timer
   fire: ->
     if @canFire
       projDx = if @holder.facing == 'right' then 1 else -1
@@ -45,13 +51,18 @@ class Kona.Weapon extends Kona.Collectable
 
 # A weapon class intended to be held by an enemy, which automatically fires at a set of targets
 #
-# Constructor options (in addition to `Weapon` options)
+# Public: Animation constructor
 #
-#   * __recharge__ - (Integer) Array of entiity groups to target. Will automatically select a random instance to fire at
-#     Ex: 'player'
-#   * __offset__ - (Object) Offset for where projectile spawns from, relative to self
-#     * x: integer x-offset
-#     * y: integer y-offset
+# opts - Hash of attributes (Default: {})
+#        Note: all options will be passed to Kona.Weapon superconstructor
+#
+#   targets - Array[String] of entity group names to target.
+#             Will automatically select a random entity instance from one of the groups to fire at
+#             Ex: ['players', 'innocentBystanders']
+#   offset -  Hash representing offset amounts  for where projectile spawns from, relative to holder's top left corner
+#            (Default: {0, 0})
+#     x -  Integer amount of x-offset, in pixels
+#     y -  Integer amount of y-offset, in pixels
 #
 class Kona.EnemyWeapon extends Kona.Weapon
   constructor: (opts={}) ->
@@ -60,7 +71,8 @@ class Kona.EnemyWeapon extends Kona.Weapon
     super(opts)
 
 
-  # Return a random entity from the list of target groups
+  # Internal: Return a random entity from the list of target groups
+  # Returns Kona.Entity
   randomTarget: ->
     targetEnts = []
     for group in @targets
@@ -68,7 +80,13 @@ class Kona.EnemyWeapon extends Kona.Weapon
     return Kona.Utils.sample(targetEnts)
 
 
-  # Fire at a random entity from all target groups
+  # Internal: Calculate coordinates and fire at a target
+  #
+  # target: A Kona.Entity instance to fire at (Optional - entity chosen randomly from target groups
+  #         if not provided)
+  #
+  # Returns nothing
+  #
   fire: (target=null) ->
     target ?= @randomTarget()
 

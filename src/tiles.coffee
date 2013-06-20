@@ -1,6 +1,8 @@
 # A generic entity class representing a solid tile with a background image
+# See Kona.Entity for constructor options
+
 class Kona.Tile extends Kona.Entity
-  @group = 'tiles'
+  @group    = 'tiles'
   @tileSize = 60
 
   constructor: (opts={}) ->

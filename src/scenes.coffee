@@ -1,3 +1,8 @@
+# TODO: DOCS
+
+
+
+
 # A scene represents a distinct game state, such as a menu or a level screen.
 #
 # Entities are added to a particular scene using a grid-like layout,
@@ -7,16 +12,17 @@
 # updating and drawing its associated entities, although scene
 # transitions must be specified manually.
 
+
 Kona.Scenes =
 
-  # Internal list of definition maps, keyed by title
+  # Internal: list of definition maps, keyed by title
   maps: []
 
-  # Internal list of scenes
+  # Internal: list of scenes
   scenes: []
 
 
-  # The scene that is currently drawing to the canvas
+  # Public: The Kona.Scene instance that is currently drawing to the canvas
   # If addEntity() is called on a scene before the engine starts, push new entity onto the queue
   currentScene: {
     addEntity: (ent) ->
@@ -24,15 +30,17 @@ Kona.Scenes =
   }
 
 
-  # Parse and save a list of definition maps.
+  # Public: Parse and save a list of definition maps.
   # Ex defns format: `[ { name1 : map1 }, { name2 : map2 } ]`
+  # TODO - DOCS
   loadDefinitions: (defns) ->
     for def in defns
       for name, map of def
         @maps.push { name: name, map: map }
 
 
-  # Initialize scenes in order from a list of arguments
+  # Public: Initialize scenes in order from a list
+  # TODO - DOCS
   loadScenes: (argList=[]) ->
     sceneNum = 1
     for args in argList
@@ -40,17 +48,33 @@ Kona.Scenes =
       sceneNum++
 
 
-  # Draw the current scene and its entities to the canvas
+  # Internal: Draw the current scene and its entities to the canvas
   drawCurrent: -> @currentScene.draw()
 
 
-  # Get all entities from a group in the current scene
-  # Ex: `Kona.Scenes.getCurrentEntities('enemies')`
+  # Public: Get all entities from a group in the current scene
+  #
+  # group - String name of the entity group
+  #
+  # Ex:
+  #
+  #   Kona.Scenes.getCurrentEntities('enemies')
+  #   # => [<Enemy>, <Enemy>]
+  #
+  # Returns: Array of Kona.Entity instances (or [])
+  #
   getCurrentEntities: (group) -> @currentScene.entities.get(group)
 
 
-  # Find the new scene by name and set it to active to start rendering
-  # Ex: `Kona.Scenes.setCurrent('lvl1:s2')`
+  # Public: Find the new scene by name and set it to active to start rendering
+  #
+  # sceneName - String name of the scene
+  #
+  # Ex: Kona.Scenes.setCurrent('lvl1:s2')
+  #
+  # Raises Exception if scene not found
+  # Returns nothing
+  #
   setCurrent: (sceneName) ->
     @currentScene.active = false
     @currentScene = @find(sceneName) or fail("Scenes.setCurrent", "Couldn't find scene: #{sceneName}")
@@ -58,7 +82,7 @@ Kona.Scenes =
     @currentScene.triggerActivation()
 
 
-  # Advance to the next scene
+  # Public: Advance to the next scene
   # This can either be specified in order in Kona.Scenes.loadScenes,
   # or manually by setting scene.next to the name of the following scene
   nextScene: ->
@@ -69,31 +93,33 @@ Kona.Scenes =
       @setCurrent("s#{++sceneNum}")
 
 
-  # Find a scene by its name
-  # Ex: `Kona.Scenes.find("s2")`
+  # Public: Find a scene by its name
+  #
+  # name - String name of the scene to find
+  #
+  # Ex: Kona.Scenes.find("s2")
+  #
+  # Returns a Kona.Scene, or null if no scene found
+  #
   find: (sceneName) ->
     Kona.Utils.find(@scenes, { name: sceneName })
 
 
 
 
-# Construct a single scene instance
+# Internal: Scene constructor
 # Prefer `Kona.Scenes.loadScenes()` instead of calling this directly
 #
-#     class Enemy extends Kona.Entity
-#       constructor: (opts={}) ->
-#         super(opts)
-#         @isEvil = true
+# opts - Hash of attributes (Default: {})
+#   map        - String name of the corresponding definition map. Ex: `level-1`
+#   name       - String name of the scene. Ex: `lvl1:s2` (Required)
+#   active     - Boolean indicating whether or not this scene is actively being drawn (Default: false)
+#   background - String path to a background image. Ex: `img/jungle.png`
+#   entities   - 2D grid (Array of arrays) specifying the scene's entity layout,
+#                defintions from a map (specified in <map>)
+#   next       - String name of the following scene. Ex: 'level-2' (Optional)
 #
-# Constructor options:
-#
-#   * __map__ - (String) The name of the corresponding definition map. Ex: `level-1`
-#   * __name (Required)__ - (String) The name of the scene. Ex: `lvl1:s2`
-#   * __active__ - (Boolean) Whether or not this scene is actively being drawn to the screen
-#   * __background__ - (String) The path to a background image. Ex: `img/jungle.png`
-#   * __entities__ - (Array) A 2D grid specifying the scene's entity layout, using
-#   * __next__ - (String) The name of the following scene. Ex: 'level-2'
-#      defintions from a map (specified in `map`)
+# Raises Exception if name not provided
 #
 class Kona.Scene
   constructor: (opts={}) ->
@@ -116,14 +142,12 @@ class Kona.Scene
     @entities.add(entity.group, entity)
 
 
-  # Initialize and construct the associated entities for a scene
+  # Internal: Initialize and construct the associated entities for a scene
   #
-  # Parameters:
+  # grid - A 2d grid (Array of arrays) of values to load into the scene.
+  #       All values must correspond to rules in the definition map (see Scene constructor)
   #
-  #   * __grid__: (Array) - A two dimensional array ('grid') of values to load into the scene.
-  #     All values must correspond to rules in the definition map, explained previously,
-  #
-  # An example might look like:
+  # An example grid might look like:
   #
   #     [
   #       ['-','-','-','-','-',],
@@ -132,6 +156,9 @@ class Kona.Scene
   #       ['r','-','c','-','-',],
   #       ['b','o','r','b','r',]
   #     ]
+  #
+  # Raises exception if mapping not found
+  # Returns nothing
   #
   loadEntities: (grid) ->
     x   = 0
@@ -153,14 +180,18 @@ class Kona.Scene
       y += Kona.Tile.tileSize
 
 
-  # Remove an entity from its group. Prefer `entity.destroy()` instead of calling this directly.
+  # Internal: Remove an entity from its group.
+  # Prefer `entity.destroy()` instead of calling this directly.
+  #
+  # Returns nothing
+  #
   removeEntity: (entity) ->
     list = @entities.for(entity.group)
     for ent, idx in list
       list.splice(idx, 1) if entity == ent
 
 
-  # Render a scene and all of its entities onto the main canvas
+  # Internal: Render a scene and all of its entities onto the main canvas
   # The drawing of a scene is split into two parts - updating and rendering.
   #
   # `update()` sets up the visual state of the entity before it is rendered to the screen -
@@ -169,6 +200,8 @@ class Kona.Scene
   # `draw()`  will then render the entities's visual state to the screen.
   #
   # See Kona.Entity
+  #
+  # Returns nothing
   #
   draw: ->
     Kona.Canvas.clear()
@@ -186,17 +219,32 @@ class Kona.Scene
         Kona.Canvas.ctx.fillRect(0, 0, Kona.Canvas.width, Kona.Canvas.height)
 
 
-  # Trigger the activation event (ex: "s2_activate") for this scene
+  # Internal: Trigger the activation event (ex: "s2_activate") for this scene
   # Called automatically when this scene becomes active
   triggerActivation: -> Kona.Events.trigger("#{@name}_activate")
 
 
-  # All tile entities in this scene
+  # Public: All tile entities in this scene
+  #
+  # Ex:
+  #
+  #   scene = Kona.Scenes.find("level1")
+  #   scene.tiles()
+  #   # => [<Tile>, <BlankTile>, <Tile>, ...]
+  #
   tiles: ->
     @entities.get(Kona.Tile.group).concat(@entities.get(Kona.BlankTile.group))
 
 
   # TODO: this sucks and probably doesn't belong here
+  # Internal: find a tile by position
+  #
+  # position -  Hash representing the coordinates of a tile
+  #   x -  Integer x-coordinate of the tile, in pixels
+  #   y -  Integer y-coordinate of the tile, in pixels
+  #
+  # Returns Kona.Tile or null if none found
+  #
   findTile: (opts={}) ->
     for tile in Kona.Scenes.currentScene.tiles()
       return tile if tile.position.x == opts.x && tile.position.y == opts.y

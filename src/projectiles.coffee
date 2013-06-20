@@ -6,6 +6,15 @@
 # it will trigger their `.hit()` method if it is available,
 # passing in the direction of the collision,
 # else the target entity will be destroyed
+
+
+
+# Public: Projectile constructor
+#
+# opts - Hash of attributes (Default: {})
+#        Note: all options will be passed to Kona.Entity superconstructor
+#   target - Kona.Entity instance that this projectile is targeting
+#   speed  - Integer speed modifier of the projectile (Default: 10)
 #
 # Ex:
 #     class PistolProj extends Kona.Projectile
@@ -23,7 +32,7 @@ class Kona.Projectile extends Kona.Entity
     @gravity = false
 
 
-  # Check if colliding with a target entity
+  # Internal: Check if colliding with a target entity
   # If so, call entity.hit() if available, passing in the direction the collision is from,
   # else revert to .destroy()
   update: ->

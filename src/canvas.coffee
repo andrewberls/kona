@@ -1,4 +1,4 @@
-# Provides a wrapper witb utilities around the canvas DOM element used for rendering
+# Utility wrapper around the canvas DOM element used for rendering
 
 Kona.Canvas =
 
@@ -7,13 +7,16 @@ Kona.Canvas =
     width:  720
     height: 540
 
-  # Construct the main canvas object.
+
+  # Public: Initialize the main canvas object
   #
-  # * __id__ (String) - the id of the HTML element (without leading '#')
+  # id - String ID of the HTML canvas DOM element.
   #
   # Ex:
   #
   #   `Kona.Canvas.init('gameCanvas')`
+  #
+  # Returns nothing
   #
   init: (id) ->
     @elem = document.getElementById(id) or fail("Canvas.init", "Can't find element with id: #{id}")
@@ -24,8 +27,10 @@ Kona.Canvas =
     @height      = @elem.height
 
 
-  # Safely perform a draw that may change the ctx fillStyle or other properties
+  # Public: Safely perform a draw that may change the ctx fillStyle or other properties
   # (will not affect subsequent drawings)
+  #
+  # fn - Function that may alter the canvas context / perform drawing
   #
   # Ex:
   #
@@ -39,8 +44,8 @@ Kona.Canvas =
     @ctx.restore()
 
 
-  # Wipe the canvas clean.
-  # Used internally between frames to prevent blurring on redraw
+  # Internal: Wipe the canvas clean.
+  # Used between frames to prevent blurring on redraw
   #
   # Ex: `Kona.Canvas.clear()`
   #
@@ -50,24 +55,24 @@ Kona.Canvas =
       @ctx.fillRect(0, 0, @width, @height)
 
 
-  # Draw a basic rectangle to the canvas
+  # Public: Draw a basic rectangle to the canvas
   #
-  # Parameters:
+  # position -  Hash representing the coordinates of an entity
+  #   x -  Integer x-coordinate of the entity, in pixels
+  #   y -  Integer y-coordinate of the entity, in pixels
   #
-  #   * __position__ - (Object) Object representing the coordinates of an entity
-  #     * x: The x-coordinate of the entity
-  #     * y: The y-coordinate of the entity
+  # box -  Hash representing the dimensions of an entity
+  #   width  - Integer width, in pixels
+  #   height - Integer height, in pixels
   #
-  #   * __box__ - (Object) Object representing the dimensions of an entity
-  #     * width  - (Integer): Width in pixels
-  #     * height - (Integer): Height in pixels
-  #
-  #   * __opts__ - (Object) Additional method options
-  #     * color: A color to pass to `ctx.fillStyle`. Ex: 'red'
+  # opts - Hash of additional method options
+  #   color  - A color to pass to ctx.fillStyle. Ex: 'red'
   #
   # Ex:
   #
   #   `Kona.Canvas.drawRect(entity.position, entity.box, { color: 'red' })`
+  #
+  # Returns nothing
   #
   drawRect: (position, box, opts={}) ->
     @safe =>
@@ -75,19 +80,25 @@ Kona.Canvas =
       @ctx.fillRect(position.x, position.y, box.width, box.height)
 
 
-  # Draw a basic circle to the canvas
+
+  # Public: Draw a basic circle to the canvas
   #
-  # Parameters:
+  # position -  Hash representing the coordinates of an entity
+  #   x -  Integer x-coordinate of the entity, in pixels
+  #   y -  Integer y-coordinate of the entity, in pixels
   #
-  #   * __position__ - (Object) Object representing the coordinates of an entity
-  #     * x: The x-coordinate of the entity
-  #     * y: The y-coordinate of the entity
+  # opts - Hash of additional method options
+  #   radius - Integer radius, in pixels
+  #   color  - A color to pass to ctx.fillStyle. Ex: 'red' (Default: 'black')
   #
   # Ex:
   #
   #   `Kona.Canvas.drawCircle(entity.position, { radius: 20, color: 'blue' })`
   #
-  drawCircle: (position, opts={}) ->
+  # Raises Exception if radius not provided
+  # Returns nothing
+  #
+  drawCircle: (position, opts) ->
     radius = opts.radius or fail("Must specify a radius")
     @safe =>
       @ctx.fillStyle = opts.color || 'black'
