@@ -230,22 +230,25 @@ class Kona.Scene
   #
   draw: ->
     Kona.Canvas.clear()
-    # Kona.Canvas.ctx.drawImage(@background, 0, 0)
-    # treelist = []
-    for name, list of @entities.all()
-      for entity in list
-        if entity?
-          entity.update() unless Kona.gamePaused
-          entity.draw()
-          # treelist.push(entity) #
+    # Kona.Canvas.ctx.drawImage(@background, 0, 0) # TODO: commented out
+    for entity of @entities.concat()
+      if entity?
+        entity.update() unless Kona.gamePaused
+        entity.draw()
 
     # @tree.clear()
-    # @tree.insert(treelist)
+    # @tree.insert(entities)
     @drawTree(@tree.root)
 
     # Gray overlay if game is paused
     # TODO: issues with z-indexing here. We want sign backgrounds to take precedence over the pause box.
-    if Kona.gamePaused
+    drawPauseOverlay() if Kona.gamePaused
+
+
+
+
+  # Internal: Draw a transparent gray overlay over canvas if game is paused
+  drawPauseOverlay: ->
       Kona.Canvas.safe =>
         Kona.Canvas.ctx.fillStyle = "rgba(34, 34, 34, 0.6)"
         Kona.Canvas.ctx.fillRect(0, 0, Kona.Canvas.width, Kona.Canvas.height)

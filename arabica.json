@@ -1,6 +1,8 @@
 {
   "paths": [
       "src/lib/underscore.min.js",
+      "src/quad/node.coffee",
+      "src/quad/quadtree.coffee",
       "src/kona.coffee",
       "src/utils.coffee",
       "src/canvas.coffee",
@@ -21,5 +23,5 @@
       "src/projectiles.coffee"
   ],
   "out": "kona.min.js",
-  "uglify": true
+  "uglify": false
 }
