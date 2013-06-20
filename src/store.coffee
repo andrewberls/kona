@@ -53,6 +53,14 @@ class Kona.Store
   all: -> @_store
 
 
+  # Internal: Return concatenated list of all values
+  concat: ->
+    result = []
+    for group, ents of @all()
+      result = result.concat(ents)
+    result
+
+
   # Alias `set()` as `add()`
   # Ex: `store.add("myKey", "myData")
   @::add = @::set
