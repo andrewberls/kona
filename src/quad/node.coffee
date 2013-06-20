@@ -15,7 +15,7 @@ class Node
     @maxDepth      = maxDepth    || 4
     @maxChildren   = maxChildren || 4
 
-
+  # Internal: TODO - docs
   insert: (item) ->
     if @nodes.length
       index = @findIndex(item)
@@ -43,6 +43,7 @@ class Node
       @children = []
 
 
+  # Internal: TODO - docs
   findIndex: (item) ->
     ix      = item.position.x
     iy      = item.position.y
@@ -66,6 +67,8 @@ class Node
     return index
 
 
+  # Internal: retrieve an item
+  # Return TODO
   retrieve: (item) ->
     out = []
 
@@ -79,12 +82,14 @@ class Node
     return out
 
 
-  # All children of this node
+  # Internal: All children of this node
+  # Return TODO - docs
   getChildren: ->
     @children.concat(this.stuckChildren)
 
 
-  # Divide this node into 4 subnodes
+  # Internal: Divide this node into 4 subnodes
+  # Return TODO - docs
   subdivide: ->
     depth = @_depth + 1
     b_x   = @bounds.x
@@ -129,7 +134,7 @@ class Node
     }, depth
 
 
-  # Clear all children from all nodes
+  # Internal: Clear all children from all child nodes
   clear: ->
     @stuckChildren.length = 0
     @children.length      = 0

@@ -1,8 +1,8 @@
 # An implementation of a QuadTree, a 2d spatial subdivision algorithm
 #
-# Original JS implementation by Mike Chambers (https://github.com/mikechambers/ExamplesByMesh/tree/master/JavaScript/QuadTree),
-#   with modifications by Andrew Berls
-#
+# Original JS implementation by Mike Chambers
+# https://github.com/mikechambers/ExamplesByMesh/tree/master/JavaScript/QuadTree
+# with modifications by Andrew Berls
 #
 # The MIT License
 #
@@ -28,47 +28,49 @@
 
 
 
-# QuadTree data structure
+# Public: QuadTree constructor
 #
-# @param {Object} bounds
-#    An object representing the bounds of the top level of the QuadTree.
-#    The object should contain the properties: x, y, width, height
+# bounds - Hash of attributes representing the bounds of the top level of the QuadTree
+#    x  - Integer x-coordinate of the top level, in pixels
+#    y  - Integer y-coordinate of the top level, in pixels
+#    width  - Integer width of the top level, in pixels
+#    height - Integer height of the top level, in pixels
 #
-# @param {Number} maxDepth
-#     The maximum number of levels that the quadtree will create.
-#     Default is 4.
+# maxDepth    - Integer number of maximum levels that the QuadTree will create (Default: 4)
 #
-# @param {Number} maxChildren
-#     The maximum number of children that a node can contain before it is split into sub-nodes.
-#     Default is 4.
+# maxChildren - Integer number of maximum children that a node can contain before
+#               it is split into sub-nodes (Default: 4)
 #
 class window.QuadTree
   constructor: (bounds, maxDepth, maxChildren) ->
     @root = new Node(bounds, 0, maxDepth, maxChildren)
 
 
-  # Inserts an item into the tree
+  # Public: Inserts an item into the tree
   #
-  # @param {Object|Array} item
-  #     The item or Array of items to be inserted into the QuadTree. The item should contain the properties: x, y
+  # item - Kona.Entity or Array[Kona.Entity]
+  #
+  # Returns nothing
   #
   insert: (item) ->
-    if item instanceof Array
+    if _.isArray(item)
       @root.insert(i) for i in item
     else
       @root.insert(item)
 
 
-  # Clears all nodes and children from the tree
+  # Public: Clears all nodes and children from the tree
+  # Returns nothing
   clear: -> @root.clear()
 
 
-  # Retrieves a copy of all items in the same node as the specified item. If the specified item
-  # overlaps the bounds of a node, then all children in both nodes will be returned.
+  # Public: Retrieves a copy of all items in the same node as the specified item.
+  # If the specified item overlaps the bounds of a node, then
+  # all children in both nodes will be returned.
   #
-  # @param {Object} item
-  #     An object representing a 2D coordinate point (with x, y properties), or a shape
-  #     with dimensions (x, y, width, height) properties.
+  # item - Kona.Entity to retrieve neighbors of
+  #
+  # Returns Array[Kona.Entity] # TODO
   #
   retrieve: (item) ->
     @root.retrieve(item).slice(0)
