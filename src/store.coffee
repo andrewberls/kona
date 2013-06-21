@@ -56,8 +56,8 @@ class Kona.Store
   # Internal: Return concatenated list of all values
   concat: ->
     result = []
-    for group, ents of @all()
-      result = result.concat(ents)
+    for key, vals of @all()
+      result = result.concat(vals)
     result
 
 
