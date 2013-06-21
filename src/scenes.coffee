@@ -215,8 +215,6 @@ class Kona.Scene
     @drawPauseOverlay() if Kona.gamePaused
 
 
-
-
   # Internal: Draw a transparent gray overlay over canvas if game is paused
   # TODO: issues with z-indexing here. We want sign backgrounds to take precedence over the pause box.
   drawPauseOverlay: ->
