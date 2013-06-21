@@ -28,21 +28,26 @@ class Kona.Store
     @_store[key]
 
 
-  # Public: Get the array of values stored at a certain key
+  # Public: Get the array of values stored at a certain key(s)
   #
-  # key - String key to index into values
+  # key - Varargs list of String keys
+  #       Returns a single flattened list of values if multiple keys given
   #
   # Ex:
   #
   #     store.get("myKey")
   #     #  => ["myData"]
+
+  #     store.get("myKey1", "myKey2")
+  #     #  => ["key1Data", "key2Data"]
   #
   #     store.get("fakeKey")
   #     #  => []
   #
   # Returns Array of values stored at key or [] if key not found
   #
-  get: (key) -> @_store[key] || []
+  get: (keys...) ->
+    _.reduce keys, ( (result, key) => result.concat(@_store[key] || []) ), []
 
 
   # Internal: Return all key/value pairs in the store
@@ -54,11 +59,7 @@ class Kona.Store
 
 
   # Internal: Return concatenated list of all values
-  concat: ->
-    result = []
-    for key, vals of @all()
-      result = result.concat(vals)
-    result
+  concat: -> @get.apply(@, _.keys(@_store))
 
 
   # Alias `set()` as `add()`

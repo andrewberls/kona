@@ -280,7 +280,5 @@ class Kona.Scene
   # Returns Kona.Tile or null if none found
   #
   findTile: (opts={}) ->
-    for tile in Kona.Scenes.currentScene.tiles()
-      return tile if tile.position.x == opts.x && tile.position.y == opts.y
-
-    return null # No match
+    tiles = Kona.Scenes.currentScene.tiles()
+    _.find(tiles, (tile) -> tile.position.x == opts.x && tile.position.y == opts.y) || null

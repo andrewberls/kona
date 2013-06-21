@@ -470,7 +470,7 @@ class Kona.Entity
   # After calling, this entity will automatically activate
   # collectables in the specified group on contact.
   #
-  # names... - An arbitrary list of String group names of collectable entities
+  # names... - Varargs list of String group names of collectable entities
   #
   # Ex:
   #
@@ -528,7 +528,7 @@ class Kona.Entity
   # ---------------------
   # Public: An interface for including composable mixins or modules
   #
-  # objs... - An arbitrary list of 'module' objects, implementing functions to add to the entity
+  # objs... - Varargs list of 'module' objects, implementing functions to add to the entity
   #           e.g., `@include Killable` or `@include Killable, Resettable`
   #
   # Ex:
