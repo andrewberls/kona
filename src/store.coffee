@@ -46,8 +46,11 @@ class Kona.Store
   #
   # Returns Array of values stored at key or [] if key not found
   #
-  get: (keys...) ->
-    _.reduce keys, ( (result, key) => result.concat(@_store[key] || []) ), []
+  get: (key) ->
+    # TODO: ref/copy issues
+    # _.reduce keys, ( (result, key) => result.concat(@_store[key] || []) ), []
+    @_store[key] || []
+
 
 
   # Internal: Return all key/value pairs in the store
@@ -59,7 +62,14 @@ class Kona.Store
 
 
   # Internal: Return concatenated list of all values
-  concat: -> @get.apply(@, _.keys(@_store))
+  concat: ->
+    # TODO: ref/copy issues
+    # @get.apply( @, _.keys(@_store))
+    result = []
+    for group, ents of @all()
+      result = result.concat(ents)
+    result
+
 
 
   # Alias `set()` as `add()`
