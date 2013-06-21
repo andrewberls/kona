@@ -27,3 +27,6 @@ class Kona.BlankTile extends Kona.Tile
 
   update: -> # Tiles are static
   draw:   -> # No sprite
+    Kona.Canvas.safe =>
+      Kona.Canvas.ctx.strokeStyle = "red"
+      Kona.Canvas.ctx.strokeRect(@position.x, @position.y, @box.width, @box.height)

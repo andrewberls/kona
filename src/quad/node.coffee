@@ -1,5 +1,9 @@
 # A bounded node data structure
 
+# TODO: retrieval not working all the time
+# Probably because nodes do not snap to grid,
+# causing children to be stuck and out of place
+
 class Node
   @TOP_LEFT     = 0
   @TOP_RIGHT    = 1
@@ -14,33 +18,6 @@ class Node
     @depth         = depth       || 0
     @maxDepth      = maxDepth    || 4
     @maxChildren   = maxChildren || 4
-
-  # Internal: TODO - docs
-  insert: (item) ->
-    if @nodes.length
-      index = @findIndex(item)
-      node  = @nodes[index]
-
-      ix      = item.position.x
-      iy      = item.position.y
-      iwidth  = item.box.width
-      iheight = item.box.height
-
-      if (ix >= node.bounds.x &&
-        ix + iwidth <= node.bounds.x + node.bounds.width &&
-        iy >= node.bounds.y &&
-        iy + iheight <= node.bounds.y + node.bounds.height)
-          @nodes[index].insert(item)
-      else
-        @stuckChildren.push(item)
-      return
-
-    @children.push(item)
-
-    if !(@_depth >= @_maxDepth) && (@children.length > @maxChildren)
-      @subdivide()
-      @insert(child) for child in @children
-      @children = []
 
 
   # Internal: TODO - docs
@@ -67,6 +44,38 @@ class Node
     return index
 
 
+  # Internal: TODO - docs
+  insert: (item) ->
+    if @nodes.length
+      index = @findIndex(item)
+      node  = @nodes[index]
+
+      ix      = item.position.x
+      iy      = item.position.y
+      iwidth  = item.box.width
+      iheight = item.box.height
+
+      if (ix >= node.bounds.x &&
+        ix + iwidth <= node.bounds.x + node.bounds.width &&
+        iy >= node.bounds.y &&
+        iy + iheight <= node.bounds.y + node.bounds.height)
+          @nodes[index].insert(item)
+      else
+        # @stuckChildren.push(item)
+        @stuckChildren[@stuckChildren.length] = item
+      return
+
+    childLength = @children.length
+    # @children.push(item)
+    @children[childLength] = item
+
+    if !(@depth >= @maxDepth) && (childLength > @maxChildren)
+      @subdivide()
+      @insert(child) for child in @children
+      # @children = []
+      @children.length = 0
+
+
   # Internal: retrieve an item
   # Return TODO
   retrieve: (item) ->
@@ -85,13 +94,13 @@ class Node
   # Internal: All children of this node
   # Return TODO - docs
   getChildren: ->
-    @children.concat(this.stuckChildren)
+    @children.concat(@stuckChildren)
 
 
   # Internal: Divide this node into 4 subnodes
   # Return TODO - docs
   subdivide: ->
-    depth = @_depth + 1
+    depth = @depth + 1
     b_x   = @bounds.x
     b_y   = @bounds.y
 
