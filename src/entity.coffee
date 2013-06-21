@@ -86,7 +86,7 @@ class Kona.Entity
   #
   #   scene    - The Kona.Scene instance that this entity belongs to (Usually set automatically)
   #
-  #   solid    - Boolean indicating hether or not this entity is solid, e.g., can this collide with other entities. (Default: true)
+  #   solid    - Boolean indicating whether or not this entity is solid (Default: true)
   #
   #   gravity  - Boolean indicating whether or not this entity is subject to gravity. (Default: true)
   #
@@ -152,8 +152,8 @@ class Kona.Entity
   toString: -> "<#{@class()} position={ x: #{@position.x}, y: #{@position.y}}>"
 
 
-  # Internal: Apply gravitational effects any directional changes each frame, and resolve any
-  # resulting collisions (ex running into a wall)
+  # Internal: Apply gravitational effects any directional changes each frame,
+  # and resolve any resulting collisions (ex running into a wall)
   #
   # You should add custom functionality to this method in derived classes
   # to update your game entities.
@@ -358,8 +358,8 @@ class Kona.Entity
       fn(ent) if ent? && ent.solid
 
 
-  # Internal: Loop over solid neighbor entities and determine whether or not a collision occurs
-  # based on a check function. Makes detection more generic.
+  # Internal: Loop over solid neighbor entities and determine
+  # whether or not a collision occurs based on a check function.
   # Returns Boolean
   anyCollisions: (fn) ->
     collision = false
