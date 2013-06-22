@@ -29,19 +29,10 @@
           store.set('otherKey', 2);
           return expect(store.get('otherKey')).toEqual([2]);
         });
-        it("returns empty array for blank key", function() {
+        return it("returns empty array for blank key", function() {
           var store;
           store = new Kona.Store();
           return expect(store.get('fakeKey')).toEqual([]);
-        });
-        return it("concatenates values for multiple keys", function() {
-          var store;
-          store = new Kona.Store();
-          store.set('myKey', 'myVal1');
-          store.set('myKey', 'myVal2');
-          store.set('otherKey', 'otherVal');
-          expect(store.get('myKey', 'otherKey')).toEqual(['myVal1', 'myVal2', 'otherVal']);
-          return expect(store.get('myKey', 'fakeKey')).toEqual(['myVal1', 'myVal2']);
         });
       });
       describe("#all", function() {

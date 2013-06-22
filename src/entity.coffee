@@ -347,6 +347,7 @@ class Kona.Entity
   neighborEntities: (opts={}) ->
     # TODO
     # Kona.Scenes.currentScene.tree.retrieve(@position)
+
     _.select Kona.Scenes.currentScene.entities.concat(), (e) => e != @
 
 

@@ -61,13 +61,14 @@ class Kona.Store
   all: -> @_store
 
 
-  # Internal: Return concatenated list of all values
+  # Internal: Return shallow copy Array of all values combined
+  # See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat
   concat: ->
     # TODO: ref/copy issues
     # @get.apply( @, _.keys(@_store))
     result = []
-    for group, ents of @all()
-      result = result.concat(ents)
+    for key, vals of @all()
+      result = result.concat(vals)
     result
 
 

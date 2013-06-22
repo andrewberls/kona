@@ -206,11 +206,11 @@ class Kona.Scene
   draw: ->
     Kona.Canvas.clear()
     Kona.Canvas.ctx.drawImage(@background, 0, 0)
-    entities = @entities.concat()
-    for entity in entities
-      if entity?
-        entity.update() unless Kona.gamePaused
-        entity.draw()
+    for group, ents of @entities.all()
+      for entity in ents
+        if entity?
+          entity.update() unless Kona.gamePaused
+          entity.draw()
 
     @drawPauseOverlay() if Kona.gamePaused
 
