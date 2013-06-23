@@ -109,6 +109,10 @@ class Kona.Entity
   #
   #   sprite - String path to a sprite image. Ex: 'images/collectables/coin.png'
   #
+  #   persistent - Boolean indicating whether or not the entity is present in every scene
+  #                For example, the player in a platformer (Default: false)
+  #
+  #
   # Raises Exception if group not provided
   #
   constructor: (opts={}) ->
@@ -119,6 +123,8 @@ class Kona.Entity
     @gravity = if opts.gravity? then opts.gravity else true
     @speed   = opts.speed   || 0
     @facing  = opts.facing  || ''
+
+    @persistent = if opts.persistent? then opts.persistent else false
 
     @sprite     = new Image()
     @sprite.src = opts.sprite || null

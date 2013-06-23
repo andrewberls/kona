@@ -21,6 +21,9 @@ Kona.Scenes =
   # Internal: list of scenes
   scenes: []
 
+  # Internal: Array[Kona.Entity] of entities persisting across all scenes
+  persistentEntities: []
+
 
   # Public: The Kona.Scene instance that is currently drawing to the canvas
   # If addEntity() is called on a scene before the engine starts, push new entity onto the queue
@@ -92,6 +95,8 @@ Kona.Scenes =
       sceneNum = parseInt @currentScene.name.replace('s', '')
       @setCurrent("s#{++sceneNum}")
 
+    @currentScene.addEntity(ent) for ent in @persistentEntities
+
 
   # Public: Find a scene by its name
   #
@@ -140,6 +145,7 @@ class Kona.Scene
     entity.scene = @
     entity.loadAnimations()
     @entities.add(entity.group, entity)
+    Kona.Scenes.persistentEntities.push(entity) if entity.persistent
 
 
   # Internal: Initialize and construct the associated entities for a scene
@@ -206,11 +212,11 @@ class Kona.Scene
   draw: ->
     Kona.Canvas.clear()
     Kona.Canvas.ctx.drawImage(@background, 0, 0)
-    for group, ents of @entities.all()
-      for entity in ents
-        if entity?
-          entity.update() unless Kona.gamePaused
-          entity.draw()
+    ents = @entities.concat()
+    for entity in ents
+      if entity?
+        entity.update() unless Kona.gamePaused
+        entity.draw()
 
     @drawPauseOverlay() if Kona.gamePaused
 
