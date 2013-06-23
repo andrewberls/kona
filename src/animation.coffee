@@ -4,9 +4,6 @@
 # Internal store for animations for a class
 # Keys are of the form "group:className", and the value is
 # a set of opts used to construct on a per-entity basis
-#
-# TODO: store constructed Kona.Animation objects here, and then assign to each
-# entity with modifications as necessary?
 Kona.Animations = {}
 
 

@@ -23,21 +23,10 @@ class Kona.Entity
 
 
   # Public: Load animations on a group of entities.
-  # This simply passed the given configuration to each entity instance in a group
+  # This simply passes the given configuration to each entity instance in a group
   #
-  # Two forms:
-  #   loadAnimations(String group, Hash Animations)
-  #   loadAnimations(Hash Animations)
-  #
-  # Ex:
-  #
-  #     EvilNinja.loadAnimations 'enemies', {
-  #       'run_right' : { width:50,height:55, sheet: 'img/enemies/turtle/run_right.png', active: true }
-  #       'run_left'  : { width:50,height:55, sheet: 'img/enemies/turtle/run_left.png' }
-  #       'die'       : { width:50,height:55, sheet: 'img/enemies/turtle/die.png', next: -> @entity.destroy() }
-  #     }
-  #
-  # You can also omit the group name if it is defined on the class itself (preferred method)
+  # animations: Hash containing configuration for a (series of) animations, of the form:
+  #   String name => Hash animOpts
   #
   # Ex:
   #
@@ -56,14 +45,8 @@ class Kona.Entity
   #
   # Returns nothing
   #
-  @loadAnimations = (group_or_animations, animations={}) ->
-    if _.isString(group_or_animations)
-      group = group_or_animations
-    else
-      group = @group
-      animations = group_or_animations
-
-    Kona.Animations["#{group}:#{@name}"] = animations
+  @loadAnimations = (animations={}) ->
+    Kona.Animations["#{@group}:#{@name}"] = animations
 
 
   # Instance methods
