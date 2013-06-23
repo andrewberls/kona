@@ -3,11 +3,8 @@
 
 Kona.Engine =
 
-  # FPS default only used for requestAnimFrame fallback
-  defaults:
-    fps:    24
-    width:  660
-    height: 480
+  # Only used for requestAnimFrame fallback
+  defaultFPS: 24
 
   running: false
 
@@ -51,7 +48,7 @@ Kona.Engine =
   # Returns nothing
   #
   start: (opts={}) ->
-    @fps     = opts.fps || @defaults.fps
+    @fps     = opts.fps || @defaultFPS
     scene = Kona.Utils.find(Kona.Scenes.scenes, { active: true }) || Kona.Scenes.scenes[0]
     Kona.Scenes.currentScene = scene or fail("Engine#start", "No scenes found")
     @running = true

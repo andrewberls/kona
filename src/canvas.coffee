@@ -5,7 +5,7 @@ Kona.Canvas =
   # Default dimensions if none specified
   defaults:
     width:  720
-    height: 540
+    height: 600 # 540
 
 
   # Public: Initialize the main canvas object
