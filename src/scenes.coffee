@@ -266,6 +266,8 @@ class Kona.Scene
   #
   tiles: ->
     @entities.get(Kona.Tile.group).concat(@entities.get(Kona.BlankTile.group))
+    # TODO: ref/copy issues in store
+    # @entities.get(Kona.Tile.group, Kona.BlankTile.group)
 
 
   # TODO: this sucks and probably doesn't belong here

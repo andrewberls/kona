@@ -46,8 +46,11 @@ class Kona.Store
   #
   # Returns Array of values stored at key or [] if key not found
   #
-  get: (keys...) ->
-    _.reduce keys, ( (result, key) => result.concat(@_store[key] || []) ), []
+  get: (key) ->
+    # TODO: ref/copy issues
+    # _.reduce keys, ( (result, key) => result.concat(@_store[key] || []) ), []
+    @_store[key] || []
+
 
 
   # Internal: Return all key/value pairs in the store
@@ -58,8 +61,16 @@ class Kona.Store
   all: -> @_store
 
 
-  # Internal: Return concatenated list of all values
-  concat: -> @get.apply(@, _.keys(@_store))
+  # Internal: Return shallow copy Array of all values combined
+  # See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat
+  concat: ->
+    # TODO: ref/copy issues
+    # @get.apply( @, _.keys(@_store))
+    result = []
+    for key, vals of @all()
+      result = result.concat(vals)
+    result
+
 
 
   # Alias `set()` as `add()`

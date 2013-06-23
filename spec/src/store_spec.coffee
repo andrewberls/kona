@@ -31,13 +31,13 @@ Kona.ready ->
         store = new Kona.Store()
         expect(store.get('fakeKey')).toEqual []
 
-      it "concatenates values for multiple keys", ->
-        store = new Kona.Store()
-        store.set('myKey', 'myVal1')
-        store.set('myKey', 'myVal2')
-        store.set('otherKey', 'otherVal')
-        expect(store.get('myKey', 'otherKey')).toEqual ['myVal1', 'myVal2', 'otherVal']
-        expect(store.get('myKey', 'fakeKey')).toEqual ['myVal1', 'myVal2']
+      # it "concatenates values for multiple keys", ->
+      #   store = new Kona.Store()
+      #   store.set('myKey', 'myVal1')
+      #   store.set('myKey', 'myVal2')
+      #   store.set('otherKey', 'otherVal')
+      #   expect(store.get('myKey', 'otherKey')).toEqual ['myVal1', 'myVal2', 'otherVal']
+      #   expect(store.get('myKey', 'fakeKey')).toEqual ['myVal1', 'myVal2']
 
 
     describe "#all", ->
