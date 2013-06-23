@@ -16,21 +16,15 @@ Kona.ready ->
         # Hacky exception to make sure function executes
         Kona.Engine.running = true
         fn = -> throw new Error("Hello World!")
-        expect(->
-          Kona.Engine.queue(fn)
-        ).toThrow()
+        expect( -> Kona.Engine.queue(fn) ).toThrow()
 
 
 
     describe "::start", ->
       beforeEach -> spyOn(Kona.Engine, 'run')
 
-      # TODO: this test is gross
-      # not sure how to guarantee failure case runs before scene defined
       it "throws an exception and then starts successfully", ->
-        expect(->
-          Kona.Engine.start()
-        ).toThrow()
+        expect( -> Kona.Engine.start() ).toThrow()
 
         engineScene = new Kona.Scene { name: 'engineScene', active: true }
         Kona.Engine.start()
@@ -41,9 +35,7 @@ Kona.ready ->
         Kona.Engine.running = false
         fn = -> throw new Error("Hello World!")
         Kona.Engine.queue(fn)
-        expect(->
-          Kona.Engine.start()
-        ).toThrow()
+        expect( -> Kona.Engine.start() ).toThrow()
 
 
       it "calls run()", ->
