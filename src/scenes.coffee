@@ -134,7 +134,9 @@ class Kona.Scene
     @background     = new Image()
     @background.src = opts.background || ''
     @entities       = new Kona.Store
+    @entityCache    = [] # Internal
     @next           = opts.next || null
+
 
     @loadEntities(opts.entities) if opts.entities?
     Kona.Scenes.scenes.push(@)
@@ -146,6 +148,7 @@ class Kona.Scene
     entity.loadAnimations()
     @entities.add(entity.group, entity)
     Kona.Scenes.persistentEntities.push(entity) if entity.persistent
+    @expireEntityCache()
 
 
   # Internal: Initialize and construct the associated entities for a scene
@@ -186,6 +189,17 @@ class Kona.Scene
       y += Kona.Tile.tileSize
 
 
+  # Internal: Return a cached Array[Kona.Entity] or compute it
+  getEntities: ->
+    if @entityCache.length
+      @entityCache
+    else
+      @entityCache = @entities.concat()
+
+  # Internal: Force the entity cache to be recomputed
+  expireEntityCache: -> @entityCache = []
+
+
   # Internal: Remove an entity from its group.
   # Prefer `entity.destroy()` instead of calling this directly.
   #
@@ -195,6 +209,7 @@ class Kona.Scene
     list = @entities.for(entity.group)
     for ent, idx in list
       list.splice(idx, 1) if entity == ent
+      @expireEntityCache()
 
 
   # Internal: Render a scene and all of its entities onto the main canvas
@@ -212,7 +227,7 @@ class Kona.Scene
   draw: ->
     Kona.Canvas.clear()
     Kona.Canvas.ctx.drawImage(@background, 0, 0)
-    ents = @entities.concat()
+    ents = @getEntities()
     for entity in ents
       if entity?
         entity.update() unless Kona.gamePaused
