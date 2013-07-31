@@ -1,0 +1,19 @@
+{
+  "paths": [
+      "src/mixins.coffee",
+      "src/player_weapons.coffee",
+      "src/player.coffee",
+      "src/effect.coffee",
+      "src/powerups.coffee",
+      "src/triggers/sign.coffee",
+      "src/triggers/spring.coffee",
+      "src/triggers/elevator.coffee",
+      "src/enemies/enemy.coffee",
+      "src/enemies/strogg.coffee",
+      "src/enemies/turtle.coffee",
+      "src/sounds.coffee",
+      "src/debugger.coffee"
+  ],
+  "out": "build/debugger.min.js",
+  "uglify": false
+}
