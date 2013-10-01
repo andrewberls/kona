@@ -36,8 +36,8 @@ class Kona.Weapon extends Kona.Collectable
   fire: ->
     if @canFire
       projDx = if @holder.facing == 'right' then 1 else -1
-      startX = if @holder.facing == 'right' then @holder.right() + 1 else @holder.left() - 30 # TODO
-      startY = @holder.top() + 9                                                              # TODO
+      startX = if @holder.facing == 'right' then @holder.right() + 1 else @holder.left() - 30 # TODO - magic numbers
+      startY = @holder.top() + 9                                                              # TODO - magic numbers
       proj   = new @projType { group: 'projectiles', x: startX, y: startY, dx: projDx }
       @holder.scene.addEntity(proj)
       Kona.Sounds.play(@projSound) if @projSound != ''
