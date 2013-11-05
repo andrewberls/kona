@@ -37,7 +37,7 @@ class Kona.Store
   #
   #     store.get("myKey")
   #     #  => ["myData"]
-
+  #
   #     store.get("myKey1", "myKey2")
   #     #  => ["key1Data", "key2Data"]
   #
@@ -52,7 +52,6 @@ class Kona.Store
     @_store[key] || []
 
 
-
   # Internal: Return all key/value pairs in the store
   # Used internally for rendering and collisions
   #
@@ -64,8 +63,6 @@ class Kona.Store
   # Internal: Return shallow copy Array of all values combined
   # See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat
   concat: ->
-    # TODO: ref/copy issues
-    # @get.apply( @, _.keys(@_store))
     result = []
     for key, vals of @all()
       result = result.concat(vals)

@@ -57,7 +57,7 @@ Kona.Keys.keydown = (key) ->
     when 'right' then player.setDirection('right')
     when 'up'    then player.jump()
     when 'space' then player.fire()
-    when 'esc' then Kona.togglePause()
+    when 'esc'   then Kona.togglePause()
 
 Kona.Keys.keyup = (key) ->
   switch key
@@ -223,7 +223,7 @@ Kona.Events.on "s1_activate", ->
   puts "s1 activated"
 #   setTimeout ->
 #     puts "spawning turtle"
-#     Kona.Sounds.play("audio/spawn.wav", { autoplay: true }) # TODO: if given path, should probably default autoplay
+#     Kona.Sounds.play("audio/spawn.wav")
 #     Kona.Scenes.currentScene.addEntity(new Turtle { x: 350, y: 0, dx: 1 })
 #   , _.random(500, 1000)
 

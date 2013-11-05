@@ -134,11 +134,11 @@ class Kona.Entity
 
 
   # Public: Return the String name of this instance's entity class
-  # ex: `(new EvilNinja).class() => 'EvilNinja'`
+  # Ex: `(new EvilNinja).class() => 'EvilNinja'`
   class: -> @constructor.name
 
   # Public: Basic representation of an entity as a string
-  toString: -> "<#{@class()} position={ x: #{@position.x}, y: #{@position.y}}>"
+  toString: -> "<#{@class()} position={ x: #{@position.x}, y: #{@position.y} }>"
 
 
   # Internal: Apply gravitational effects any directional changes each frame,
@@ -180,7 +180,6 @@ class Kona.Entity
   #
   # Returns nothing
   draw: ->
-
     # DEBUG: show collision rectangles
     # Kona.Canvas.drawRect(@position, @box)
 
@@ -239,8 +238,6 @@ class Kona.Entity
   # y - Integer y-coordinate, in pixels
   #
   # Returns nothing
-  #
-  # TODO: accept { x, y }
   setPosition: (x, y) ->
     @position.x = x
     @position.y = y
@@ -277,7 +274,7 @@ class Kona.Entity
 
   # Public: Return the Kona.Tile to the bottom left of this entity
   bottomLeftNeighbor: ->
-    size  = Kona.Tile.tileSize
+    size       = Kona.Tile.tileSize
     midX       = (@leftCol()*size)+(size/2)  # The halfway point of the tile our left side is in
     neighborX  = (@leftCol()*size)           # Right of the midpoint - use the tile below us
     neighborX -= size if @left() < midX      # Left of the midpoint - use the tile one over to the left
@@ -287,7 +284,7 @@ class Kona.Entity
 
   # Public: Return the Kona.Tile to the bottom right of this entity
   bottomRightNeighbor: ->
-    size  = Kona.Tile.tileSize
+    size       = Kona.Tile.tileSize
     midX       = (@rightCol()*size)+(size/2)  # The halfway point of the tile our left side is in
     neighborX  = (@rightCol()*size)           # Left of the midpoint - use the tile below us
     neighborX -= size if @right > midX        # Right of the midpoint - use the tile one over to the right
