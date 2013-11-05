@@ -1,0 +1,112 @@
+.content {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  *zoom: 1;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 20px 30px 30px; }
+  .content:before, .content:after {
+    display: table;
+    content: ""; }
+  .content:after {
+    clear: both; }
+
+html {
+  overflow-y: scroll; }
+
+body {
+  background: #f6f2e8 url("/img/noise.png");
+  color: #4d4d4d;
+  font-family: "Quattrocento Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  text-rendering: optimizeLegibility; }
+
+body > .container {
+  margin: 25px auto 0; }
+
+@media (max-width: 630px) {
+  body .container {
+    padding: 0 5px; } }
+.left {
+  float: left; }
+
+.right {
+  float: right; }
+
+li {
+  margin-bottom: 10px; }
+
+h1 {
+  font-size: 2.1em;
+  margin-bottom: 15px; }
+
+h2 {
+  border-bottom: 1px solid #e6e6e6;
+  font-size: 1.6em;
+  margin: 25px 0 15px;
+  padding-bottom: 5px; }
+
+h3 {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 20px 0 10px; }
+
+strong {
+  font-weight: bold; }
+
+p {
+  margin-bottom: 10px;
+  line-height: 1.4; }
+
+a {
+  color: #ff5d55;
+  text-decoration: none; }
+  a:hover {
+    color: #e7503f;
+    text-decoration: underline; }
+
+header {
+  background-color: black;
+  font-size: 3em;
+  padding: 30px;
+  text-align: center; }
+  header a {
+    color: white; }
+    header a:hover {
+      text-decoration: none; }
+
+.sidebar li {
+  margin-left: 10px; }
+  .sidebar li:before {
+    content: "- "; }
+
+.content .breadcrumbs {
+  margin-bottom: 12px; }
+.content code,
+.content pre {
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  color: #333333;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace; }
+.content code {
+  font-size: 0.8em;
+  padding: 1px 2px; }
+.content pre {
+  line-height: 1.4;
+  margin-bottom: 15px;
+  padding: 10px 15px; }
+  .content pre code {
+    background: none;
+    border: none;
+    padding: 0; }
+
+img {
+  margin-bottom: 10px;
+  max-width: 100%; }

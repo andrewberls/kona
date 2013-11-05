@@ -1,0 +1,137 @@
+@import "variables";
+@import "mixins";
+
+
+// Baseline
+// --------------------------
+html {
+  overflow-y: scroll;
+}
+
+body {
+  background: #f6f2e8 url('/img/noise.png');
+  color: lighten($gray-text, 10);
+  font-family: $baseFontFamily;
+  font-size: 15px;
+  text-rendering: optimizeLegibility;
+}
+
+body > .container { margin: 25px auto 0; }
+
+@include mobile {
+  body .container { padding: 0 5px; }
+}
+
+.left { float: left }
+.right { float: right }
+
+li { margin-bottom: 10px; }
+
+
+
+// Typography
+// --------------------------
+h1 {
+  font-size: 2.1em;
+  margin-bottom: 15px;
+}
+
+h2 {
+  border-bottom: 1px solid lighten($med-gray, 10);
+  font-size: 1.6em;
+  margin: 25px 0 15px;
+  padding-bottom: 5px;
+}
+
+h3 {
+  @include bold(1.2em);
+  margin: 20px 0 10px;
+}
+
+strong { font-weight: bold; }
+
+p {
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+a {
+  color: $orange;
+  text-decoration: none;
+
+  &:hover {
+    color: $dark-orange;
+    text-decoration: underline;
+  }
+}
+
+
+
+// Header
+// --------------------------
+header {
+  background-color: black;
+  font-size: 3em;
+  padding: 30px;
+  text-align: center;
+
+  a {
+    color: white;
+    &:hover { text-decoration: none; }
+  }
+}
+
+
+
+// Sidebar
+// --------------------------
+.sidebar {
+  li {
+    margin-left: 10px;
+    &:before { content: "- "; }
+  }
+}
+
+
+
+// Content
+// --------------------------
+.content {
+  @extend %whitebox;
+
+  .breadcrumbs { margin-bottom: 12px; }
+
+  code,
+  pre {
+    @include border-radius;
+    background-color: $light-gray;
+    border: 1px solid #ddd;
+    color: $gray-text;
+    font-family: $codeFontFamily;
+  }
+
+  code {
+    // Inline code snippets
+    font-size: 0.8em;
+    padding: 1px 2px;
+  }
+
+  pre {
+    // Code blocks
+    line-height: 1.4;
+    margin-bottom: 15px;
+    padding: 10px 15px;
+
+    code {
+      // Undo extra code stylings in markdown-fenced blocks
+      background: none;
+      border: none;
+      padding: 0;
+    }
+  }
+}
+
+img {
+  margin-bottom: 10px;
+  max-width: 100%;
+}

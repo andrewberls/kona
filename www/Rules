@@ -1,0 +1,71 @@
+#!/usr/bin/env ruby
+
+# --------------------------
+# Stylesheets
+# --------------------------
+compile '/scss/*_*/' do
+  # don’t compile partials
+  nil
+end
+
+compile '/scss/*/' do
+  filter :sass, syntax: :scss
+end
+
+route '/scss/*_*/' do
+  nil
+end
+
+route '/scss/*/' do
+  item.identifier.sub('scss','css').chop + '.css'
+end
+
+
+# --------------------------
+# Images
+# --------------------------
+compile '/img/*' do
+end
+
+route '/img/*' do
+  item.identifier.chop + '.' + item[:extension]
+end
+
+
+
+
+
+# --------------------------
+# Content
+# --------------------------
+# compile '/docs/*' do
+#   filter :kramdown
+#   layout 'default'
+# end
+
+# compile '/tutorials/*' do
+#   filter :kramdown
+#   layout 'default'
+# end
+
+compile '*' do
+  if item.binary?
+    # don’t filter binary items
+  else
+    filter :erb
+    filter :kramdown
+    layout 'default'
+  end
+end
+
+route '*' do
+  if item.binary?
+    # Write item with identifier /foo/ to /foo.ext
+    item.identifier.chop + '.' + item[:extension]
+  else
+    # Write item with identifier /foo/ to /foo/index.html
+    item.identifier + 'index.html'
+  end
+end
+
+layout '*', :erb

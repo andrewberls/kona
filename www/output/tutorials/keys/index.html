@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link href='http://fonts.googleapis.com/css?family=Quattrocento+Sans' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="/css/cheeky.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" media="screen">
+  </head>
+  <body>
+
+    <header>
+      <h1><a href="/">Kona</a></h1>
+    </header>
+
+    <div class="container">
+      <div class="row">
+        <div class="span-3 sidebar">
+          <h3>Links</h3>
+          <ul>
+            <li><a href="/getting_started">Getting Started</a></li>
+            <li><a href="/tutorials">Tutorials</a></li>
+            <li><a href="/demos">Demos</a></li>
+            <li><a href="/api">API Reference</a></li>
+          </ul>
+        </div>
+
+        <div class="span-13 content">
+          <p><code>Kona.Keys</code> provides an interface for easily binding keypresses to different actions in your game.</p>
+
+<h3 id="define-the-konakeyskeydown-function"><strong>1) Define the <code>Kona.Keys.keydown()</code> function</strong></h3>
+
+<p>This function is directly bound the DOM keydown event, and will be called with the <strong>name</strong> of each pressed key. For example:</p>
+
+<pre><code>Kona.Keys.keydown = (key) -&gt;
+  switch key
+    when 'left'  then player.setDirection('left')
+    when 'right' then player.setDirection('right')
+    when 'up'    then player.jump()
+    when 'space' then player.fire()
+</code></pre>
+
+<h3 id="bind-a-handler-function-to-a-specific-key"><strong>2) Bind a handler function to a specific key</strong></h3>
+
+<p>You can also bind actions directly to a single key using <code>Kona.Keys.bind()</code>. The method takes a string key name and a callback function invoked whenever that key is pressed.</p>
+
+<pre><code>Kona.Keys.bind 'a', -&gt;
+  console.log "You pressed a!"
+</code></pre>
+
+<p>Kona automatically maps key names to their corresponding keycodes (e..g, <code>a -&gt; 65</code>), so your bindings will be more readable. In addition, the following ‘special’ names are recognized:</p>
+
+<ul>
+  <li><code>'enter'</code></li>
+  <li><code>'return'</code></li>
+  <li><code>'esc'</code></li>
+  <li><code>'escape'</code></li>
+  <li><code>'ctrl'</code></li>
+  <li><code>'control'</code></li>
+  <li><code>'left'</code></li>
+  <li><code>'up'</code></li>
+  <li><code>'right'</code></li>
+  <li><code>'down'</code></li>
+  <li><code>'shift'</code></li>
+  <li><code>'space'</code></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

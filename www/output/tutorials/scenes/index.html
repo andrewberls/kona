@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link href='http://fonts.googleapis.com/css?family=Quattrocento+Sans' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="/css/cheeky.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" media="screen">
+  </head>
+  <body>
+
+    <header>
+      <h1><a href="/">Kona</a></h1>
+    </header>
+
+    <div class="container">
+      <div class="row">
+        <div class="span-3 sidebar">
+          <h3>Links</h3>
+          <ul>
+            <li><a href="/getting_started">Getting Started</a></li>
+            <li><a href="/tutorials">Tutorials</a></li>
+            <li><a href="/demos">Demos</a></li>
+            <li><a href="/api">API Reference</a></li>
+          </ul>
+        </div>
+
+        <div class="span-13 content">
+          <p>A scene represents a distinct game state, such as a menu or a level screen.</p>
+
+<p>Entities are added to a particular scene using a grid-like configuration layout, which corresponds to a definition map.</p>
+
+<p>The engine will take care of rendering the current scene, including updating and drawing its associated entities, although scene transitions must be specified manually - see ‘Scene transitions’ below.</p>
+
+<h2 id="the-definition-map">The definition map</h2>
+<p>The <strong>definition map</strong> is a set of rules mapping identifiers to objects for initializing scenes and entities.</p>
+
+<p>In human terms, it allows you to define your game scenes/levels using an intuitive grid format,
+and the engine will automatically construct and place entities for you.</p>
+
+<p>The map is a key-value listing of <strong>rules</strong>, which are explained in the terminology section.</p>
+
+<p>You must set <code>Kona.Scenes.definitionMap</code> to contain your configuration.</p>
+
+<h3 id="terminology">Terminology:</h3>
+<ul>
+  <li><strong>Rule</strong>: an key-value pair specifying an identifier and the object it creates</li>
+  <li><strong>Identifier</strong>: a string representing an object. Ex: <code>'-'</code> could represent a blank tile, and <code>'x'</code> an Enemy.</li>
+</ul>
+
+<h3 id="entity-constructor-arguments">Entity constructor arguments:</h3>
+
+<p>The ‘value’ of a key-value rule is itself a key-value list of arguments.</p>
+
+<ul>
+  <li><strong>group</strong> (String) - The group this entity belongs to. See ‘Entity Groups’ below.</li>
+  <li><strong>entity</strong> (Object) - The entity class to instantiate. Ex: <code>Kona.Tile</code> or <code>Enemy</code></li>
+  <li><strong>opts</strong> (Object) - Optional arguments that will be passed to the entity constructor when it is called.</li>
+</ul>
+
+<p>An example map might look like this:</p>
+
+<pre><code>Kona.Scenes.definitionMap = {
+  '-': { group: 'tiles',   entity: Kona.BlankTile }
+  'r': { group: 'tiles',   entity: Kona.Tile, opts: { sprite: 'img/dirt.png' } }
+  'x': { group: 'enemies', entity: Enemy,     opts: { width: 30, height: 55 } }
+  'c': { group: 'coins',   entity: Coin,      opts: { width: 30, height: 30 } }
+}
+</code></pre>
+
+<p>We will see how the map is put to use in the next section.</p>
+
+<hr />
+<p>## Constructing a scene and loading entities
+A scene must be constructed before its entities can be loaded. In this example, we’ll construct and load entities for the first screen of the first level.
+A string <strong>name</strong> is required for each scene. <strong>background</strong> specifies an optional background image path, and the <strong>active</strong> boolean is used to indicate the first scene to render after starting the engine. The active parameter can be omitted and does not have to be explicitly set to false - just make sure one of your scenes is active when you start the engine.</p>
+
+<pre><code>level1_1 = new Kona.Scene {
+  name: 'lvl1:s1'
+  background: 'lvl1.jpg'
+  active: true # Since it's marked as active, this scene will be the first to show
+}
+</code></pre>
+
+<p>Entities are loaded using a call to <code>loadEntities(grid)</code>, where <code>scene</code> is some pre-constructed scene object.
+  * <strong>grid</strong>: (Array) - A two dimensional array (‘grid’) of values to load into the scene.
+    All values must correspond to rules in the definition map, explained previously.</p>
+
+<p>An example grid might look something like this:</p>
+
+<pre><code>level1_1.loadEntities [
+  ['-','-','-','-','-',],
+  ['r','b','-','-','-',],
+  ['o','-','-','-','-',],
+  ['r','-','c','-','-',],
+  ['b','o','r','b','r',]
+]
+</code></pre>
+
+<hr />
+
+<p>Entity instances can also be manually added to a scene using <code>addEntity()</code>. Ex: <code>Kona.Scenes.currentScene.addEntity(player)</code></p>
+
+<p>This is useful is you want to keep a reference to the entity around for scripting. In the example above, we add the player to the scene and can then write code such as <code>Kona.Keys.bind 'space', -&gt; player.fire()</code></p>
+
+<h2 id="entity-groups">Entity groups</h2>
+<p>Each scene internally keeps track of a list of associated entities. These entities are divided into named <strong>groups</strong>. Example groups might consist of <code>tiles</code>, <code>enemies</code>, <code>collectables</code>, etc. All entities in all groups will be automatically updated and rendered by the engine, but this gives a useful handle to the developer for access or scripting. An entity is required to belong to a specific group - see the group field of the definition map.</p>
+
+<p>Groups have many uses and make tasks much easier - for example, entities in the <code>player</code> group can be scripted to only be able to destroy entities in the <code>enemies</code> group. Additionally, groups are used internally to keep track of Collectors, which are entities that are allowed to ‘pick up’ collectables such as powerups.</p>
+
+<h2 id="scene-transitions">Scene transitions</h2>
+<p>Once you have constructed all of the scenes for your game and loaded their entities, you will need to make the calls to transition between them at the appropriate time.</p>
+
+<h3 id="manually">Manually</h3>
+<p>You can manually transition to any scene by calling <code>Kona.Scenes.setCurrent(sceneName)</code>. For example, you could bind the escape key to <code>Kona.Scenes.setCurrent('pauseMenu')</code>.</p>
+
+<h3 id="using-next">Using next()</h3>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

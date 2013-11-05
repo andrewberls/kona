@@ -1,0 +1,79 @@
+An entity is any renderable object which belongs to a scene. `Kona.Entity` implements an abstract backbone for your game objects. Basics such as position, direction, box model, and collision detection/resolution are handled within this class.
+
+All distinct objects that render to the canvas should inherit from `Kona.Entity` - players, enemies, projectiles, collectables, etc.
+
+Constructor example:
+
+    class Enemy extends Kona.Entity
+      constructor: (opts={}) ->
+        super(opts)
+        # custom code here ...
+
+
+
+## Edge Accessors
+Methods are provided to access the coordinates of the entities box edges, in pixels.
+For example, `entity.top()` will return the y-coordinate of the top edge.
+
+* `top()` - y-coordinate of the top edge
+* `bottom()` - y-coordinate of the top edge
+* `left()` - x-coordinate of the top edge
+* `right()` - x-coordinate of the top edge
+
+## Motion / Position
+Various helpers for dealing with motion and position.
+
+* `movingLeft()` - Boolean indicating whether or not the entity is currently moving left
+* `movingRight()` - Boolean indicating whether or not the entity is currently moving right
+* `addGravity()` - Boolean indicating whether or not the entity is currently moving left
+* `setPosition(x, y)` - Move the entity to a specified pair of integer x,y coordinates
+* `stop(axis)` - Stop all motion on an axis. Motion is stopped in all directions if one is not provided. Ex: `entity.stop('dx')`
+* `onSurface()` - Boolean indicating whether or not the entity is standing on a solid surface
+
+## Collision Detection
+ For each edge (left, right, top, bottom), there are 2 methods for detecting collisions on that edge.
+
+__Plural methods__, ex `leftCollisions()`, check for collisions with any other entities in the current scene in the scene.
+
+__Singular__ methods, ex `leftCollision()`, check for collisions with a specified entity passed as a parameter
+
+__Left Collisions__ (left edge hitting another entities right):
+* `leftCollision(entity)` - Boolean indicating whether or not the left edge is colliding with the specified entity
+* `leftCollisions()` - Boolean indicating whether or not there is a left collision with any neighboring entity
+
+__Right Collision__ (right edge hitting another entities left):
+* `rightCollision(entity)` - Boolean indicating whether or not the right edge is colliding with the specified entity
+* `rightCollisions()` - Boolean indicating whether or not there is a right collision with any neighboring entity
+
+__Top Collisions__ (top edge hitting another entities bottom):
+* `topCollision(entity)` - Boolean indicating whether or not the top edge is colliding with the specified entity
+* `topCollisions()` - Boolean indicating whether or not there is a top collision with any neighboring entity
+
+__Bottom Collisions__ (bottom edge hitting another entities top):
+* `bottomCollision(entity)` - Boolean indicating whether or not the bottom edge is colliding with the specified entity
+* `bottomCollisions()` - Boolean indicating whether or not there is a bottom collision with any neighboring entity
+
+## Collision Resolution
+Resolve collisions after getting user input and applying transformations to entity
+
+For example, prevent a player from falling through the floor after applying gravity.
+
+* `correctLeft()` - move an entity away from a left collision
+* `correctRight()` - move an entity away from a right collision
+* `correctTop()` - move an entity away from a top collision
+* `correctBottom()` - move an entity away from a bottom collision
+
+## Collectables
+The `collects()` method is used to mark an entity as a __collector__ for a __group__ of collectables. It is intended for initialization in a constructor.
+
+After calling, this entity will automatically collect ('activate') the specified collectables on contact.
+
+See docs for Kona.Collectable.
+
+Example:
+
+    class Player extends Kona.Entity
+      constructor: (opts={}) ->
+        super(opts)
+        @collects('coins', 'weapons')
+

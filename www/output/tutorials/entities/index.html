@@ -1,0 +1,120 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link href='http://fonts.googleapis.com/css?family=Quattrocento+Sans' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="/css/cheeky.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" media="screen">
+  </head>
+  <body>
+
+    <header>
+      <h1><a href="/">Kona</a></h1>
+    </header>
+
+    <div class="container">
+      <div class="row">
+        <div class="span-3 sidebar">
+          <h3>Links</h3>
+          <ul>
+            <li><a href="/getting_started">Getting Started</a></li>
+            <li><a href="/tutorials">Tutorials</a></li>
+            <li><a href="/demos">Demos</a></li>
+            <li><a href="/api">API Reference</a></li>
+          </ul>
+        </div>
+
+        <div class="span-13 content">
+          <p>An entity is any renderable object which belongs to a scene. <code>Kona.Entity</code> implements an abstract backbone for your game objects. Basics such as position, direction, box model, and collision detection/resolution are handled within this class.</p>
+
+<p>All distinct objects that render to the canvas should inherit from <code>Kona.Entity</code> - players, enemies, projectiles, collectables, etc.</p>
+
+<p>Constructor example:</p>
+
+<pre><code>class Enemy extends Kona.Entity
+  constructor: (opts={}) -&gt;
+    super(opts)
+    # custom code here ...
+</code></pre>
+
+<h2 id="edge-accessors">Edge Accessors</h2>
+<p>Methods are provided to access the coordinates of the entities box edges, in pixels.
+For example, <code>entity.top()</code> will return the y-coordinate of the top edge.</p>
+
+<ul>
+  <li><code>top()</code> - y-coordinate of the top edge</li>
+  <li><code>bottom()</code> - y-coordinate of the top edge</li>
+  <li><code>left()</code> - x-coordinate of the top edge</li>
+  <li><code>right()</code> - x-coordinate of the top edge</li>
+</ul>
+
+<h2 id="motion--position">Motion / Position</h2>
+<p>Various helpers for dealing with motion and position.</p>
+
+<ul>
+  <li><code>movingLeft()</code> - Boolean indicating whether or not the entity is currently moving left</li>
+  <li><code>movingRight()</code> - Boolean indicating whether or not the entity is currently moving right</li>
+  <li><code>addGravity()</code> - Boolean indicating whether or not the entity is currently moving left</li>
+  <li><code>setPosition(x, y)</code> - Move the entity to a specified pair of integer x,y coordinates</li>
+  <li><code>stop(axis)</code> - Stop all motion on an axis. Motion is stopped in all directions if one is not provided. Ex: <code>entity.stop('dx')</code></li>
+  <li><code>onSurface()</code> - Boolean indicating whether or not the entity is standing on a solid surface</li>
+</ul>
+
+<h2 id="collision-detection">Collision Detection</h2>
+<p>For each edge (left, right, top, bottom), there are 2 methods for detecting collisions on that edge.</p>
+
+<p><strong>Plural methods</strong>, ex <code>leftCollisions()</code>, check for collisions with any other entities in the current scene in the scene.</p>
+
+<p><strong>Singular</strong> methods, ex <code>leftCollision()</code>, check for collisions with a specified entity passed as a parameter</p>
+
+<p><strong>Left Collisions</strong> (left edge hitting another entities right):
+* <code>leftCollision(entity)</code> - Boolean indicating whether or not the left edge is colliding with the specified entity
+* <code>leftCollisions()</code> - Boolean indicating whether or not there is a left collision with any neighboring entity</p>
+
+<p><strong>Right Collision</strong> (right edge hitting another entities left):
+* <code>rightCollision(entity)</code> - Boolean indicating whether or not the right edge is colliding with the specified entity
+* <code>rightCollisions()</code> - Boolean indicating whether or not there is a right collision with any neighboring entity</p>
+
+<p><strong>Top Collisions</strong> (top edge hitting another entities bottom):
+* <code>topCollision(entity)</code> - Boolean indicating whether or not the top edge is colliding with the specified entity
+* <code>topCollisions()</code> - Boolean indicating whether or not there is a top collision with any neighboring entity</p>
+
+<p><strong>Bottom Collisions</strong> (bottom edge hitting another entities top):
+* <code>bottomCollision(entity)</code> - Boolean indicating whether or not the bottom edge is colliding with the specified entity
+* <code>bottomCollisions()</code> - Boolean indicating whether or not there is a bottom collision with any neighboring entity</p>
+
+<h2 id="collision-resolution">Collision Resolution</h2>
+<p>Resolve collisions after getting user input and applying transformations to entity</p>
+
+<p>For example, prevent a player from falling through the floor after applying gravity.</p>
+
+<ul>
+  <li><code>correctLeft()</code> - move an entity away from a left collision</li>
+  <li><code>correctRight()</code> - move an entity away from a right collision</li>
+  <li><code>correctTop()</code> - move an entity away from a top collision</li>
+  <li><code>correctBottom()</code> - move an entity away from a bottom collision</li>
+</ul>
+
+<h2 id="collectables">Collectables</h2>
+<p>The <code>collects()</code> method is used to mark an entity as a <strong>collector</strong> for a <strong>group</strong> of collectables. It is intended for initialization in a constructor.</p>
+
+<p>After calling, this entity will automatically collect (‘activate’) the specified collectables on contact.</p>
+
+<p>See docs for Kona.Collectable.</p>
+
+<p>Example:</p>
+
+<pre><code>class Player extends Kona.Entity
+  constructor: (opts={}) -&gt;
+    super(opts)
+    @collects('coins', 'weapons')
+</code></pre>
+
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

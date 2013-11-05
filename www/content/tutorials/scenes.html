@@ -1,0 +1,96 @@
+A scene represents a distinct game state, such as a menu or a level screen.
+
+Entities are added to a particular scene using a grid-like configuration layout, which corresponds to a definition map.
+
+The engine will take care of rendering the current scene, including updating and drawing its associated entities, although scene transitions must be specified manually - see 'Scene transitions' below.
+
+## The definition map
+The __definition map__ is a set of rules mapping identifiers to objects for initializing scenes and entities.
+
+In human terms, it allows you to define your game scenes/levels using an intuitive grid format,
+and the engine will automatically construct and place entities for you.
+
+The map is a key-value listing of __rules__, which are explained in the terminology section.
+
+You must set `Kona.Scenes.definitionMap` to contain your configuration.
+
+### Terminology:
+  * __Rule__: an key-value pair specifying an identifier and the object it creates
+  * __Identifier__: a string representing an object. Ex: `'-'` could represent a blank tile, and `'x'` an Enemy.
+
+### Entity constructor arguments:
+
+The 'value' of a key-value rule is itself a key-value list of arguments.
+
+  * __group__ (String) - The group this entity belongs to. See 'Entity Groups' below.
+  * __entity__ (Object) - The entity class to instantiate. Ex: `Kona.Tile` or `Enemy`
+  * __opts__ (Object) - Optional arguments that will be passed to the entity constructor when it is called.
+
+An example map might look like this:
+
+    Kona.Scenes.definitionMap = {
+      '-': { group: 'tiles',   entity: Kona.BlankTile }
+      'r': { group: 'tiles',   entity: Kona.Tile, opts: { sprite: 'img/dirt.png' } }
+      'x': { group: 'enemies', entity: Enemy,     opts: { width: 30, height: 55 } }
+      'c': { group: 'coins',   entity: Coin,      opts: { width: 30, height: 30 } }
+    }
+
+
+We will see how the map is put to use in the next section.
+
+
+
+
+
+
+----------------------------------------------------------------------------------
+## Constructing a scene and loading entities
+A scene must be constructed before its entities can be loaded. In this example, we'll construct and load entities for the first screen of the first level.
+A string __name__ is required for each scene. __background__ specifies an optional background image path, and the __active__ boolean is used to indicate the first scene to render after starting the engine. The active parameter can be omitted and does not have to be explicitly set to false - just make sure one of your scenes is active when you start the engine.
+
+    level1_1 = new Kona.Scene {
+      name: 'lvl1:s1'
+      background: 'lvl1.jpg'
+      active: true # Since it's marked as active, this scene will be the first to show
+    }
+
+
+Entities are loaded using a call to `loadEntities(grid)`, where `scene` is some pre-constructed scene object.
+  * __grid__: (Array) - A two dimensional array ('grid') of values to load into the scene.
+    All values must correspond to rules in the definition map, explained previously.
+
+An example grid might look something like this:
+
+    level1_1.loadEntities [
+      ['-','-','-','-','-',],
+      ['r','b','-','-','-',],
+      ['o','-','-','-','-',],
+      ['r','-','c','-','-',],
+      ['b','o','r','b','r',]
+    ]
+
+----------------------------------------------------------------------------------
+
+
+
+
+
+
+Entity instances can also be manually added to a scene using `addEntity()`. Ex: `Kona.Scenes.currentScene.addEntity(player)`
+
+This is useful is you want to keep a reference to the entity around for scripting. In the example above, we add the player to the scene and can then write code such as `Kona.Keys.bind 'space', -> player.fire()`
+
+
+
+## Entity groups
+Each scene internally keeps track of a list of associated entities. These entities are divided into named __groups__. Example groups might consist of `tiles`, `enemies`, `collectables`, etc. All entities in all groups will be automatically updated and rendered by the engine, but this gives a useful handle to the developer for access or scripting. An entity is required to belong to a specific group - see the group field of the definition map.
+
+Groups have many uses and make tasks much easier - for example, entities in the `player` group can be scripted to only be able to destroy entities in the `enemies` group. Additionally, groups are used internally to keep track of Collectors, which are entities that are allowed to 'pick up' collectables such as powerups.
+
+## Scene transitions
+Once you have constructed all of the scenes for your game and loaded their entities, you will need to make the calls to transition between them at the appropriate time.
+
+### Manually
+You can manually transition to any scene by calling `Kona.Scenes.setCurrent(sceneName)`. For example, you could bind the escape key to `Kona.Scenes.setCurrent('pauseMenu')`.
+
+### Using next()

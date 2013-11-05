@@ -1,0 +1,37 @@
+`Kona.Keys` provides an interface for easily binding keypresses to different actions in your game.
+
+### __1) Define the `Kona.Keys.keydown()` function__
+
+This function is directly bound the DOM keydown event, and will be called with the __name__ of each pressed key. For example:
+
+    Kona.Keys.keydown = (key) ->
+      switch key
+        when 'left'  then player.setDirection('left')
+        when 'right' then player.setDirection('right')
+        when 'up'    then player.jump()
+        when 'space' then player.fire()
+
+
+
+### __2) Bind a handler function to a specific key__
+
+You can also bind actions directly to a single key using `Kona.Keys.bind()`. The method takes a string key name and a callback function invoked whenever that key is pressed.
+
+    Kona.Keys.bind 'a', ->
+      console.log "You pressed a!"
+
+
+Kona automatically maps key names to their corresponding keycodes (e..g, `a -> 65`), so your bindings will be more readable. In addition, the following 'special' names are recognized:
+
+  * `'enter'`
+  * `'return'`
+  * `'esc'`
+  * `'escape'`
+  * `'ctrl'`
+  * `'control'`
+  * `'left'`
+  * `'up'`
+  * `'right'`
+  * `'down'`
+  * `'shift'`
+  * `'space'`
