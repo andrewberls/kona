@@ -7,6 +7,7 @@
       "src/engine.coffee",
       "src/store.coffee",
       "src/events.coffee",
+      "src/scene.coffee",
       "src/scenes.coffee",
       "src/entity.coffee",
       "src/animation.coffee",
