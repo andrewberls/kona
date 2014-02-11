@@ -25,6 +25,10 @@ Kona.Utils =
     _.where(list, props)[0] || null
 
 
+  # Delete Utils.random() to Underscore
+  random: _.random
+
+
   # Public: Modify obj1 to also contain the contents of obj2
   # The value for entries with duplciate keys will be that of obj2
   # unless overwrite is explicitly set to false
