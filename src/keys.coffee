@@ -84,18 +84,34 @@ Kona.Keys =
   }
 
 
+
+  # Strips whitespace from String `key` selector and return its
+  # corresponding keycode
+  #
+  # Ex: keyCodeFor('enter') => 13
+  #
+  # Returns Number
+  keyCodeFor: (key) ->
+    key = key.replace(/\s/g, '')
+    @_keycodes[key] || key.toUpperCase().charCodeAt(0)
+
+
   # Parse and save key binding/handler function pair
-  # Strips whitespace from key selector and converts to an internal keycode
   #
   # Options:
+  #   key - The String key name to bind to, ex: `'b'`
+  #   handler - The handler function to invoke when key is pressed
   #
-  #   * __key__ - (String) The key to bind to, ex: `'b'`
-  #   * __handler__ - (Function) The handler function to invoke when key is pressed
+  # Returns nothing
+  bind: (key, fn) -> Kona.Events.bind("key_#{@keyCodeFor(key)}", fn)
+
+
+  # Remove all handler bindings for a key
   #
-  bind: (key, fn) ->
-    key     = key.replace(/\s/g, '')
-    keycode = @_keycodes[key] || key.toUpperCase().charCodeAt(0)
-    Kona.Events.bind("key_#{keycode}", fn)
+  #   key - A String key name
+  #
+  # Returns nothing
+  unbind: (key) -> Kona.Events.unbind("key_#{@keyCodeFor(key)}")
 
 
   # Internally invoke the associated handler function when a bound key is pressed,

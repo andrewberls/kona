@@ -60,6 +60,17 @@ class Kona.Store
   all: -> @_store
 
 
+  # Delete all values for `key` if one is provided,
+  # else reset the entire store
+  #
+  # Returns nothing
+  reset: (key) ->
+    if key?
+      @_store[key] = []
+    else
+      @_store = []
+
+
   # Internal: Return shallow copy Array of all values combined
   # See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat
   concat: ->

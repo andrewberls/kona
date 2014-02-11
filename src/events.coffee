@@ -22,6 +22,11 @@ Kona.Events =
   bind: (name, handler) -> @store.add(name, handler)
 
 
+  # Remove all handlers for the String key `name`
+  # Returns nothing
+  unbind: (name) -> @store.reset(name)
+
+
   # Invoke a handler function associated with an event name
   # Multiple handlers can be bound to a single name key -
   # all will be invoked. Does nothing if no event associated with name
