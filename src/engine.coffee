@@ -7,6 +7,7 @@ Kona.Engine =
   defaultFPS: 24
 
   running: false
+  stopped: false
 
   # Internal: Queue of callbacks to invoke once the engine starts
   _queue: []
@@ -59,8 +60,13 @@ Kona.Engine =
 
   # Internal: Repeatedly draw the current scene by requesting animation frames
   run: ->
-    requestAnimFrame(Kona.Engine.run, Kona.Canvas.elem)
+    return if @stopped
+    requestAnimFrame(Kona.Engine.run.bind(Kona.Engine), Kona.Canvas.elem)
     Kona.Scenes.drawCurrent()
+
+
+  stop: ->
+    @stopped = true
 
 
 
