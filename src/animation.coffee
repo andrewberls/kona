@@ -34,10 +34,12 @@ Kona.Animations = {}
 #            If function, then callback to invoke after playing once (Optional)
 #
 class Kona.Animation
+  DEFAULT_MS_PER_FRAME: 25
+
   constructor: (opts={}) ->
     @lastUpdateTime = 0
     @elapsed        = 0
-    @msPerFrame     = opts.msPerFrame || 25
+    @msPerFrame     = opts.msPerFrame || @DEFAULT_MS_PER_FRAME
 
     @entity    = opts.entity
     @name      = opts.name

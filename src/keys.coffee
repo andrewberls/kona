@@ -25,8 +25,8 @@ Kona.Keys =
 
   # Mapping of special names --> keycode
   _keycodes: {
-    'enter': 13, 'return': 13,
-    'esc'  : 27, 'escape': 27,
+    'enter': 13, 'return' : 13,
+    'esc'  : 27, 'escape' : 27,
     'ctrl' : 17, 'control': 17,
     'left' : 37, 'up'     : 38,
     'right': 39, 'down'   : 40,

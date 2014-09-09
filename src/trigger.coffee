@@ -22,7 +22,7 @@ class Kona.Trigger extends Kona.Entity
 
   # Boolean function to check if an entity is within a given activation tolerance range
   # True by default - override in derived classes for specific behavior
-  withinTolerance: (ent) -> true
+  withinTolerance: (entity) -> true
 
 
   # Internal: Test if a collector is intersecting
@@ -40,15 +40,9 @@ class Kona.Trigger extends Kona.Entity
   # If `@pickupSound` is a string, play as a sound
   # else if `@pickupSound` is an array, choose one to play at random
   activate: ->
-    if _.isString(@pickupSound)
-      Kona.Sounds.play(@pickupSound) if @pickupSound != ''
-    else if _.isArray(@pickupSound)
-      sound = Kona.Utils.sample(@pickupSound)
-      Kona.Sounds.play(sound)
-
-
-
-# Internal tracking of who can collect a given collectable.
-# For example, a player could pick up entities the `coins` group,
-# and both players and enemies could pick up entities in the `food` group.
-Kona.Collectors = new Kona.Store
+    switch
+      when _.isString(@pickupSound)
+        Kona.Sounds.play(@pickupSound) if @pickupSound != ''
+      when _.isArray(@pickupSound)
+        sound = Kona.Utils.sample(@pickupSound)
+        Kona.Sounds.play(sound)

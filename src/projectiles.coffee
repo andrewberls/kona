@@ -25,10 +25,12 @@
 #         @destructibles = ['enemies']
 #
 class Kona.Projectile extends Kona.Entity
+  DEFAULT_SPEED: 10
+
   constructor: (opts={}) ->
     super(opts)
     @target  = opts.target || null
-    @speed   = opts.speed  || 10
+    @speed   = opts.speed  || @DEFAULT_SPEED
     @gravity = false
 
 

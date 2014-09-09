@@ -15,10 +15,12 @@
 #   holder   - The `Kona.Entity` instance holding this weapon
 #
 class Kona.Weapon extends Kona.Collectable
+  DEFAULT_RECHARGE: 300 # ms
+
   constructor: (opts={}) ->
     super(opts)
     @canFire     = true
-    @recharge    = opts.recharge || 300
+    @recharge    = opts.recharge || @DEFAULT_RECHARGE
     @projType    = opts.projType || null
     @projSound   = opts.sound    || ''
     @pickupSound = opts.pickup   || ''
@@ -87,25 +89,24 @@ class Kona.EnemyWeapon extends Kona.Weapon
   #
   # Returns nothing
   #
-  fire: (target=null) ->
-    target ?= @randomTarget()
+  fire: (target = @randomTarget()) ->
+    return unless @isActive() && target.isAlive
 
-    if @isActive() && target.isAlive
-      x = Math.abs(@holder.midx() - target.midx())  # x-distance between enemy & target
-      y = Math.abs(@holder.midy() - target.midy())  # y-distance between enemy & target
+    x = Math.abs(@holder.midx() - target.midx())  # x-distance between enemy & target
+    y = Math.abs(@holder.midy() - target.midy())  # y-distance between enemy & target
 
-      targetLeft = @holder.position.x >= target.midx()
-      targetUp   = @holder.position.y >= target.midy()
+    targetLeft = @holder.position.x >= target.midx()
+    targetUp   = @holder.position.y >= target.midy()
 
-      angle = Math.atan2(y, x) + (if targetUp then 0.5 else 0) # Angle between enemy and target in radians
-      speed = 1
+    angle = Math.atan2(y, x) + (if targetUp then 0.5 else 0) # Angle between enemy and target in radians
+    speed = 1
 
-      projDx = speed * Math.cos(angle) * (if targetLeft then -1 else 1)
-      projDy = speed * Math.sin(angle) * (if targetUp then -1 else 1)
+    projDx = speed * Math.cos(angle) * (if targetLeft then -1 else 1)
+    projDy = speed * Math.sin(angle) * (if targetUp then -1 else 1)
 
-      startX = if targetLeft then @holder.left()-@projOffset.x else @holder.right()+@projOffset.x
-      startY = @holder.top() + @projOffset.y
+    startX = if targetLeft then @holder.left()-@projOffset.x else @holder.right()+@projOffset.x
+    startY = @holder.top() + @projOffset.y
 
-      proj   = new @projType { group: 'projectiles', x: startX, y: startY, dx: projDx, dy: projDy, target: target }
-      @holder.scene.addEntity(proj)
-      Kona.Sounds.play(@projSound) if @projSound != ''
+    proj   = new @projType { group: 'projectiles', x: startX, y: startY, dx: projDx, dy: projDy, target: target }
+    @holder.scene.addEntity(proj)
+    Kona.Sounds.play(@projSound) if @projSound != ''
