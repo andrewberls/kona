@@ -73,22 +73,6 @@ Kona.Utils =
 
 
 
-# Run a function only once. Useful for debugging within loops.
-#
-# fn - Function to be run
-#
-# Ex:
-#
-#     while true
-#       once =>
-#         console.log "This will only be logged once"
-#
-window.__k_once = 0
-window.once = (fn) ->
-  fn() if __k_once == 0
-  __k_once++
-
-
 # Public: Throw an exception with a message
 # Accepts one or two string arguments
 #
@@ -103,7 +87,3 @@ window.once = (fn) ->
 window.fail = (args...) ->
   msg = if args.length == 2 then "In #{args[0]}: #{args[1]}" else args.toString()
   throw new Error(msg)
-
-
-# Shorthand for console.log, used for debugging
-window.puts = (obj) -> console.log obj

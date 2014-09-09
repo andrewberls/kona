@@ -85,7 +85,7 @@ class Player extends Kona.Entity
   hit: (dir) ->
     if @isAlive
       @health--
-      puts "player hit, #{@health} hp remaining"
+      console.log "player hit, #{@health} hp remaining"
       if @health <= 0
         @die()
       else
@@ -98,7 +98,7 @@ class Player extends Kona.Entity
       @lives--
       Kona.Sounds.play('player_die')
       if @lives <= 0
-        puts "Game over" # TODO: implement
+        console.log "Game over" # TODO: implement
       else
         @setAnimation("die_right") # TODO: die_#{dir}
 

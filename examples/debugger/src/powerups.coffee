@@ -4,7 +4,7 @@ class HealthPowerup extends Kona.Collectable
 
   activate: (collector) ->
     super
-    puts "got #{@value} health"
+    console.log "got #{@value} health"
     collector.health += @value
 
 
@@ -42,7 +42,7 @@ class Coin extends Kona.Collectable
 
   activate: (collector) ->
     super
-    puts "got #{@value} score"
+    console.log "got #{@value} score"
     collector.score += @value
 
 

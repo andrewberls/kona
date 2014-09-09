@@ -220,15 +220,15 @@ Kona.Scenes.find("s2").addEntity(new Elevator(width: 60, height: 60, x: 600, y: 
 #   GAME START
 # ----------------------
 Kona.Events.on "s1_activate", ->
-  puts "s1 activated"
+  console.log "s1 activated"
 #   setTimeout ->
-#     puts "spawning turtle"
+#     console.log "spawning turtle"
 #     Kona.Sounds.play("audio/spawn.wav")
 #     Kona.Scenes.currentScene.addEntity(new Turtle { x: 350, y: 0, dx: 1 })
 #   , _.random(500, 1000)
 
 
-Kona.Events.on "s2_activate", -> puts "s2 activated"
+Kona.Events.on "s2_activate", -> console.log "s2 activated"
 
 
 
