@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Kona Tracing Demo</title>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
+
+  <style type="text/css">
+    * { margin: 0; padding: 0; }
+
+    body {
+      color: #404040;
+      font-size: 16px;
+    }
+
+    .canvas-container {
+      position: relative;
+      margin: 0 auto;
+      width: 940px;
+    }
+
+    canvas {
+      display: block;
+      position: fixed;
+      margin: 0 auto;
+      z-index: -999;
+    }
+
+    h1, p {
+      font-family: 'Open Sans';
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3em;
+      font-weight: normal;
+      line-height: 300px;
+    }
+
+    p {
+      font-size: 0.9em;
+      margin-top: 10em;
+    }
+
+    a { color: #08c; }
+    a:hover { text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <div class="canvas-container">
+    <canvas width='940px' height='300px' id="gameCanvas"></canvas>
+    <h1>Hello World.</h1>
+  </div>
+
+  <p>
+    An experiment using <a href="https://github.com/andrewberls/kona">Kona.js</a> by <a href="http://andrewberls.com/">Andrew Berls</a>.
+  </p>
+
+  <script type="text/javascript" src="kona.min.js"></script>
+  <script type="text/javascript" src="trace.js"></script>
+</body>
+</html>
