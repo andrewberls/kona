@@ -11,7 +11,7 @@ The simplest possible example of Kona, showing a ball bouncing off walls.
 Debugger is the reference game that Kona was built for. Like Kona, it is still a work in
 progress.
 
-Kona was also used to built [FlippyBard](http://andrewberls.com/demos/flippybard/) (*"it ain't Flappy Bird ™"*)
+Kona was also used to built [FlippyBard](http://andrewberls.com/demos/flippybard/) (*"it ain't Flappy Bird ™"*) (source [here](https://github.com/andrewberls/flippybard))
 
 
 
